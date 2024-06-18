@@ -1,0 +1,12 @@
+[
+  {
+    "id": "ProductList",
+    "title": "홈",
+    "imageUrl": ""
+  },
+  {
+    "id": "Setting",
+    "title": "My",
+    "imageUrl": ""
+  }
+]
