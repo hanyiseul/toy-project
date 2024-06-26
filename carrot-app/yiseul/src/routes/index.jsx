@@ -2,8 +2,7 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import App from '../App';
 import NotFoundPage from '../NotFoundPage';
 import ProductList from '../pages/ProductList';
-
-// import SubTypography from '../views/components/SubTypography';
+import ProductWrite from '../pages/ProductWrite';
 
 const routes = createBrowserRouter([
   {
@@ -25,6 +24,10 @@ const routes = createBrowserRouter([
       {
         path: 'productList',
         element: <ProductList />,
+      },
+      {
+        path: 'write',
+        element: <ProductWrite />,
       },
     ],
   },

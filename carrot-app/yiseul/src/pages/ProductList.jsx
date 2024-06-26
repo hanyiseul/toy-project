@@ -1,11 +1,21 @@
 import PropTypes from 'prop-types'; // PropTypes 불러오기
 import Products from '../components/Products'
 import { useEffect, useState } from 'react';
+import Button from '../components/Button';
+import { useNavigate } from 'react-router-dom';
 
 export default function ProductList() {
 
   const [products, setProducts] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const navigateWrite = () => {
+    console.log('hi')
+    navigate('/pages/write');
+  }
+
+
 
   useEffect(() => {
     setError(null); // 에러 초기화
@@ -41,7 +51,8 @@ export default function ProductList() {
         ) : (
           <Products products={products} />
         )}
-      
+
+        <Button text="글쓰기" onClick={navigateWrite} />
       </section>
     </>
   )
