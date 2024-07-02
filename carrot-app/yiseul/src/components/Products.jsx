@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types'; // PropTypes 불러오기
+import Button from './Button';
 
 export default function Products({ id='', className='', 
 products=[] }) {
@@ -15,6 +16,7 @@ products=[] }) {
             </p>
             <p>{product.price}</p>
           </div>
+          <Button text="삭제" />
         </li>
       ))}
     </ul>

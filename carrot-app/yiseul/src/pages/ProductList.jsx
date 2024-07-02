@@ -51,7 +51,7 @@ export default function ProductList() {
         ) : (
           <Products products={products} />
         )}
-
+        
         <Button text="글쓰기" onClick={navigateWrite} />
       </section>
     </>
