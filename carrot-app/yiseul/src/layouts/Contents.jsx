@@ -16,4 +16,5 @@ const ContentsStyle = styled.div`
   padding: 20px;
   height: calc(100vh - 155px);
   box-sizing: border-box;
+  overflow-y: scroll;
 `
