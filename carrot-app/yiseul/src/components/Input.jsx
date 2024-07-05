@@ -2,7 +2,16 @@ import PropTypes from 'prop-types'; // PropTypes 불러오기
 import { useState } from 'react';
 import Image from './Image';
 
-export default function Input({label, value, placeholder, readonly, disabled, accept, onChange, multiple, type='text'}) {
+export default function Input({
+  label, 
+  value, 
+  placeholder, 
+  readOnly, 
+  disabled, 
+  accept, 
+  onChange, 
+  multiple, 
+  type='text'}) {
   const [uploadImgUrl, setUploadImgUrl] = useState([]);
 
   const onchangeImageUpload = (e) => {
@@ -24,7 +33,7 @@ export default function Input({label, value, placeholder, readonly, disabled, ac
       {uploadImgUrl && uploadImgUrl.map((img, id) => (
         <Image id={id} img={img} key={id}/>
       ))}
-      <input className={`input`}type={type} value={value} accept={accept} placeholder={placeholder} readOnly={readonly} disabled={disabled} onChange={multiple ? onchangeImageUpload : onChange} multiple={multiple}/>
+      <input className={`input`}type={type} value={value} accept={accept} placeholder={placeholder} readOnly={readOnly} disabled={disabled} onChange={multiple ? onchangeImageUpload : onChange} multiple={multiple}/>
     </div>
   )
 }

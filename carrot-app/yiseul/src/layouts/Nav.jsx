@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
+import Image from '../components/Image';
 
 export default function Nav() {
   // const nav = [
@@ -30,7 +31,7 @@ export default function Nav() {
       }
     }
     navData();
-  });
+  },[]);
 
   return (
     <NavStyle as="nav">
@@ -38,7 +39,7 @@ export default function Nav() {
         {nav.map((navItem, index) => (
           <li key={index}>
             <NavLink className="search__link" to={`/pages/${navItem.id}`}>
-              <img src={navItem.imageUrl} alt={`${navItem.title}`} />
+              <Image src={navItem.imageUrl} alt={`${navItem.title}`}/>
               <span className="search__title"><strong>{navItem.title}</strong></span>
             </NavLink>
           </li>

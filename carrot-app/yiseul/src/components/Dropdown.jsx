@@ -1,12 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types'; // PropTypes 불러오기
 
 export default function Dropdown({
-  className = "",
-  id = "",
+  className,
+  id,
   disabled = false,
-  parentClass = "",
-  onChange
+  parentClass,
 }) {
   const options = ["원서동", "괴안동"];
   const [defaultOption, setDefaultOption] = useState(options[0]);
