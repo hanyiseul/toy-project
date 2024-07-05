@@ -3,6 +3,7 @@ import App from '../App';
 import NotFoundPage from '../NotFoundPage';
 import ProductList from '../pages/ProductList';
 import ProductWrite from '../pages/ProductWrite';
+import ProductDetail from '../pages/ProductDetail';
 
 const routes = createBrowserRouter([
   {
@@ -26,8 +27,12 @@ const routes = createBrowserRouter([
         element: <ProductList />,
       },
       {
-        path: 'write',
+        path: 'productWrite',
         element: <ProductWrite />,
+      },
+      {
+        path: 'ProductDetail/:productId',
+        element: <ProductDetail />,
       },
     ],
   },

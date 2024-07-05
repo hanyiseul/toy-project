@@ -1,7 +1,9 @@
+import PropTypes from 'prop-types'; // PropTypes 불러오기
 import { useEffect } from 'react';
 
-
-export default function Map({ style }) {
+export default function Map({ 
+  style 
+}) {
   useEffect(() => {
     const script = document.createElement('script');
     script.async = true;
@@ -12,8 +14,8 @@ export default function Map({ style }) {
       // Kakao Maps API가 로드된 후 실행될 함수
       const mapContainer = document.getElementById('map'), // 지도를 표시할 div 
       mapOption = { 
-          center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-          level: 10 // 지도의 확대 레벨 
+        center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+        level: 10 // 지도의 확대 레벨
       }; 
 
       const map = new window.kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
@@ -55,4 +57,8 @@ export default function Map({ style }) {
     <div id="map" style={style}></div>
   );
 }
+// PropTypes 추가
+Map.propTypes = {
+  style: PropTypes.string,
+};
 
