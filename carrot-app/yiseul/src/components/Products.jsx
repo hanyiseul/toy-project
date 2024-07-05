@@ -1,29 +1,30 @@
-import PropTypes from 'prop-types'; // PropTypes 불러오기
-import Button from './Button';
+import PropTypes from 'prop-types';
+import Popup from './Popup';
+import { Link } from 'react-router-dom';
 
-export default function Products({ id='', className='', 
-products=[] }) {
+export default function Products({ id, className, products }) {
   return (
-    <ul className={`product__ist ${className}`} id={id}>
+    <ul className={`product__list ${className}`} id={id}>
       {products.map((product, index) => (
         <li key={index}>
-          <img src={`../src/assets/images/svg/product${product.id}.svg`} alt={`${product.title} 이미지`} />
-          <div className="product__info">
-            <p>{product.title}</p>
-            <p>
-              <span>{product.location}</span>
-              <span>{product.date}</span>
-            </p>
-            <p>{product.price}</p>
-          </div>
-          <Button text="삭제" />
+          <Link to={{ pathname: `/pages/productDetail/${product.id}`, state: { products } }}>
+            <img src={`../src/assets/images/svg/product${product.id}.svg`} alt={`${product.title} 이미지`} />
+            <div className="product__info">
+              <p>{product.title}</p>
+              <p>
+                <span>{product.location}</span>
+                <span>{product.date}</span>
+              </p>
+              <p>{product.price}</p>
+            </div>
+          </Link>
+          <Popup buttonText='팝업' />
         </li>
       ))}
     </ul>
-  )
+  );
 }
 
-// PropTypes 추가
 Products.propTypes = {
   id: PropTypes.string,
   className: PropTypes.string,
