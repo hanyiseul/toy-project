@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types'; // PropTypes 불러오기
 
 export default function Dropdown({
-  className,
+  className='',
   id,
   disabled = false,
   parentClass,
