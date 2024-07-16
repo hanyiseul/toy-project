@@ -13,7 +13,7 @@ export default function Header({as}) {
       <Dropdown/>
       <div className="buttons">
         <Button icon='search' text='검색'/>
-        <Button icon='notice' text='알림'/>
+        {/* <Button icon='notice' text='알림'/> */}
       </div>
     </HeaderStyle>
   )

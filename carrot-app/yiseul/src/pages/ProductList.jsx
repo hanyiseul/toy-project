@@ -11,11 +11,8 @@ export default function ProductList() {
   const navigate = useNavigate();
 
   const navigateWrite = () => {
-    console.log('hi')
-    navigate('/pages/write');
+    navigate('/pages/productWrite');
   }
-
-
 
   useEffect(() => {
     setError(null); // 에러 초기화

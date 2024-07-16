@@ -57,8 +57,3 @@ export default function Map({
     <div id="map" style={style}></div>
   );
 }
-// PropTypes 추가
-Map.propTypes = {
-  style: PropTypes.string,
-};
-
