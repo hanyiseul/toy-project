@@ -17,6 +17,3 @@ rl.on('line', function (line) {
     str = input[0];
     console.log(str)
 });
-
-
-테스트
