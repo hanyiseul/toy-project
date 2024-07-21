@@ -1,13 +1,13 @@
 import styled from 'styled-components';
 import Button from '../components/Button'
 import Dropdown from '../components/Dropdown'
-import Products from '../components/Products'
 
-export default function Header({as}) {
+export default function Header() {
   // const options = [
 	// 	{ label: '원서동', value: '원서동' },
 	// 	{ label: '괴안동', value: '괴안동' }
 	// ]
+
   return (
     <HeaderStyle as="header" className="header container">
       <Dropdown/>

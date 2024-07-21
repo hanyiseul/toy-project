@@ -4,6 +4,8 @@ import NotFoundPage from '../NotFoundPage';
 import ProductList from '../pages/ProductList';
 import ProductWrite from '../pages/ProductWrite';
 import ProductDetail from '../pages/ProductDetail';
+import Login from '../pages/Login';
+import Setting from '../pages/Setting';
 
 const routes = createBrowserRouter([
   {
@@ -31,7 +33,7 @@ const routes = createBrowserRouter([
         element: <ProductWrite />,
       },
       {
-        path: 'ProductDetail/:productId',
+        path: 'productDetail/:productId',
         element: <ProductDetail />,
       },
     ],
@@ -39,6 +41,16 @@ const routes = createBrowserRouter([
   {
     path: '*',
     element: <NotFoundPage />,
+    errorElement: <NotFoundPage />,
+  },
+  {
+    path: '/pages/login',
+    element: <Login />,
+    errorElement: <NotFoundPage />,
+  },
+  {
+    path: '/pages/setting',
+    element: <Setting />,
     errorElement: <NotFoundPage />,
   },
 ]);
