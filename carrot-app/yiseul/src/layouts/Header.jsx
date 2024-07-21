@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import Button from '../components/Button'
 import Dropdown from '../components/Dropdown'
+import { useNavigate } from 'react-router-dom';
 
 export default function Header() {
   // const options = [
@@ -8,11 +9,15 @@ export default function Header() {
 	// 	{ label: '괴안동', value: '괴안동' }
 	// ]
 
+  const navigate = useNavigate();
+  const linkToserachPage = () => {
+    navigate('/pages/search')
+  }
   return (
     <HeaderStyle as="header" className="header container">
       <Dropdown/>
       <div className="buttons">
-        <Button icon='search' text='검색'/>
+        <Button icon='search' text='검색' onClick={linkToserachPage}/>
         {/* <Button icon='notice' text='알림'/> */}
       </div>
     </HeaderStyle>

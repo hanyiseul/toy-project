@@ -6,6 +6,7 @@ import ProductWrite from '../pages/ProductWrite';
 import ProductDetail from '../pages/ProductDetail';
 import Login from '../pages/Login';
 import Setting from '../pages/Setting';
+import Search from '../pages/Search';
 
 const routes = createBrowserRouter([
   {
@@ -51,6 +52,11 @@ const routes = createBrowserRouter([
   {
     path: '/pages/setting',
     element: <Setting />,
+    errorElement: <NotFoundPage />,
+  },
+  {
+    path: '/pages/search',
+    element: <Search />,
     errorElement: <NotFoundPage />,
   },
 ]);
