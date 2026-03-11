@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="../assets/common.css">
+</head>
+<body>
+  <div class="resultWrap">
+    <h1 class="title">문제 풀이 확인</h1>
+    <p class="desc">각 문제의 정답과 해설을 확인하세요.</p>
+
+    <div class="result">
+      <div class="resultTitle">
+        <span>part ${part}</span>
+        <span>문제 ${id}</span>
+      </div>
+      <div class="resultCon">
+        <p class="reaultQuestion">${content}</p>
+        <ol class="resultList">
+          <li>${options[index+1]}. ${options}</li>
+        </ol>
+      </div>
+      <div class="explanation">${explanation}</div>
+    </div>
+  </div>
+</body>
+<script src="../assets/question.js"></script>
+<script>
+  
+/**
+ * 
+ * 파이프라인
+ * 
+ * 데이터 복원
+ *   - 1. test.html 에서 로컬스토리지에 저장한 답안들 가져오기
+ * 
+ * 복원된 데이터 처리
+ *   - 2. 정답 체크
+ *         2-1. 로컬스토리지에 저장한 답들과 question.js의 answer 답과 일치한지 확인
+ *              * 문제 번호와 그에 해당하는 답안들이 서로 일치하는지 확인 !!
+ *         2-2. 만약 로컬스토리지에 저장한 답들과 question.js의 answer 답이 일치한다면 -> 정답처리
+ *              그렇지 않다면 -> 오답 처리
+ *              * 정답일 경우 correct 클래스 추가 / 오답일 경우 wrong 클래스 추가
+ *         2-3. 1문제당 점수 = (100/총 문제수): 올림 처리 
+ *              => 내점수 : 문제수 * 1문제당 점수 (최고 100점 -> 넘을 경우 100점으로 내림)
+ * 
+ * 데이터 로딩
+ *   - 3. 해당 문제에 대한 문제 해설 데이터를 가져와서 템플릿에 그린 후 화면에 노출
+ * 
+ * 
+*/
+
+
+
+
+</script>
+</html>
