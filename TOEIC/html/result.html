@@ -1,32 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="../assets/common.css">
+  <title>토익 문제 연습 시스템</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
 </head>
 <body>
+  <header>
+    <h1>토익문제 시스템</h1>
+    <ul class="menuList">
+      <li><a href="/test.html">문제풀기</a></li>
+      <li><a href="/result.html">결과보기</a></li>
+      <li><a href="/analysis.html">분석보기</a></li>
+    </ul>
+  </header>
   <div class="resultWrap">
     <h1 class="title">문제 풀이 확인</h1>
     <p class="desc">각 문제의 정답과 해설을 확인하세요.</p>
 
-    <div class="result">
-      <div class="resultTitle">
-        <span>part ${part}</span>
-        <span>문제 ${id}</span>
-      </div>
-      <div class="resultCon">
-        <p class="reaultQuestion">${content}</p>
-        <ol class="resultList">
-          <li>${options[index+1]}. ${options}</li>
-        </ol>
-      </div>
-      <div class="explanation">${explanation}</div>
-    </div>
+    <div id="score" class="score"></div>
+
+    <div id="result" class="result"></div>
+
+    <a href="analysis.html">분석하기</a>
   </div>
 </body>
-<script src="../assets/question.js"></script>
+<script src="../assets/js/question.js"></script>
 <script>
   
 /**
@@ -44,7 +44,7 @@
  *              그렇지 않다면 -> 오답 처리
  *              * 정답일 경우 correct 클래스 추가 / 오답일 경우 wrong 클래스 추가
  *         2-3. 1문제당 점수 = (100/총 문제수): 올림 처리 
- *              => 내점수 : 문제수 * 1문제당 점수 (최고 100점 -> 넘을 경우 100점으로 내림)
+ *              => 내점수 : (현재 점수 / 전체 점수) * 100 (최고 100점)
  * 
  * 데이터 로딩
  *   - 3. 해당 문제에 대한 문제 해설 데이터를 가져와서 템플릿에 그린 후 화면에 노출
@@ -52,7 +52,83 @@
  * 
 */
 
+const resultData = () => {
+  
+  // 1. 로컬스토리지에 저장한 답안들 가져오기
+  // 데이터가 있으면 문제 템플릿을 / 없으면 nodata를
+  const data = localStorage.getItem("testResult");
+  const result = document.querySelector("#result");
+  console.log(data);
 
+  const userdata = JSON.parse(data); // JSON 문자열을 객체로 변환
+
+  // 불러온 데이터 처리 후 화면 노출
+  if(!data) {
+    // 데이터업쪙ㅠㅠ
+    result.innerHTML = `<div class="noData">문제를 풀지 않았어요</div>`
+  } else {
+
+    
+    let score = 0; // 내점수 숫자로 초기화
+    result.innerHTML = question2.map((item, idx) => {
+      // 내 대답 숫자로 가져오깅
+      const userAnswer = Number(userdata.test[idx+1]);
+
+      // 점수 체크
+      if (userAnswer === item.answer) score += Math.ceil(100 / question2.length);
+
+      // 점수가 백점일 경우 강조 클래스 
+      const resultScore = (score === 100 ? "total100" : "myScore");
+  
+      document.querySelector("#score").innerHTML = `
+        <p class="${resultScore}">${score}점 / <span class="total">100점</span></p>
+      `
+
+      // 정답 체크하기
+      // 정답일 경우 resultBox에 correct 클래스 추가 / 오답일 경우 wrong 추가
+      return `<div class="resultBox ${userAnswer === item.answer ? "correct" : "wrong"}">
+        <div class="resultTitle">
+          <span>part ${item.part}</span>
+          <span>문제 ${item.id}</span>
+        </div>
+        <div class="resultCon">
+          <p class="reaultQuestion">${item.content}</p>
+
+          내 정답 : ${userAnswer}
+          찐 정답 : ${item.answer}
+
+
+          <ol class="resultList">
+            ${item.options.map((option,index) =>{  
+              // 클래스명 담을 변수
+              let classname = "";
+
+              // 찐 정답 표시 => index+1(답안 번호랑) 찐 정답이 일치하는 li에 클래스 추가할꼬야
+              if(item.answer === index+1) {
+                classname += "correctOption"
+              
+              // 오답 표시 => 내가 고른 답안이랑 찐 답안이랑 다르쟈나?
+              } else if((userAnswer === index+1) !== (item.answer === index+1)) { 
+                 classname += "wrongOption"
+
+              // 정답도 오답도 아닌 기본 클래스~
+              } else {
+                classname="option"
+              }
+              // 기본
+              return `<li class="${classname}">${index+1}. ${option}</li>` 
+              
+              }).join("")
+            }
+            <li></li>
+          </ol>
+        </div>
+        <div class="explanation">${item.explanation}</div>
+      </div>`
+    }).join(" ");
+  }
+}
+resultData();
 
 
 </script>

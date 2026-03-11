@@ -1,12 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>토익 문제 연습 시스템</title>
-  <link rel="stylesheet" href="../assets/common.css">
+  <link rel="stylesheet" href="../assets/css/common.css">
 </head>
 <body>
+  <header>
+    <h1>토익문제 시스템</h1>
+    <ul class="menuList">
+      <li><a href="/test.html">문제풀기</a></li>
+      <li><a href="/result.html">결과보기</a></li>
+      <li><a href="/analysis.html">분석보기</a></li>
+    </ul>
+  </header>
   <div class="testWrap">
     <div class="left">
       <h1>시험 문제</h1>
@@ -21,7 +29,7 @@
 </body>
 
 
-<script src="../assets/question.js"></script> <!-- 문제 데이터 json 파일 -->
+<script src="../assets/js/question.js"></script> <!-- 문제 데이터 json 파일 -->
 <script>
   
 /**
@@ -56,8 +64,9 @@
 
   // 2. 데이터 로딩 : 문제 데이터를 받아서 문제 리스트 템플릿 만들기
   const test = () => {
-    
-    const list = document.querySelector("#test"); // 문제 리스트 담을 변수 정의
+    // 문제 리스트 담을 변수 정의 
+    // -> 아이디는 한 파일에 고유하게 하나만 가능하기 때문에 querySelector이 아닌 querySelectorAll로 지정
+    const list = document.querySelector("#test"); 
 
     // list 변수 안에 html 집어넣기
     list.innerHTML = question2.map(item => { // 데이터 원본을 수정하는 것은 위험하기 때문에 map으로 원본 복사해서 새 배열 생성하기
