@@ -46,7 +46,7 @@ const question = [
   },
   {
     "id": 4,
-    "part": 4,
+    "part": 1,
     "category": "LC",
     "content": "What is the announcement mainly about?",
     "media": "../media/audio/p4_q1.mp3",
@@ -61,7 +61,7 @@ const question = [
   },
   {
     "id": 5,
-    "part": 5,
+    "part": 1,
     "category": "RC",
     "content": "Please submit the report _____ Friday.",
     "media": null,
@@ -76,7 +76,7 @@ const question = [
   },
   {
     "id": 6,
-    "part": 6,
+    "part": 2,
     "category": "RC",
     "content": "The company has decided to _____ its customer service team.",
     "media": null,
@@ -91,7 +91,7 @@ const question = [
   },
   {
     "id": 7,
-    "part": 7,
+    "part": 3,
     "category": "RC",
     "content": "According to the email, why was the meeting postponed?",
     "media": "p7_email1.jpg",

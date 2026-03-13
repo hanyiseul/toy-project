@@ -4,15 +4,127 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>토익 문제 연습 시스템</title>
+  <link rel="stylesheet" href="/assets/css/common.css">
 </head>
 <body>
   <header>
     <h1>토익문제 시스템</h1>
     <ul class="menuList">
-      <li><a href="/test.html">문제풀기</a></li>
-      <li><a href="/result.html">결과보기</a></li>
-      <li><a href="/analysis.html">분석보기</a></li>
+      <li><a href="/">문제풀기</a></li>
+      <li><a href="/result">결과보기</a></li>
+      <li><a href="/analysis">분석보기</a></li>
     </ul>
   </header>
+  <section class="analysisWrap">
+    <div class="analysisarea">
+      <h2 class="title">문제 풀이 분석</h2>
+
+      <div id="part" class="part">
+        <canvas id="partChart"></canvas>
+      </div>
+      
+      <div id="category" class="category">
+        <canvas id="categoryChart"></canvas>
+      </div>
+
+      <div class="buttonWrap">
+        <a class="btn" href="/">문제 풀기</a>
+      </div>
+    </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="../assets/js/database.js"></script>
+<script>
+
+  /**
+   * 
+   * 파이프라인
+   * 
+   * 데이터 복원
+   *   - 1. test.html 에서 로컬스토리지에 저장한 답안들 가져오기
+   * 
+   * 복원된 데이터 처리
+   *   - 2. part별 틀린 문제 유형별 통계 시각화
+   *        2-1. 로컬스토리지에 저장한 답들과 question.js의 answer 답과 일치한지 확인
+   *   - 3. category별 틀린 문제 유형별 통계 시각화
+   * 
+   * 데이터 로딩
+   *   - 3. 해당 문제에 대한 문제 해설 데이터를 가져와서 템플릿에 그린 후 화면에 노출
+   * 
+   * 
+  */
+
+  
+    // 1. 로컬스토리지에 저장한 답안들 가져오기
+    // 데이터가 있으면 문제 템플릿을 / 없으면 nodata를
+    const data = localStorage.getItem("testResult");
+    const result = document.querySelector("#result");
+
+    const userdata = JSON.parse(data); // JSON 문자열을 객체로 변환
+
+    console.log(userdata)
+    console.log(data)
+
+    // 오답 담을 객체
+      const wrongPart = {};
+    const wrongCategory = {};
+
+    question.forEach(item => {
+      const answer = userdata[item.id];
+
+
+      if (wrongPart[item.part]) {
+        wrongPart[item.part] += 1;
+      } else {
+        wrongPart[item.part] = 1;
+      }
+      
+      if(answer !== item.answer) {
+        if(wrongCategory[item.category]) {
+          wrongCategory[item.category] += 1;
+        } else {
+          wrongCategory[item.category] = 1;
+        }
+      }
+    })
+
+    new Chart(document.getElementById("partChart"), {
+        type: "bar",
+        data: {
+          labels: Object.values(wrongPart).map(part => `part${part}`),
+          datasets: [{
+            label: "Part별 틀린 문제",
+            data: Object.values(wrongPart),
+            barThickness: 30,   // 막대 두께 줄이기
+            borderRadius: 10,   // 둥글게
+            categoryPercentage: 0.9, // 위아래 공간 줄이기
+            barPercentage: 0.9       // 막대 영역 꽉 채우기
+          }]
+        },
+        options: {
+          indexAxis: 'y',   // 가로 그래프
+          maintainAspectRatio: false
+        }
+      });
+
+      new Chart(document.getElementById("categoryChart"), {
+          type: "bar",
+          data: {
+            labels: Object.keys(wrongCategory),
+            datasets: [{
+              label: "Category별 틀린 문제",
+              data: Object.values(wrongCategory),
+              backgroundColor: "#60a5fa",
+              barThickness: 30,   // 막대 두께 줄이기
+              borderRadius: 10,   // 둥글게
+              categoryPercentage: 0.9, // 위아래 공간 줄이기
+              barPercentage: 0.9       // 막대 영역 꽉 채우기
+            }]
+          },
+          options: {
+            indexAxis: 'y',   // 가로 그래프
+            maintainAspectRatio: false
+          }
+        });
+</script>
 </html>
