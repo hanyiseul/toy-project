@@ -1,15 +1,65 @@
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css");
-body {padding: 0; margin: 0; font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;}
+/* reset */
+body {padding: 0; margin: 0; font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif; color: #333;}
 img{width: 100%; height: auto;}
-ul, ol {list-style: none; padding: 0;}
+ul, ol {list-style: none; margin: 0; padding: 0;}
 p {margin: 0;}
-.testWrap {border: 1px solid red; position: relative;}
-.left {border: 1px solid blue; width: 65%; padding: 10px;}
-.testList > li {margin: 10px 0; padding: 10px 0;}
-.testList > li:not(:first-child) {border-top: 1px solid #ccc;}
-.testNum {font-size: 20px; font-weight: bold;}
-.testTitle {margin-top: 5px;}
-.testTitle p {margin-top: 5px;}
-.testContents {width: 100%; max-width: 300px; height: auto; margin: 10px 0;}
-.right { background: tan; position: fixed; top: 0; right: 0; width: 35%; height: 100%;}
+a {color: #333; text-decoration: none;}
+h1 {margin: 0;}
+.radioWrap {margin-bottom: 10px;}
+.radioWrap .radio {display: none;}
+.radioWrap label {display: block; padding: 12px 14px; border-radius: 8px; cursor: pointer; border: 1px solid #ddd; transition: all 0.2s ease;}
+.radioWrap  label:hover {background: #f5f5f5;}
+.radioWrap .radio:checked + label {color: white; background: #1147e6; border-color: #1147e6;}
+.buttonWrap {width: 100%; text-align: center;}
+.btn {display: inline-block; width: 100%; padding: 10px 15px; color: #fff; text-align: center; outline: none; border: none; border-radius: 15px; background: #1147e6; box-sizing: border-box; }
 
+/* header */
+header {position: fixed; top: 0; left: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 20px 20px; background-color: #fff; box-sizing: border-box; box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
+.menuList {display: flex; gap: 15px;}
+.menuList a {padding: 10px 15px; border-radius: 10px;}
+.menuList a.active {color: #1147e6; font-weight: bold; background: #eef6ff;}
+section {padding: 120px 20px 40px; min-height: 100vh; background: #f5f5f5; box-sizing: border-box;}
+
+/* test.html */
+.testWrap { position: relative;}
+.testWrap > div {padding: 20px; border-radius: 15px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
+.testWrap .left {width: 60%;}
+.testWrap .testList > li {margin: 10px 0; padding: 30px 0;}
+.testWrap .testList > li:first-child {margin-top: 0; padding-top: 0;}
+.testWrap .testList > li:not(:first-child) {border-top: 1px solid #ccc;}
+.testWrap .num > span {color: #555; font-size: 14px;}
+.testWrap .num .testNum {padding: 5px 10px; color: #1147e6; font-size: 14px; font-weight: bold; border-radius: 50px; background-color: #dbeafe}
+.testWrap .testTitle {margin-top: 5px;}
+.testWrap .testTitle p {margin-top: 20px;}
+.testWrap .testContents {width: 100%; max-width: 300px; height: auto; margin: 10px 0 0;}
+.testWrap .testOption {margin-top: 10px;}
+.testWrap .right {position: fixed; top: 120px; right: 20px; width: calc(40% - 70px); height: calc(100vh - 160px); box-sizing: border-box;}
+.testWrap h1 {font-size: 18px;}
+.testWrap .answersWrap {margin-top: 10px; height: calc(100% - 125px); overflow-y: auto;}
+.testWrap .questionBox {display: flex; gap: 10px;}
+.testWrap .questionBox + .questionBox {margin-top: 15px;}
+.testWrap .questionBox .qeustionNum {width: 20px; line-height: 37px; font-weight: bold;}
+.testWrap .answerList {display: flex; align-items: center; justify-content: space-around; gap: 10px; width:100%;}
+.testWrap .answerList li {width: 100%;}
+.testWrap .answerList li .btn {width: 100%; padding: 10px; color: #333; text-align: center; border: 1px solid #ccc; border-radius: 10px; background: transparent; transition: 0.3s all;}
+.testWrap .answerList .btn.active {color: #fff; background: #1147e6;}
+.testWrap .answerList + .answerList {margin-top: 10px;}
+.testWrap .buttonWrap {margin-top: 10px;}
+.testWrap .progress .desc {display: flex; align-items: center; justify-content: space-between; margin: 10px 0; color: #555; font-size: 14px;}
+.testWrap .progressBar {position:relative; width: 100%; height: 10px; border-radius: 30px; background: #ddd;}
+.testWrap #progressIng {position:absolute; left: 0; top: 0; height: 100%; border-radius: 30px; background: #1147e6; transition: 0.3s all;}
+
+/* result.html */
+.resultWrap .resultarea {padding: 20px; border-radius: 15px; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
+.resultarea .result .noData {padding: 50px; text-align: center;}
+.resultarea .result + .buttonWrap {width: 300px; margin: 20px auto 0;}
+.resultarea .score {border: 1px solid red; margin: 20px 0; text-align: center;}
+.resultarea .score .myScore {color: #1147e6; font-size: 25px; font-weight: bold;}
+.resultarea .score .total100 {color: red; font-size: 25px; font-weight: bold;}
+.resultarea .score .myScore .total {color : #555; font-size: 15px; font-weight: normal;}
+
+.resultBox {position:relative; margin: 30px 0; padding: 20px 30px; border-left: 4px solid blue; border-radius: 10px;}
+.resultBox + .resultBox:before {content: ""; position: absolute; top: -15px; left: 0; display: block; width: 100%; height: 1px; border-top: 1px solid #ccc;}
+.resultBox.wrong {border-color: red; border-radius: 10px;}
+.resultBox .resultTitle {color:#555; font-size: 14px;}

@@ -10,25 +10,28 @@
   <header>
     <h1>토익문제 시스템</h1>
     <ul class="menuList">
-      <li><a href="/test.html">문제풀기</a></li>
-      <li><a href="/result.html">결과보기</a></li>
-      <li><a href="/analysis.html">분석보기</a></li>
+      <li><a href="test.html">문제풀기</a></li>
+      <li><a href="result.html" class="active">결과보기</a></li>
+      <li><a href="analysis.html">분석보기</a></li>
     </ul>
   </header>
-  <div class="resultWrap">
-    <h1 class="title">문제 풀이 확인</h1>
-    <p class="desc">각 문제의 정답과 해설을 확인하세요.</p>
+  <section class="resultWrap">
+    <div class="resultarea">
+      <h1 class="title">문제 풀이 확인</h1>
+      <p class="desc">각 문제의 정답과 해설을 확인하세요.</p>
 
-    <div id="score" class="score"></div>
+      <div id="score" class="score"></div>
 
-    <div id="result" class="result"></div>
+      <div id="result" class="result"></div>
 
-    <a href="analysis.html">분석하기</a>
-  </div>
+      <div class="buttonWrap">
+        <a class="btn" href="analysis.html">분석하기</a>
+      </div>
+    </div>
+  </section>
 </body>
-<script src="../assets/js/question.js"></script>
+<script src="../assets/js/database.js"></script>
 <script>
-  
 /**
  * 
  * 파이프라인
@@ -58,30 +61,36 @@ const resultData = () => {
   // 데이터가 있으면 문제 템플릿을 / 없으면 nodata를
   const data = localStorage.getItem("testResult");
   const result = document.querySelector("#result");
-  console.log(data);
 
   const userdata = JSON.parse(data); // JSON 문자열을 객체로 변환
+  
+  console.log(userdata)
+  console.log(data)
 
   // 불러온 데이터 처리 후 화면 노출
   if(!data) {
     // 데이터업쪙ㅠㅠ
     result.innerHTML = `<div class="noData">문제를 풀지 않았어요</div>`
+    document.querySelector(".title").style.display = "none";
+    document.querySelector(".desc").style.display = "none";
+    document.querySelector(".btn").textContent = "돌아가기";  
+    document.querySelector(".btn").setAttribute("href", "test.html")
   } else {
 
     
     let score = 0; // 내점수 숫자로 초기화
-    result.innerHTML = question2.map((item, idx) => {
+    result.innerHTML = question.map((item, idx) => {
       // 내 대답 숫자로 가져오깅
       const userAnswer = Number(userdata.test[idx+1]);
 
       // 점수 체크
-      if (userAnswer === item.answer) score += Math.ceil(100 / question2.length);
+      if (userAnswer === item.answer) score += Math.ceil(100 / question.length);
 
       // 점수가 백점일 경우 강조 클래스 
       const resultScore = (score === 100 ? "total100" : "myScore");
   
       document.querySelector("#score").innerHTML = `
-        <p class="${resultScore}">${score}점 / <span class="total">100점</span></p>
+        <p class="${resultScore}">${score}점 <span class="total">/ 100점</span></p>
       `
 
       // 정답 체크하기
@@ -129,7 +138,5 @@ const resultData = () => {
   }
 }
 resultData();
-
-
 </script>
 </html>

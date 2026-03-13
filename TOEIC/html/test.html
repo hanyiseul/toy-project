@@ -10,40 +10,50 @@
   <header>
     <h1>토익문제 시스템</h1>
     <ul class="menuList">
-      <li><a href="/test.html">문제풀기</a></li>
-      <li><a href="/result.html">결과보기</a></li>
-      <li><a href="/analysis.html">분석보기</a></li>
+      <li><a href="test.html" class="active">문제풀기</a></li>
+      <li><a href="result.html">결과보기</a></li>
+      <li><a href="analysis.html">분석보기</a></li>
     </ul>
   </header>
-  <div class="testWrap">
+  <section class="testWrap">
     <div class="left">
-      <h1>시험 문제</h1>
       <ul id="test" class="testList"></ul>
-      <button type="button" class="btn submit" onclick="submit()">제출완료</button>
     </div>
     <div class="right">
       <h1>답안</h1>
-      <div id="answersWrap"></div>
+      <div id="answersWrap" class="answersWrap"></div>
+      <div class="progress">
+        <div class="desc">
+          <span>답안 제출</span>
+          <span id="persent" class="persent"></span>
+        </div>
+        <div class="progressBar">
+          <div id="progressIng" style="width: 20%;"></div>
+        </div>
+      </div>
+      <div class="buttonWrap">
+        <button type="button" class="btn submit" onclick="submit()">제출완료</button>
+      </div>
     </div>
-  </div>
+  </section>
 </body>
 
-
-<script src="../assets/js/question.js"></script> <!-- 문제 데이터 json 파일 -->
+<script src="../assets/js/database.js"></script> <!-- 문제 데이터 json 파일 -->
 <script>
-  
-/**
+  /**
  * 
  * 파이프라인
  * 
  * 데이터 로딩
  *  - 1. question.js에서 문제 데이터를 받아서 문제 템플릿을 만들어서 해당 데이터 객체에 맞는 템플릿 그려서 화면에 송출
- *  - 2. 문제 템플릿 옆에 체크한 답안이 표시되는 답안 템플릿 만들기
- *        2-1. 체크한 답안의 문제를 체크해서
- *        2-2. 답안지에 있는 해당 문제에 (2-1) 값에 클래스를 줘서 체크 표시 만들기
+ *  - 2. 문제 풀기 기능 만들기
+ *        2-1. 문제 템플릿 옆에 체크한 답안이 표시되는 답안 템플릿 만들기
+ *        2-2. 체크한 답안의 문제를 체크해서
+ *        2-3. 답안지에 있는 해당 문제에 (2-1) 값에 클래스를 줘서 체크 표시 만들기
+ *  (추가)2-4. 문제 풀이 현황 체크 
  *  - 3. 문제에서 체크 답안 이벤트 실행
  *        3-1. 체크한 답안들에 체크 표시 주기
- *        * 주의 : 중복 체크 없게 초기화 시켜주기
+ *        3-2. 문제지 답안들과 와 답안지의 답안들과 체크 표시 연동하기 
  * 
  * 데이터 수집
  *  - 4. 제출할 때 체크한 값들 객체로 저장하기
@@ -58,150 +68,180 @@
 
 // 1. 준비!
   
-  // 변수 정의 : 입력 답을 넣을 객체 
-  let answers = {};
+// 변수 정의 : 입력 답을 넣을 객체 
+let answers = {};
 
+// 2. 데이터 로딩 : 문제 데이터를 받아서 문제 리스트 템플릿 만들기
+const test = () => {
+  // 문제 리스트 담을 변수 정의 
+  // -> 아이디는 한 파일에 고유하게 하나만 가능하기 때문에 querySelector이 아닌 querySelectorAll로 지정
+  const list = document.querySelector("#test"); 
 
-  // 2. 데이터 로딩 : 문제 데이터를 받아서 문제 리스트 템플릿 만들기
-  const test = () => {
-    // 문제 리스트 담을 변수 정의 
-    // -> 아이디는 한 파일에 고유하게 하나만 가능하기 때문에 querySelector이 아닌 querySelectorAll로 지정
-    const list = document.querySelector("#test"); 
-
-    // list 변수 안에 html 집어넣기
-    list.innerHTML = question2.map(item => { // 데이터 원본을 수정하는 것은 위험하기 때문에 map으로 원본 복사해서 새 배열 생성하기
-      // 변수 정의 : 문제에 이미지가 있으면 이미지 노출 / mp3파일이면 오디오 노출 -> 둘 다 없을 경우 에러가 아닌 undefined 반환 (옵셔널체이닝)
-      const media = item.media ? `
-        <div class="testContents ${item.media?.includes("mp3") ? "mp3" : "img"}">
-          ${item.media?.includes("mp3") ? `<audio controls><source src="${item.media}"></audio>` 
-          : `<img src="${item.media}">`}
-        </div>
-      `: ""
-      // 문제 html 템플릿 그리기
-      return `
-        <li>
-          <span class="testNum">문제 ${item.id}</span>
-          <div class="testQuestion">
-            <div class="testTitle">
+  // list 변수 안에 html 집어넣기
+  list.innerHTML = question.map(item => { // 데이터 원본을 수정하는 것은 위험하기 때문에 map으로 원본 복사해서 새 배열 생성하기
+    // 변수 정의 : 문제에 이미지가 있으면 이미지 노출 / mp3파일이면 오디오 노출 -> 둘 다 없을 경우 에러가 아닌 undefined 반환 (옵셔널체이닝)
+    const media = item.media ? `
+      <div class="testContents ${item.media?.includes("mp3") ? "mp3" : "img"}">
+        ${item.media?.includes("mp3") ? `<audio controls><source src="${item.media}"></audio>` 
+        : `<img src="../assets/media/images/${item.media}">`}
+      </div>
+    `: ""
+    // 문제 html 템플릿 그리기
+    return `
+      <li>
+        <div class="testQuestion">
+          <div class="testTitle">
+            <div class="num">
+              <span class="testNum">문제 ${item.id}</span>
               <span>part ${item.part}.</span>
               <span>${item.category}</span>
-              <p>${item.content}</p>
             </div>
-            ${media}
-            <div class="testOption">
-              <ol class="optionList">
-                ${item.options.map((option,index) =>{
-                    // 반복문을 사용하여 답안 만들기
-                    // name에 문제 id값을 넣어 해당 문제의 답안을 묶어주기 -> 예) 이 답안들은 1번 문제의 답안들이다~
-                    // value 값에 답안 번호 저장 (index는 0부터 시작이고 답은 1부터라서 index+1로 설정)
-                    return `<li>
-                      <input type="radio" class="radio" id="chk-${item.id}-${index}" name="${item.id}" value="${index+1}"/>
-                      <label for="chk-${item.id}-${index}"><span>${index + 1}</span> ${option}
-                    </li>` 
-                  }).join("")
-                }
-              </ol>
-            </div>
+            <p>${item.content}</p>
           </div>
-        </li>
-      `;
-    }).join("");
-  }
-  test();
+          ${media}
+          <div class="testOption">
+            <ol class="optionList">
+              ${item.options.map((option,index) =>{
+                  // 반복문을 사용하여 답안 만들기
+                  // name에 문제 id값을 넣어 해당 문제의 답안을 묶어주기 -> 예) 이 답안들은 1번 문제의 답안들이다~
+                  // value 값에 답안 번호 저장 (index는 0부터 시작이고 답은 1부터라서 index+1로 설정)
+                  return `<li class="radioWrap">
+                    <input type="radio" class="radio" id="chk-${item.id}-${index}" name="${item.id}" value="${index+1}"/>
+                    <label for="chk-${item.id}-${index}"><span>${index + 1}.</span> ${option}
+                  </li>` 
+                }).join("")
+              }
+            </ol>
+          </div>
+        </div>
+      </li>
+    `;
+  }).join("");
+}
+test();
+
+const progress = () => {
+  const chkItems = document.querySelectorAll("input[type='radio']:checked"); // 변수 정의 : 체크한 답
   
-  // 3. 문제에서 체크한 답과 답안 목록 부분이랑 동일하게 만들기
-  const answerEvent = () => {
-    // 변수 정의 : 답안 리스트 
-    const answersWrap = document.querySelector("#answersWrap");
-    const test = document.querySelectorAll("#test li");
-    
-    // li는 options 갯수만큼
-    answersWrap.innerHTML = question2.map((item, index) => { 
-      // question2 객체만큼 돌리고 (ul 갯수)
-      // question2의 options(답안갯수)만큼 돌려서 li 만들기 (index는 0부터니까 +1 해주기)
-      return `
-          <ul class="answerList">
-            ${item.options.map((li, index) => `<li class="li">${index + 1}</li>`).join("")} 
-          </ul>
-    `}).join("");
-  }
-  answerEvent();
   
-  // 4. 푼 문제 체크 후 답안지에 반영
-  const checkEvent = () => {
-    // 변수 정의 : 모든 라디오 항목들
-    const input = document.querySelectorAll("input[type='radio']");
+  // 문제 푼 현황
+  let persent = document.querySelector("#persent");
+  let bar = document.querySelector("#progressIng");
 
-    // 답안 리스트
-    const answersList = document.querySelectorAll(".answerList");
-    console.log(answersList)
+  persent.innerHTML = `
+    ${chkItems.length} / ${question.length}
+  `
+  bar.style.width = `${(chkItems.length/question.length) * 100}%`
+}
 
-    // 체크시 클래스 추가
-    input.forEach((item, index) => {
-      // 이벤트리스너 : 라디오를 클릭시 체인지 이벤트 실행
-      item.addEventListener("change", () => { 
-        // 1번에서 정의 한 answer 객체에 프로퍼티(푼 문제) 담기
-        answers[item.name] = item.value;
-        console.log(item.value)
+// 2. 문제 풀기 기능
+const checkEvent = () => {
+// 문제에서 체크한 답과 답안 목록 부분이랑 동일하게 만들기
+  const answersWrap = document.querySelector("#answersWrap"); // 변수 정의 : 답안 리스트 
+  const input = document.querySelectorAll("input[type='radio']");// 변수 정의 : 모든 라디오 항목들
+  
+  progress();
 
-        // 선택한 답안 해당 문제 찾기
-        const questionId = Number(item.name) -1; // -1 하는 이유 : 0부터 시작하는데 보여지는 문제의 id 값은 1부터 시작하기 때문
-        console.log(questionId);
-        const targetList = answersList[questionId]
+  // li는 options 갯수만큼
+  answersWrap.innerHTML = question.map((item, index) => { 
+    // question 객체만큼 돌리고 (ul 갯수)
+    // question의 options(답안갯수)만큼 돌려서 li 만들기 (index는 0부터니까 +1 해주기)
+    return `
+      <div class="questionBox">
+        <div class="qeustionNum">${index+1}</div>
+        <ul class="answerList">
+          ${item.options.map((_, idx) => `<li class="li"><button type="button" class="btn" data-id="chk-${index+1}-${idx}">${idx + 1}</button></li>`).join("")} 
+        </ul>
+      </div>
+  `}).join("");
+  
+// 푼 문제 체크 후 답안지에 반영
 
-        // 선택한 옵션값 저장
-        const option = Number(item.value) -1; // -1 하는 이유 : 인덱스는 0부터 시작하는데 문제 답 번호와 싱크를 맞추려고 index를 1씩 더했기 때문
-        targetList.querySelectorAll("li").forEach(li => { // active 초기화 (중복 선택 방지)
-          li.classList.remove("active");
-        })
-        console.log(targetList.children[option]);
-        targetList.children[option].classList.add("active"); // 선택한 타켓에 클래스를 주어 체크 표시
+  // 답안 리스트
+  const answersList = document.querySelectorAll(".answerList");
 
+  answersList.forEach(list => {
+    const answerBtn = list.querySelectorAll(".btn");
 
+    answerBtn.forEach(btn => {
+      btn.classList.remove("active");
+
+      // 답안지의 버튼 클릭
+      btn.addEventListener("click", (e) => { // 답안지의 버튼 클릭시
+        const silbing = e.target.closest(".answerList").querySelectorAll(".btn"); // 선택한 버튼의 다른 형제 버튼들을 찾아서
+        silbing.forEach(item => item.classList.remove("active")); // active 클래스를 모두 지워 초기화 해주고 (미선택 표시)
+        const btnId = e.target.dataset.id // 클릭한 답안의 data-id를 가져와서
+        const inpChk = document.getElementById(btnId) // 체크한 input
+        inpChk.checked = true; // 값이 일치하는 input id를 찾아 체크하고
+        
+        e.target.classList.add("active"); // 클릭한 답안에 active 클래스를 줌
+
+        answers[inpChk.name] = inpChk.value // input name = answer.id / input value = answer
+        progress();
       });
     });
-  }
-  checkEvent();
+  });
 
-  // 5. 답안 전송 이벤트
-  const submit = () => {    
-    // 변수 정의 : 전체 라디오와 체크된 라디오 
-    const raido = document.querySelectorAll("input[type='radio']"); // 전체 라디오
-    const chkItems = document.querySelectorAll("input[type='radio']:checked"); // 푼 문제 확인
+  // 체크시 클래스 추가
+  input.forEach(item => {
 
-    let result; // 문제 다 풀었는지 확인 여부 변수 
+    // 선택한 답안 해당 문제 찾기
+    const questionId = Number(item.name) -1; // -1 하는 이유 : 0부터 시작하는데 보여지는 문제의 id 값은 1부터 시작하기 때문
+    const targetList = answersList[questionId]
 
-    // 라디오는 한개만 선택 가능하기 때문에 선택된 라디오 값과 문제수가 동일하면 통과    
-    if(chkItems.length === question2.length) {
-      result = true; // 문제 다 풀었으면 true
+    // 선택한 옵션값 저장
+    const option = Number(item.value) -1; // -1 하는 이유 : 인덱스는 0부터 시작하는데 문제 답 번호와 싱크를 맞추려고 index를 1씩 더했기 때문
+    
+    // 이벤트리스너 : 라디오를 클릭시 체인지 이벤트 실행 (푼 문제 체크 후 답안지에 반영)
+    item.addEventListener("change", () => { 
+      // 1번에서 정의 한 answer 객체에 프로퍼티(푼 문제) 담기
+      answers[item.name] = item.value;
 
-      // 데이터 수집 : 로컬스토리지에 보낼 데이터 정의
-      const answesrData = {
-        test: answers, // "시험" : "푼 문제"
-        date: new Date().toLocaleString() // 시험 본 시간 체크
-      }
+      targetList.querySelectorAll("li").forEach(li => { // active 초기화 (중복 선택 방지)
+        li.querySelector(".btn").classList.remove("active");
+      })
+      targetList.children[option].querySelector(".btn").classList.add("active"); // 선택한 타켓에 클래스를 주어 체크 표시
+      progress();
+    });
+  });
+}
+checkEvent();
 
-      console.log(answesrData.test)
+// 3. 답안 전송 이벤트
+const submit = () => {    
+  // 변수 정의 : 전체 라디오와 체크된 라디오 
+  const chkItems = document.querySelectorAll("input[type='radio']:checked"); // 푼 문제 확인
 
-      // 데이터 전달 : localStorage에 데이터를 저장하여 다른 페이지에서도 해당 데이터를 사용할 수 있게 함
-      localStorage.setItem("testResult", JSON.stringify(answesrData)); // localStorage key:value 저장
-      location.href = "result.html" // 데이터 전달 후 result 페이지로 이동
-    } else {
-      result = false; // 다 안풀었으면 false
+  let result; // 문제 다 풀었는지 확인 여부 변수 
+
+  // 라디오는 한개만 선택 가능하기 때문에 선택된 라디오 값과 문제수가 동일하면 통과    
+  if(chkItems.length === question.length) {
+    result = true; // 문제 다 풀었으면 true
+
+    // 데이터 수집 : 로컬스토리지에 보낼 데이터 정의
+    const answesrData = {
+      test: answers, // "시험" : "푼 문제"
     }
+    console.log(answesrData)
 
-    // result 값이 true일 경우 제출 완료 -> 결과페이지 이동 / 아니면 안 푼 문제 풀라고 안내
-    alert(result ? "제출 완료! 답안 확인!" : `안푼 문제 푸세용`);
+    // 데이터 전달 : localStorage에 데이터를 저장하여 다른 페이지에서도 해당 데이터를 사용할 수 있게 함
+    localStorage.setItem("testResult", JSON.stringify(answesrData)); // localStorage key:value 저장
+    location.href = "result.html" // 데이터 전달 후 result 페이지로 이동
+  } else {
+    result = false; // 다 안풀었으면 false
   }
 
-  /**
-   * 
-   * 보완사항!
-   * 1. 체크박스일 경우 중복 체크일때 (답이 여러개일 수 있는 경우)
-   * 2. 안 풀고 제출하면 안 푼 문제 확인해주기!!
-   * 3. 한문씩 뜨게 하고 다음 문제 넘어가게 해보기
-   *
-  */
+  // result 값이 true일 경우 제출 완료 -> 결과페이지 이동 / 아니면 안 푼 문제 풀라고 안내
+  alert(result ? "제출 완료! 답안 확인!" : `안푼 문제 푸세용`);
+}
 
+/**
+ * 
+ * 보완사항!
+ * 1. 체크박스일 경우 중복 체크일때 (답이 여러개일 수 있는 경우)
+ * 2. 안 풀고 제출하면 안 푼 문제 확인해주기!!
+ * 3. 한문씩 뜨게 하고 다음 문제 넘어가게 해보기
+ *
+*/
 </script>
 </html>
