@@ -1,10 +1,10 @@
-[
+const question = [
   {
     "id": 1,
     "part": 1,
     "category": "LC",
     "content": "What is the woman doing in the picture?",
-    "media": "/media/images/p1_q1.png",
+    "media": "p1_q1.png",
     "options": [
       "She is typing on a laptop.",
       "She is talking on the phone.",
@@ -16,10 +16,10 @@
   },
   {
     "id": 2,
-    "part": 1,
+    "part": 2,
     "category": "LC",
     "content": "Where is the meeting room?",
-    "media": "/media/audio/p2_q1.mp3",
+    "media": "../media/audio/p2_q1.mp3",
     "options": [
       "On the second floor.",
       "At three o’clock.",
@@ -31,10 +31,10 @@
   },
   {
     "id": 3,
-    "part": 1,
+    "part": 3,
     "category": "LC",
     "content": "What problem are the speakers discussing?",
-    "media": "/media/audio/p3_q1.mp3",
+    "media": "../media/audio/p3_q1.mp3",
     "options": [
       "A delayed flight",
       "A broken printer",
@@ -46,10 +46,10 @@
   },
   {
     "id": 4,
-    "part": 1,
+    "part": 4,
     "category": "LC",
     "content": "What is the announcement mainly about?",
-    "media": "/media/audio/p4_q1.mp3",
+    "media": "../media/audio/p4_q1.mp3",
     "options": [
       "A new company policy",
       "An office relocation",
@@ -61,7 +61,7 @@
   },
   {
     "id": 5,
-    "part": 2,
+    "part": 5,
     "category": "RC",
     "content": "Please submit the report _____ Friday.",
     "media": null,
@@ -76,7 +76,7 @@
   },
   {
     "id": 6,
-    "part": 2,
+    "part": 6,
     "category": "RC",
     "content": "The company has decided to _____ its customer service team.",
     "media": null,
@@ -91,10 +91,10 @@
   },
   {
     "id": 7,
-    "part": 3,
+    "part": 7,
     "category": "RC",
     "content": "According to the email, why was the meeting postponed?",
-    "media": "/media/images/p7_email1.jpg",
+    "media": "p7_email1.jpg",
     "options": [
       "The manager is on vacation.",
       "The office is under renovation.",
