@@ -20,7 +20,7 @@ const port = 3000; ; // port 설정
 const htmlPath = path.join(__dirname, 'html'); 
 const cssPath = path.join(__dirname, 'assets', 'css');
 const jsPath = path.join(__dirname, 'assets', 'js');
-const mediaPath = path.join(__dirname, 'media');
+const mediaPath = path.join(__dirname, 'assets', 'media');
 
 // /로 진입 할 html 미리 읽기
 const testFile = fs.readFileSync(path.join(htmlPath, 'test.html'));
@@ -74,13 +74,13 @@ const server = createServer((req, res) => {
       return;
     }
     // 이미지
-    if (req.url === '/images/p1_q1.jpg') {
-      const p1_q1 = fs.readFileSync(path.join(mediaPath, 'images', 'p1_q1.jpg'));
+    if (req.url === '/assets/media/images/p1_q1.png') {
+      const p1_q1 = fs.readFileSync(path.join(mediaPath, 'images', 'p1_q1.png'));
       res.setHeader('Content-Type', 'image/jpeg');
       res.end(p1_q1);
       return;
     }
-    if (req.url === '/images/p7_email1.jpg') {
+    if (req.url === '/assets/media/images/p7_email1.jpg') {
       const p7_email1 = fs.readFileSync(path.join(mediaPath, 'images', 'p7_email1.jpg'));
       res.setHeader('Content-Type', 'image/jpeg');
       res.end(p7_email1);
