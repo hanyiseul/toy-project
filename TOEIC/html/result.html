@@ -10,14 +10,15 @@
   <header>
     <h1>토익문제 시스템</h1>
     <ul class="menuList">
-      <li><a href="test.html">문제풀기</a></li>
-      <li><a href="result.html" class="active">결과보기</a></li>
-      <li><a href="analysis.html">분석보기</a></li>
+      <li><a href="/">문제풀기</a></li>
+      <li><a href="/result" class="active">결과보기</a></li>
+      <li><a href="/analysis">분석보기</a></li>
+      <li><a href="/map">시험장</a></li>
     </ul>
   </header>
   <section class="resultWrap">
     <div class="resultarea">
-      <h1 class="title">문제 풀이 확인</h1>
+      <h2 class="title">문제 풀이 확인</h2>
       <p class="desc">각 문제의 정답과 해설을 확인하세요.</p>
 
       <div id="score" class="score"></div>
@@ -25,7 +26,7 @@
       <div id="result" class="result"></div>
 
       <div class="buttonWrap">
-        <a class="btn" href="analysis.html">분석하기</a>
+        <a class="btn" href="/analysis">분석하기</a>
       </div>
     </div>
   </section>
@@ -74,7 +75,7 @@ const resultData = () => {
     document.querySelector(".title").style.display = "none";
     document.querySelector(".desc").style.display = "none";
     document.querySelector(".btn").textContent = "돌아가기";  
-    document.querySelector(".btn").setAttribute("href", "test.html")
+    document.querySelector(".btn").setAttribute("href", "/")
   } else {
 
     
@@ -102,13 +103,9 @@ const resultData = () => {
         </div>
         <div class="resultCon">
           <p class="reaultQuestion">${item.content}</p>
-
-          내 정답 : ${userAnswer}
-          찐 정답 : ${item.answer}
-
-
           <ol class="resultList">
             ${item.options.map((option,index) =>{  
+              console.log(item)
               // 클래스명 담을 변수
               let classname = "";
 
@@ -129,10 +126,9 @@ const resultData = () => {
               
               }).join("")
             }
-            <li></li>
           </ol>
         </div>
-        <div class="explanation">${item.explanation}</div>
+        <div class="explanation">해설 : ${item.explanation}</div>
       </div>`
     }).join(" ");
   }
