@@ -10,7 +10,7 @@
 
 | 문제풀이 | 결과 | 분석 | 지도 |
 |----------|------|------|------|
-| ![](./screenshots/test.webp) | ![](./screenshots/result.webp) | ![](./screenshots/analysis.webp) | ![](./screenshots/map.webp) |
+| ![](./screenshots/readme_screenshot_1.webp) | ![](./screenshots/readme_screenshot_2.webp) | ![](./screenshots/readme_screenshot_3.webp) | ![](./screenshots/readme_screenshot_4.webp) |
 ---
 
 
