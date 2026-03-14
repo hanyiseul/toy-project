@@ -10,10 +10,10 @@
   <header>
     <h1>토익문제 시스템</h1>
     <ul class="menuList">
-      <li><a href="/" class="active">문제풀기</a></li>
-      <li><a href="/result">결과보기</a></li>
-      <li><a href="/analysis">분석보기</a></li>
-      <li><a href="/map">시험장</a></li>
+      <li><a href="../html/test.html" class="active">문제풀기</a></li>
+      <li><a href="../html/result.html">결과보기</a></li>
+      <li><a href="../html/analysis.html">분석보기</a></li>
+      <li><a href="../html/map.html">시험장</a></li>
     </ul>
   </header>
   <section class="testWrap">
@@ -83,8 +83,8 @@ const test = () => {
     // 변수 정의 : 문제에 이미지가 있으면 이미지 노출 / mp3파일이면 오디오 노출 -> 둘 다 없을 경우 에러가 아닌 undefined 반환 (옵셔널체이닝)
     const media = item.media ? `
       <div class="testContents ${item.media?.includes("mp3") ? "mp3" : "img"}">
-        ${item.media?.includes("mp3") ? `<audio controls><source src="/assets/media/images/${item.media}"></audio>` 
-        : `<img src="/assets/media/images/${item.media}">`}
+        ${item.media?.includes("mp3") ? `<audio controls><source src="../assets/media/images/${item.media}"></audio>` 
+        : `<img src="../assets/media/images/${item.media}">`}
       </div>
     `: ""
     // 문제 html 템플릿 그리기
@@ -158,7 +158,7 @@ const checkEvent = () => {
   
 // 푼 문제 체크 후 답안지에 반영
 
-  // 답안 리스트
+  // 답안 리스트/
   const answersList = document.querySelectorAll(".answerList");
 
   answersList.forEach(list => {
@@ -227,7 +227,7 @@ const submit = () => {
 
     // 데이터 전달 : localStorage에 데이터를 저장하여 다른 페이지에서도 해당 데이터를 사용할 수 있게 함
     localStorage.setItem("testResult", JSON.stringify(answesrData)); // localStorage key:value 저장
-    location.href = "result" // 데이터 전달 후 result 페이지로 이동
+    location.href = "../html/result.html" // 데이터 전달 후 result 페이지로 이동
   } else {
     result = false; // 다 안풀었으면 false
   }
