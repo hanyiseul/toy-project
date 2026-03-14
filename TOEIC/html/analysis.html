@@ -4,32 +4,34 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>토익 문제 연습 시스템</title>
-  <link rel="stylesheet" href="/assets/css/common.css">
+  <link rel="stylesheet" href="../assets/css/common.css">
 </head>
 <body>
   <header>
     <h1>토익문제 시스템</h1>
     <ul class="menuList">
-      <li><a href="/">문제풀기</a></li>
-      <li><a href="/result">결과보기</a></li>
-      <li><a href="/analysis">분석보기</a></li>
-      <li><a href="/map">시험장</a></li>
+      <li><a href="../html/test.html">문제풀기</a></li>
+      <li><a href="../html/result.html">결과보기</a></li>
+      <li><a href="../html/analysis.html" class="active">분석보기</a></li>
+      <li><a href="../html/map.html">시험장</a></li>
     </ul>
   </header>
   <section class="analysisWrap">
     <div class="analysisarea">
       <h2 class="title">문제 풀이 분석</h2>
 
-      <div id="part" class="part">
-        <canvas id="partChart"></canvas>
-      </div>
-      
-      <div id="category" class="category">
-        <canvas id="categoryChart"></canvas>
+      <div class="chart">
+        <div id="part" class="part">
+          <canvas id="partChart"></canvas>
+        </div>
+        
+        <div id="category" class="category">
+          <canvas id="categoryChart"></canvas>
+        </div>
       </div>
 
       <div class="buttonWrap">
-        <a class="btn" href="/">문제 풀기</a>
+        <a class="btn" href="../html/test.html">문제 풀기</a>
       </div>
     </div>
 </body>
@@ -59,73 +61,79 @@
     // 1. 로컬스토리지에 저장한 답안들 가져오기
     // 데이터가 있으면 문제 템플릿을 / 없으면 nodata를
     const data = localStorage.getItem("testResult");
-    const result = document.querySelector("#result");
 
     const userdata = JSON.parse(data); // JSON 문자열을 객체로 변환
 
     console.log(userdata)
     console.log(data)
 
-    // 오답 담을 객체
-      const wrongPart = {};
-    const wrongCategory = {};
+     if (!data) {
+        // 데이터업쪙ㅠㅠ
+        document.querySelector(".chart").innerHTML = `<div class="noData">문제를 풀지 않았어요</div>`
+        document.querySelector(".title").style.display = "none";
+        // document.querySelector(".part").style.display = "none";
+        // document.querySelector(".category").style.display = "none";
+      } else {  
+        // 오답 담을 객체
+       const wrongPart = {};
+       const wrongCategory = {};
 
-    question.forEach(item => {
-      const answer = userdata[item.id];
+       question.forEach(item => {
+         const answer = Number(userdata.test[item.id]); // answer : 내가 체크한 답안
 
+         if (answer !== item.answer) { // 오답일 경우 (answer : 내가 체크한 답안 / item.answer : 정답)
+           if (wrongPart[item.part]) {
+             wrongPart[item.part] += 1; //  틀린 문제가 있으면 +1
+           } else {
+             wrongPart[item.part] = 1; // 틀린 문제가 없으면 1로 초기화
+           }
+           if (wrongCategory[item.category]) {
+             wrongCategory[item.category] += 1; // 틀린 문제가 있으면 +1
+           } else {
+             wrongCategory[item.category] = 1; // 틀린 문제가 없으면 1로 초기화
+           }
+         }
+       })
+       console.log(userdata)
 
-      if (wrongPart[item.part]) {
-        wrongPart[item.part] += 1;
-      } else {
-        wrongPart[item.part] = 1;
+       new Chart(document.getElementById("partChart"), {
+         type: "bar",
+         data: {
+           labels: Object.keys(wrongPart).map(part => `part${part}`),
+           datasets: [{
+             label: "Part별 틀린 문제",
+             data: Object.values(wrongPart),
+             barThickness: 30,   // 막대 두께 줄이기
+             borderRadius: 10,   // 둥글게
+             categoryPercentage: 0.9, // 위아래 공간 줄이기
+             barPercentage: 0.9       // 막대 영역 꽉 채우기
+           }]
+         },
+         options: {
+           indexAxis: 'y',   // 가로 그래프
+           maintainAspectRatio: false
+         }
+       });
+
+       new Chart(document.getElementById("categoryChart"), {
+         type: "bar",
+         data: {
+           labels: Object.keys(wrongCategory),
+           datasets: [{
+             label: "Category별 틀린 문제",
+             data: Object.values(wrongCategory),
+             backgroundColor: "#60a5fa",
+             barThickness: 30,   // 막대 두께 줄이기
+             borderRadius: 10,   // 둥글게
+             categoryPercentage: 0.9, // 위아래 공간 줄이기
+             barPercentage: 0.9       // 막대 영역 꽉 채우기
+           }]
+         },
+         options: {
+           indexAxis: 'y',   // 가로 그래프
+           maintainAspectRatio: false
+         }
+       });
       }
-      
-      if(answer !== item.answer) {
-        if(wrongCategory[item.category]) {
-          wrongCategory[item.category] += 1;
-        } else {
-          wrongCategory[item.category] = 1;
-        }
-      }
-    })
-
-    new Chart(document.getElementById("partChart"), {
-        type: "bar",
-        data: {
-          labels: Object.values(wrongPart).map(part => `part${part}`),
-          datasets: [{
-            label: "Part별 틀린 문제",
-            data: Object.values(wrongPart),
-            barThickness: 30,   // 막대 두께 줄이기
-            borderRadius: 10,   // 둥글게
-            categoryPercentage: 0.9, // 위아래 공간 줄이기
-            barPercentage: 0.9       // 막대 영역 꽉 채우기
-          }]
-        },
-        options: {
-          indexAxis: 'y',   // 가로 그래프
-          maintainAspectRatio: false
-        }
-      });
-
-      new Chart(document.getElementById("categoryChart"), {
-          type: "bar",
-          data: {
-            labels: Object.keys(wrongCategory),
-            datasets: [{
-              label: "Category별 틀린 문제",
-              data: Object.values(wrongCategory),
-              backgroundColor: "#60a5fa",
-              barThickness: 30,   // 막대 두께 줄이기
-              borderRadius: 10,   // 둥글게
-              categoryPercentage: 0.9, // 위아래 공간 줄이기
-              barPercentage: 0.9       // 막대 영역 꽉 채우기
-            }]
-          },
-          options: {
-            indexAxis: 'y',   // 가로 그래프
-            maintainAspectRatio: false
-          }
-        });
 </script>
 </html>
