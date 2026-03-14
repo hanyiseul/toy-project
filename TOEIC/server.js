@@ -33,21 +33,21 @@ const server = createServer((req, res) => {
 
   try {
     // HTML 요청
-    if (req.url === '/') {
+    if (req.url === '/html/test.html' || req.url === '/') { // fs.readFileSync() 방식 테스트
       res.setHeader('Content-Type', 'text/html');
       res.end(testFile);
       return;
     }
-    if (req.url === '/result') { // fs.readFile() 방식 테스트
+    if (req.url === '/html/result.html') { // fs.readFile() 방식 테스트
       filePath = path.join(htmlPath, 'result.html');
     }
-    if (req.url === '/map') {
+    if (req.url === '/html/map.html') {
       const mapFile = fs.readFileSync(path.join(htmlPath, 'map.html'));
       res.setHeader('Content-Type', 'text/html');
       res.end(mapFile);
       return;
     }
-    if (req.url === '/analysis') {
+    if (req.url === '/html/analysis.html') {
       const analysisFile = fs.readFileSync(path.join(htmlPath, 'analysis.html'));
       res.setHeader('Content-Type', 'text/html');
       res.end(analysisFile);
