@@ -1,0 +1,6 @@
+[
+  { "id": 1, "name": "홈", "path": "/" },
+  { "id": 2, "name": "호가", "path": "/orderbook" },
+  { "id": 3, "name": "차트", "path": "/chart" },
+  { "id": 4, "name": "내계좌", "path": "/account" }
+]
