@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Index</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+</head>
+<body>
+  <header class="header">
+    <div class="back">
+      <button type="button" class="btn back"><span class="blind">back</span></button>
+    </div>
+    <div>3월</div>
+    <div class="dropdown">
+      <button type="button" class="btn btn_dropdown">편집</button>
+    </div>
+  </header>
+  <main>
+    <section class="expenses_monthly mb0 pb0">
+      <div class="monthly_history">
+        <div class="monthly_info">
+          <div class="monthly">
+            <span class="month">{3}</span>월
+          </div>
+          <div class="monthly_category">
+            <p class="spend_category">최다 소비 <span class="category">{카테고리}</span></p>
+            <p class="spend_history">지난달보다 <span class="spend_data">{금액}</span> 쓰는 중</p>
+          </div>
+        </div>
+        <div class="monthly_chart">
+          <canvas id="chart" class="chart"></canvas>
+        </div>
+      </div>
+      <div class="weekly_calender">
+        하단 캘린더
+      </div>
+      <div class="recently_expenses">
+        지출내역 3개만
+      </div>
+      <div class="button">
+        <button type="button" class="btn more">내역 더보기</button>
+      </div>
+    </section>
+    <section class="expenses_fixed mt0">
+      고정지출내역
+      보험
+      통신요금
+      생활요금
+      구독
+      기타
+    </section>
+    <section class="balance">
+      남은돈
+      수입
+      소비
+      남은금액
+    </section>
+    <section class="analysis">
+
+    </section>
+  </main>
+</body>
+</html>
