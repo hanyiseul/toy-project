@@ -2,12 +2,14 @@
 const express = require("express"); // express 모듈
 const path =require("path"); // 경로 모듈
 const app = express(); // express 객체 생성
-const port = 3000;
-const route = require('./backend/router'); // route.js 불러오기
+const port = 8000;
+const route = require('./backend/route/pageRouter'); // pageRoute.js 불러오기
 
-app.use(express.static(path.join(__dirname, "public")));
 
-app.use(route);;
+app.use(express.static(path.join(__dirname, "public"))); // 정적 파일 경로
+app.get('/favicon.ico', (_, res) => res.status(204)); // 파비콘 무시
+
+app.use(route); // pageroute 실행
 
 // Express 미들웨어 설정
 // 모든 API 요청이 들어오기 전에 실행되는 전처리 단계
