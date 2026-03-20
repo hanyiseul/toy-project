@@ -3,7 +3,7 @@ const express = require("express"); // express 모듈
 const path =require("path"); // 경로 모듈
 const app = express(); // express 객체 생성
 const port = 8000;
-const route = require('./backend/route/pageRouter'); // pageRoute.js 불러오기
+const route = require('./route/pageRouter'); // pageRoute.js 불러오기
 
 
 app.use(express.static(path.join(__dirname, "public"))); // 정적 파일 경로
