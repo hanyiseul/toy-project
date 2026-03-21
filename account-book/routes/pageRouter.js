@@ -4,11 +4,11 @@ const path =require("path"); // 경로 모듈
 
 const router = express.Router({ mergeParams: true }); //  mergeParams: true - 상위 라우터의 URL 파라미터를 이 라우터에서도 사용할 수 있게 하는 옵션
 
-const htmlPath = path.join(__dirname, "..", "..","public", "templates");
+const htmlPath = path.join(__dirname, "..","public", "templates");
 
 // index.html 
 router.get("/", (_, res) => {
-  res.sendFile(path.join(htmlPath, "index.html")); // sendFile - 실제 파일을 읽어서 브라우저로 전달
+  res.sendFile(path.join(htmlPath, "login.html")); // sendFile - 실제 파일을 읽어서 브라우저로 전달
 });
 
 // 노가다 안하는 방법

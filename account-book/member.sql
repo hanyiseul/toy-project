@@ -17,4 +17,7 @@ create table member (
 );
 
 -- 접속할 사용자 생성
-create user 'accountuser'@'localhost' identified by '1234';
+create user 'testuser'@'localhost' identified by '1234'; -- user 생성 / 비밀번호 생성
+grant all privileges on accountBook.* to 'testuser'@'localhost'; -- 모든 권한(all privileges) 부여(grant)
+FLUSH PRIVILEGES; -- 권한 변경 즉시 적용
+select user, host from mysql.user;

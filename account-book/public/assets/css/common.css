@@ -73,6 +73,17 @@ th:last-child,td:last-child {border-right:none;}
 .btn.btn_dropdown {display: inline-block; width: auto;  color: var(--color-text); border: 1px solid var(--color-border); background: var(--color-white);}
 /* blind */
 .blind {position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;}
+
+/* chart */
+.chart {border: 1px solid red;}
+
+/* link */
+.link { cursor: pointer;}
+.auth_links a {position: relative; padding: 0 5px 0 10px; color: var(--color-text); transition: 0.3s all;}
+.auth_links a:before {content: ""; position: absolute; top: 50%; left: 0; display: inline-block; width: 1px; height: 12px; background: var(--color-border); transform: translateY(-50%);}
+.auth_links a:first-child:before {display: none;}
+.auth_links a:hover {color: var(--color-primary);}
+
 /* header */
 .header {position: sticky; display: flex; align-items: center; justify-content: space-between; width: 100%; height: 45px; padding: 0 20px; background: var(--color-white); box-sizing: border-box; box-shadow: var(--shadow-card);}
 .header .btn {min-width: 50px; height: 45px;}
@@ -90,5 +101,7 @@ section + section {border-top: 10px solid var(--color-border);}
 .monthly_info .monthly {text-align: center;}
 .monthly_info .monthly .month {font-weight: bold;}
 
-/* chart */
-.chart {border: 1px solid red;}
+/* login */
+.card.login_card {flex-direction: column;}
+.card.login_card .card_wrap {min-height: auto;}
+.card.login_card .auth_links {padding: 0 0 20px;}

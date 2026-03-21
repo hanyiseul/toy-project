@@ -1,6 +1,6 @@
 // db.js : db 계정 정보 관리
 
-const { createPool } = require("mysql2");
+const { createPool } = require("mysql2/promise");
 
 const pool = createPool({ // db 연결을 여러개 만들어 미리 관리하는 pool 생성
   host: "localhost", // db 서버 주소
