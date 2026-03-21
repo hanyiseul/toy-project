@@ -6,6 +6,12 @@ COLLATE utf8mb4_general_ci;
 -- 생성한 database 사용 
 use accountBook;
 
+-- 접속할 사용자 생성
+create user 'testuser'@'localhost' identified by '1234'; -- user 생성 / 비밀번호 생성
+grant all privileges on accountBook.* to 'testuser'@'localhost'; -- 모든 권한(all privileges) 부여(grant)
+FLUSH PRIVILEGES; -- 권한 변경 즉시 적용
+select user, host from mysql.user;
+
 -- 회원정보 테이블 
 create table member (
 	id int auto_increment primary key,
@@ -15,9 +21,3 @@ create table member (
     birth_date date,
     tel VARCHAR(20)
 );
-
--- 접속할 사용자 생성
-create user 'testuser'@'localhost' identified by '1234'; -- user 생성 / 비밀번호 생성
-grant all privileges on accountBook.* to 'testuser'@'localhost'; -- 모든 권한(all privileges) 부여(grant)
-FLUSH PRIVILEGES; -- 권한 변경 즉시 적용
-select user, host from mysql.user;
