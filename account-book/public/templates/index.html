@@ -11,7 +11,7 @@
     <div class="back">
       <button type="button" class="btn back"><span class="blind">back</span></button>
     </div>
-    <div>{user}님의 가계부</div>
+    <div><span id="userName">user</span>님의 가계부</div>
     <div class="dropdown">
       <button type="button" class="btn btn_dropdown">편집</button>
     </div>
@@ -61,4 +61,17 @@
     </section>
   </main>
 </body>
+<script type="module">
+import {checkAuth} from "../assets/js/auth.js";
+const init = async () => {
+  console.log(checkAuth);
+
+  const user = await checkAuth();
+
+  if(!user) return;
+
+  document.querySelector("#userName").textContent = `${user.userName}`
+}
+init();
+</script>
 </html>

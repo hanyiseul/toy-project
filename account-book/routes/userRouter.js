@@ -12,6 +12,9 @@ router.post("/signup", userController.signup);
 router.get("/checkid", userController.checkId);
 
 // 로그인
-router.post("/login", userController.login)
+router.post("/login", userController.login);
+
+// 로그인 - 인증
+router.get("/verify",  userController.verify);
 
 module.exports = router;
