@@ -15,22 +15,41 @@
         <label for="input_id">아이디</label>
       </div>
       <div class="input_wrap">
-        <input type="text" id="input_pwd" class="input" name="user_pwd"/>
+        <input type="password" id="input_pwd" class="input" name="user_pwd"/>
         <label for="input_pwd">비밀번호</label>
       </div>
       <div class="button_wrap">
-        <button type="button" id="btn_login" class="btn">로그인</button>
+        <button type="button" id="btn_login" class="btn" onclick="login()">로그인</button>
       </div>
     </div>
     <div class="auth_links">
-      <a href="#">아이디 찾기</a>
-      <a href="#">비밀번호 찾기</a>
+      <!-- <a href="#">아이디 찾기</a>
+      <a href="#">비밀번호 찾기</a> -->
       <a href="/signup">회원가입</a>
     </div>
   </section>
 </body>
 
 <script>
-  
+  // 로그인
+  const login = async () => {
+    const response = await fetch("/api/user/login", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: input_id.value, user_pwd: input_pwd.value})
+    });
+
+    const data = await response.json();
+
+    console.log(data)
+
+    if(data.success) {
+      localStorage.setItem('myToken', data.token);
+      location.href = '/index';
+    } else {
+      alert("로그인 실패");
+    }
+  }
+
 </script>
 </html>

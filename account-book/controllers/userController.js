@@ -2,6 +2,8 @@
 // 요청(req)을 받아서 처리하고 응답(res)을 보내는 역할 => 결과를 받아서 프론트에 전달
 
 const userService = require("../services/useService.js");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = "my_super_secret_key";
 
 // 회원가입
 exports.signup = async (req, res) => {
@@ -26,6 +28,7 @@ exports.signup = async (req, res) => {
   }
 }
 
+// 회원가입 - 아이디 중복 체크
 exports.checkId = async (req, res) => {
   try {
     console.log(req.query)
@@ -38,6 +41,42 @@ exports.checkId = async (req, res) => {
     res.json({
       success: false,
       message: "회원가입 실패"
+    });
+  }
+}
+
+// 로그인
+exports.login = async (req, res) => {
+  try {
+    const {user_id, user_pwd} = req.body;
+
+    const result = await userService.login(user_id, user_pwd);
+    res.json(result);
+
+  } catch (error) { // 데이터 처리 실패 시
+    res.json({
+      success: false,
+      message: "로그인 실패"
+    });
+  }
+}
+
+// 로그인 - JWT 검증
+exports.verify = (req, res) => {
+  try {
+    const authHeader = req.headers['authorization']; // 클라이언트가 보낸 authorization header
+    const token = authHeader && authHeader.split(" ")[1]; // authorization 헤더에서 Bearer를 제거하고 JWT 토큰만 가져오는 코드
+
+    if(!token) return res.josn({success: false});
+
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+      if (err) return res.json({ success: false });
+      res.json({ success: true, user: decoded }); // 유효하면 해독된 유저 정보 응답
+    });
+  } catch (err) { // 데이터 처리 실패 시
+    res.json({
+      success: false,
+      message: "로그인 실패"
     });
   }
 }

@@ -30,6 +30,18 @@ exports.checkId = async (user_id) => {
   return result;
 }
 
+// 로그인
+exports.login = async(user_id) => {
+  const sql = `
+    select * from member where user_id = ?
+  `
+
+  const [result] = await pool.query(sql, [user_id]);
+  const user = result[0]; // 조회된 목록 중 첫번째 사용자 꺼냄 (로그인시 1명만 조회되기 때문)
+
+  return user;
+}
+
 /**
  * pool.query : db 커넥션 pool에서 커넥션 하나 가져와서 sql 실행하고 다시 pool로 반환
  * pool -> connection 하나 가져옴 -> query 실행 -> connection 반환

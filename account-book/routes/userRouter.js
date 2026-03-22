@@ -11,4 +11,7 @@ router.post("/signup", userController.signup);
 // 회원가입 - 아이디 중복 여부 체크
 router.get("/checkid", userController.checkId);
 
+// 로그인
+router.post("/login", userController.login)
+
 module.exports = router;

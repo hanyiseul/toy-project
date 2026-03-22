@@ -46,7 +46,6 @@
 <script>
   // 회원가입 함수
   const signup  = async () => {
-    console.log("회원가입 버튼 클릭");
     const user_name = document.getElementById("input_name").value;
     const user_id = document.getElementById("input_id").value;
     const user_pwd = document.getElementById("input_pwd").value;
@@ -67,8 +66,6 @@
         headers: { "Content-Type": "application/json" }, // 요청 헤더에 JSON 형식의 데이터임을 명시
         body: JSON.stringify({ user_name, user_id, user_pwd, birth_date, tel }) // 요청 본문에 JSON 형식으로 회원가입 정보를 담아서 보냄
       });
-      console.log(response);
-
       const data = await response.json(); // json 받은걸 자바스크립트 객체로 변환해서 data 변수에 저장
       console.log(data);
       // 회원가입 성공 여부 조건문
@@ -99,7 +96,7 @@
       if (data.exists) { // 아이디 중복 시
         alert("아이디가 중복됩니다");
       } 
-
+      return alert("가능합니다")
     } catch (error) {
       console.error("Error:", error);
       alert("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
