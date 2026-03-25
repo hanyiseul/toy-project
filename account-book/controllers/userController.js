@@ -3,7 +3,7 @@
 
 const userService = require("../services/useService.js");
 const jwt = require("jsonwebtoken");
-const JWT_SECRET = "my_super_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // 회원가입
 exports.signup = async (req, res) => {

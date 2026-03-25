@@ -4,7 +4,7 @@
 const userModel = require("../models/userModel.js");
 const jwt = require('jsonwebtoken'); // JWT : JSON Web Token, 사용자 인증에 사용되는 토큰 기반 인증 방식
 const bcrypt = require('bcrypt'); // bcrypt : 비밀번호 암호화 라이브러리
-const JWT_SECRET = "my_super_secret_key";
+const JWT_SECRET = process.env.JWT_SECRET; // .env에 랜덤키 생성 (원래는 git에 올리면 안됨)
 
 // 회원가입
 exports.signup = async (user_name, user_id, user_pwd, birth_date, tel) => {
@@ -89,7 +89,7 @@ exports.login = async (user_id, user_pwd) => {
   // user 정보가 존재하고 비밀번호 비교가 가능하다면
   if(user && await bcrypt.compare(user_pwd, user.pwd)) { // 비밀번호 비교 함수 : bcrypt.compare(입력비밀번호, db해시비밀번호)
     // playload : JWT 토큰을 생성하는 코드 - jwt.sign(토큰에 담을 정보, 토큰 서명용 비밀키, 토큰 만료시간)
-    const token = jwt.sign({userId: user.user_id, userName: user.user_name}, JWT_SECRET, { expiresIn: '1h' }); //token 변수에 Payload에 유저 정보를 담아 서명
+    const token = jwt.sign({user_id: user.user_id, user_name: user.user_name}, JWT_SECRET, { expiresIn: '12h' }); //token 변수에 Payload에 유저 정보를 담아 서명
 
     return {
       success: true,
