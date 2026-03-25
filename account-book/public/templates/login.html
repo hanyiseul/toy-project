@@ -30,7 +30,7 @@
   </section>
 </body>
 
-<script>
+<!-- <script>
   // 로그인
   const login = async () => {
     const response = await fetch("/api/user/login", {
@@ -39,17 +39,15 @@
       body: JSON.stringify({ user_id: input_id.value, user_pwd: input_pwd.value})
     });
 
-    const data = await response.json();
+    const data = await response.json(); // 응답받은 json을 js 객체로 변환하여 data에 저장
 
-    console.log(data)
-
-    if(data.success) {
-      localStorage.setItem('myToken', data.token);
-      location.href = '/index';
+    if(data.success) { // data의 성공 여부 메세지가 true일 경우
+      localStorage.setItem('myToken', data.token); // 로컬스토리지에 토큰 저장
+      location.href = '/index'; // 로그인 성공시 index.html로 이동
     } else {
       alert("로그인 실패");
     }
   }
 
-</script>
+</script> -->
 </html>

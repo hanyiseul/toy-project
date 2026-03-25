@@ -21,11 +21,13 @@
       <div class="monthly_history">
         <div class="monthly_info">
           <div class="monthly">
-            <span class="month">{3}</span>월
+            <button type="button" class="prev_month" id="prevMonth">◀</button>
+            <span class="month" id="currentMonth">{3}</span>월
+            <button type="button" class="next_month" id="nextMonth">▶</button>
           </div>
           <div class="monthly_category">
-            <p class="spend_category">최다 소비 <span class="category">{카테고리}</span></p>
-            <p class="spend_history">지난달보다 <span class="spend_data">{금액}</span> 쓰는 중</p>
+            <p id="spend_category" class="spend_category">최다 소비 <span class="category">{카테고리}</span></p>
+            <p id="spend_history" class="spend_history">이번달 총 소비금액 <span class="spend_data">{금액}</span> 쓰는 중</p>
           </div>
         </div>
         <div class="monthly_chart">
@@ -61,17 +63,81 @@
     </section>
   </main>
 </body>
-<script type="module">
+<!-- <script type="module">
 import {checkAuth} from "../assets/js/auth.js";
+import {state} from "../assets/js/state.js";
+import {common} from "../assets/js/common.js";
 const init = async () => {
-  console.log(checkAuth);
-
   const user = await checkAuth();
 
-  if(!user) return;
+  if(!user) return; // 인증 정보가 없을 경우 return
 
-  document.querySelector("#userName").textContent = `${user.userName}`
+  state.user = user; // 인증정보 공통 함수에 저장
+
+  document.querySelector("#userName").textContent = `${user.user_name}`;
+
+  dateState();
+  console.log("init 실행"); // init 정상 실행 확인 콘솔
 }
 init();
-</script>
+
+const loadData = async() => {
+  // const response = await fetch('/api/account/data');
+  // const data = awiat response.json();
+  console.log("loadData 실행");
+
+ await common.dateState();
+}
+
+// 조회 월 설정
+const dateState = async() => {
+  const dateState = state.date;
+  const renderMonth = () => {
+    // 년도 바뀌면
+    if (dateState.year === new Date().getFullYear()) {
+      document.querySelector("#currentMonth").textContent = dateState.month;
+    } else {
+      document.querySelector("#currentMonth").textContent =
+        dateState.year + "." + dateState.month;
+    }
+
+    // 현재 달이면 다음달 클릭 버튼 숨김
+    if (dateState.year === new Date().getFullYear() && dateState.month >= new Date().getMonth() + 1) {
+      document.querySelector("#nextMonth").style.display = "none";
+    } else {
+      document.querySelector("#nextMonth").style.display = "inline-block";
+    }
+  };
+
+  renderMonth();
+  loadData();
+
+  document.querySelector("#prevMonth").addEventListener("click", () => {
+    dateState.month--;
+    if (dateState.month < 1) {
+      dateState.month = 12;
+      dateState.year--;
+    }
+    renderMonth();
+    loadData();
+  });
+
+  document.querySelector("#nextMonth").addEventListener("click", () => {
+    // 현재달까지만 선택 가능
+    if (
+      dateState.year === new Date().getFullYear() &&
+      dateState.month >= new Date().getMonth() + 1
+    ) {
+      return;
+    }
+    dateState.month++;
+    if (dateState.month > 12) {
+      dateState.month = 1;
+      dateState.year++;
+    }
+    renderMonth();
+    loadData();
+  });
+};
+</script> -->
 </html>

@@ -44,6 +44,20 @@
   </section>
 </body>
 <script>
+  const signup = async() => {
+    const user_name = document.getElementById("input_name").value;
+    const user_id = document.getElementById("input_id").value;
+    const user_pwd = document.getElementById("input_pwd").value;
+    const user_pwdConfirm = document.getElementById("input_pwdConfirm").value;
+    const birth_date = document.getElementById("input_birth").value;
+    const tel = document.getElementById("input_tel").value;
+
+    try {
+      const response = await fetch('/api/user/signup')
+    }
+  }
+</script>
+<!-- <script>
   // 회원가입 함수
   const signup  = async () => {
     const user_name = document.getElementById("input_name").value;
@@ -102,5 +116,5 @@
       alert("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
     }
   }
-</script>
+</script> -->
 </html>
