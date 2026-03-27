@@ -21,3 +21,13 @@ exports.signup = async (user_name, user_id, pwd, birth_date, tel) => {
 
   return rows;
 }
+
+exports.checkId = async(user_id) => {
+  const sql = `
+    select user_id from member where user_id=?
+  `
+
+  const [rows] = await pool.query (sql, user_id);
+  
+  return rows;
+}

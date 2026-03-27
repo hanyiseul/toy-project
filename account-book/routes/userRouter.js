@@ -8,5 +8,6 @@ const userController = require("../controllers/userController"); // user 관련 
 
 // 회원가입
 router.post("/signup", userController.signup);
+router.get("/checkId", userController.checkId);
 
 module.exports = router; // 다른 파일에서도 이 파일을 이용할 수 있도록 내보내기

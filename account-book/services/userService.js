@@ -29,7 +29,10 @@ exports.signup = async(user_name, user_id, pwd, birth_date, tel) => {
       message: "service 회원가입 실패"
     };
   } catch (error) {
-    console.error(error);
+  console.log("error:", error);
+  console.log("error.code:", error.code);
+  console.log("error.errno:", error.errno);
+  console.log("error.sqlMessage:", error.sqlMessage);
     if (error.code === 'ER_DUP_ENTRY') {
       return {
         success: false,
@@ -39,6 +42,26 @@ exports.signup = async(user_name, user_id, pwd, birth_date, tel) => {
     return {
       success: false, 
       message: "service 회원가입 에러"
+    }
+  }
+}
+
+// 회원가입 - 아이디 중복 체크 여부
+exports.checkId = async(user_id) => {
+  // userModel에서 chekcId 쿼리를 받아서 result에 저장
+  const result = await userModel.checkId(user_id);
+
+  try {
+    const exists = result.length > 0; // user_id가 0개 이상이면 true
+    console.log(exists);
+    return {
+      exists,
+      message: exists ? "이미 아이디가 존재합니다."  : "사용 가능한 아이디입니다."
+    }
+  } catch (error) {
+    console.error(error);
+    return {
+      message: "service 아이디 중복 체크 에러"
     }
   }
 }

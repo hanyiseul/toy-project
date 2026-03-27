@@ -24,3 +24,21 @@ exports.signup = async (req, res) => {
     });
   }
 }
+
+exports.checkId = async (req, res) => {
+  console.log("req",req);
+  console.log("res",res);
+  try {
+    // req.query : URL 뒤에 붙은 데이터(쿼리 파라미터)를 가져오는 객체
+    const {user_id} = req.query;
+
+    // userSerive.js에서 처리한 checkid 함수에 user_id값을 담아 result에 저장
+    const result = await userService.checkId(user_id);
+    res.json(result);
+  } catch(error) {
+    res.json({
+      success: false,
+      messages: "아이디 중복체크 실패"
+    })
+  }
+}
