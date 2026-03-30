@@ -22,11 +22,13 @@ exports.signup = async (user_name, user_id, pwd, birth_date, tel) => {
   return rows;
 }
 
+// 아이디 중복체크 여부, 로그인
 exports.checkId = async(user_id) => {
   const sql = `
     select user_id from member where user_id=?
   `
 
+  // 아이디 중복체크를 하기 때문에 로그인도 하나만 뜰듯
   const [rows] = await pool.query (sql, user_id);
   
   return rows;

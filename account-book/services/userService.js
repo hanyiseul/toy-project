@@ -29,10 +29,6 @@ exports.signup = async(user_name, user_id, pwd, birth_date, tel) => {
       message: "service 회원가입 실패"
     };
   } catch (error) {
-  console.log("error:", error);
-  console.log("error.code:", error.code);
-  console.log("error.errno:", error.errno);
-  console.log("error.sqlMessage:", error.sqlMessage);
     if (error.code === 'ER_DUP_ENTRY') {
       return {
         success: false,
@@ -63,5 +59,37 @@ exports.checkId = async(user_id) => {
     return {
       message: "service 아이디 중복 체크 에러"
     }
+  }
+}
+
+exports.login = async(user_id, pwd) => {
+  const user = awaituserModel.checkId(user_id)[0]
+
+  try {
+    if (user && await bcrypt.compare(pwd, user.pwed)) {
+      // user 정보가 존재하고 비밀번호 비교가 가능하다면
+      // payload : JWT 토큰을 생성하는 코드
+      //  - jwt.sign(토큰에 담을 정보, 토큰 서명용 비밀키, 토큰 만료시간)
+      const token = jwt.sign({user_id: user.user_id, user_name: user.user_name}, JWT_SECRET, {expiresIn: '12h'});  //token 변수에 Payload에 유저 정보를 담아 서명
+
+      return {
+        success: true,
+        token
+      }
+    } else if(!(await bcrypt.compare(pwd, user.pwed))) {
+      // 비밀 번호가 틀렸다면
+      // 비밀번호 비교 함수 : bcrypt.compare(입력받은비번, db 등록된 암호화(해시)비번)
+      return {
+        success: false,
+        message: "비밀번호가 틀렸습니다."
+      }
+    } else if(!user) {
+      // 아이디가 없을 경우 (아이디를 비교했기 때문에)
+      return{
+        message: "아이디가 없습니다."
+      }
+    }
+  } catch (error) {
+
   }
 }

@@ -26,8 +26,6 @@ exports.signup = async (req, res) => {
 }
 
 exports.checkId = async (req, res) => {
-  console.log("req",req);
-  console.log("res",res);
   try {
     // req.query : URL 뒤에 붙은 데이터(쿼리 파라미터)를 가져오는 객체
     const {user_id} = req.query;
@@ -40,5 +38,11 @@ exports.checkId = async (req, res) => {
       success: false,
       messages: "아이디 중복체크 실패"
     })
+  }
+}
+
+exports.login = async (req, res) => {
+  try {
+    const {user_id, pwd}
   }
 }
