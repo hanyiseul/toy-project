@@ -45,21 +45,36 @@
 </body>
 <script>
   // 회원가입에 필요한 입력값 변수 정의
-  const user_name = document.getElementById("input_name").value;
-  const user_id = document.getElementById("input_id").value;
-  const pwd = document.getElementById("input_pwd").value;
-  const pwd_confirm = document.getElementById("input_pwdConfirm").value;
-  const birth = document.getElementById("input_birth");
-  const tel = document.getElementById("input_tel").value;
+  const inputs = {
+    name: document.getElementById("input_name"),
+    id: document.getElementById("input_id"),
+    pwd: document.getElementById("input_pwd"),
+    pwdConfirm: document.getElementById("input_pwdConfirm"),
+    birth: document.getElementById("input_birth"),
+    tel: document.getElementById("input_tel")
+  };
   
+  // 아이디 중복 체크 여부
+  let isIdChecked = false;
+
   // 회원가입 함수
   const signup = async() => {
-    const birth_date = birth.value;
+    const user_name = inputs.name.value;
+    const user_id = inputs.id.value;
+    const pwd = inputs.pwd.value;
+    const pwd_confirm = inputs.pwdConfirm.value;
+    const birth_date = inputs.birth.value;
+    const tel = inputs.tel.value;
 
     // 비밀번호 확인 조건문
     if(pwd !== pwd_confirm) { // 비밀번호와 비빌번호확인이 틀리면
       document.getElementById("input_pwdConfirm").focus(); // 비밀번호 다시 입력
       return alert("비밀번호가 일치하지 않습니다.");
+    }
+
+    // 만일 아이디 중복 체크가 안되었을 경우
+    if(!isIdChecked) { // isIdChecked가 false일 경우
+      return alert("아이디 중복 확인 해주세요");
     }
 
     try {
@@ -91,10 +106,11 @@
       return;
     }
   }
+  
 
   // 아이디 중복 체크 함수
   const checkId = async () => {
-    const user_id = document.getElementById("input_id").value;
+    const user_id = inputs.id.value;
     
     try {
       // 쿼리 파라미터(Query Parameter) : URL 뒤에 붙어서 서버로 데이터를 전달하는 값
@@ -102,9 +118,13 @@
       const response = await fetch(`/api/user/checkId?user_id=${user_id}`);
       const data = await response.json();
 
+      // 아이디 중복 확인이 된다면 true
+      isIdChecked = true;
+
       if(data.exists) { // 아이디가 존재한다면
         document.getElementById("input_id").focus();
         alert("이미 존재하는 아이디입니다.");
+        console.log(isIdChecked)
       } else { // 아이디가 존재하지 않는다면
         alert("사용 가능합니다.");
       }
@@ -112,7 +132,6 @@
       console.error("Error:", error);
       alert("아이디 중복 체크 실패했습니다. 다시 확인해주세요");
     }
-
   }
 </script>
 </html>
