@@ -43,6 +43,35 @@ exports.checkId = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const {user_id, pwd}
+    const {user_id, pwd} = req.body;
+
+    const result = await userService.login(user_id, pwd)
+    res.json(result);
+
+  } catch(error) { // 데이터 처리 실패시
+    res.json({
+      success: false,
+      message: "controller 로그인 실패"
+    })
+  }
+}
+
+// 로그인 - JWT 검증
+exports.verify = (req, res) => {
+  try {
+    const authHeader = req.headers['authorization']; // 클라이언트가 보낸 authorization header
+    const token = authHeader && authHeader.split(" ")[1]; // authorization 헤더에서 Bearer를 제거하고 JWT 토큰만 가져오는 코드
+
+    if(!token) return res.josn({success: false});
+
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+      if (err) return res.json({ success: false });
+      res.json({ success: true, user: decoded }); // 유효하면 해독된 유저 정보 응답
+    });
+  } catch (err) { // 데이터 처리 실패 시
+    res.json({
+      success: false,
+      message: "로그인 실패"
+    });
   }
 }

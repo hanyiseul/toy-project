@@ -10,4 +10,9 @@ const userController = require("../controllers/userController"); // user 관련 
 router.post("/signup", userController.signup);
 router.get("/checkId", userController.checkId);
 
+// 로그인
+router.post("/login", userController.login);
+// 로그인 - 인증
+router.get("/verify",  userController.verify);
+
 module.exports = router; // 다른 파일에서도 이 파일을 이용할 수 있도록 내보내기

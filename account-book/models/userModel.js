@@ -25,7 +25,7 @@ exports.signup = async (user_name, user_id, pwd, birth_date, tel) => {
 // 아이디 중복체크 여부, 로그인
 exports.checkId = async(user_id) => {
   const sql = `
-    select user_id from member where user_id=?
+    select * from member where user_id=?
   `
 
   // 아이디 중복체크를 하기 때문에 로그인도 하나만 뜰듯
@@ -33,3 +33,15 @@ exports.checkId = async(user_id) => {
   
   return rows;
 }
+
+/**
+ * pool.query : db 커넥션 pool에서 커넥션 하나 가져와서 sql 실행하고 다시 pool로 반환
+ * pool -> connection 하나 가져옴 -> query 실행 -> connection 반환
+ * 
+ * MYSQL2 라이브러리에서 query()를 실행하면 2개의 값을 배열로 반환 [result(쿼리 결과), fields(컬럼 정보)]
+ *  => [
+          { affectedRows: 1, insertId: 5 },
+          [column metadata ...]
+        ]
+ * 배열 구조 분해 할당 : const [result] = await pool.query(sql, [...]);
+ */

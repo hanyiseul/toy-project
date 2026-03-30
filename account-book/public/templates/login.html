@@ -30,13 +30,13 @@
   </section>
 </body>
 
-<!-- <script>
+<script>
   // 로그인
   const login = async () => {
     const response = await fetch("/api/user/login", {
       method: "post",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: input_id.value, user_pwd: input_pwd.value})
+      body: JSON.stringify({ user_id: input_id.value, pwd: input_pwd.value})
     });
 
     const data = await response.json(); // 응답받은 json을 js 객체로 변환하여 data에 저장
@@ -49,5 +49,5 @@
     }
   }
 
-</script> -->
+</script>
 </html>

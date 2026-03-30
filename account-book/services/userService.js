@@ -63,10 +63,12 @@ exports.checkId = async(user_id) => {
 }
 
 exports.login = async(user_id, pwd) => {
-  const user = awaituserModel.checkId(user_id)[0]
-
+  // promise로 userModel.checkId(user_id);의 값을 다 받아온 후에
+  const result = await userModel.checkId(user_id);
+  // result의 첫번째값 가져오기 (db 쿼리가 배열로 오기 때문)
+  const user = result[0];
   try {
-    if (user && await bcrypt.compare(pwd, user.pwed)) {
+    if (user && await bcrypt.compare(pwd, user.pwd)) {
       // user 정보가 존재하고 비밀번호 비교가 가능하다면
       // payload : JWT 토큰을 생성하는 코드
       //  - jwt.sign(토큰에 담을 정보, 토큰 서명용 비밀키, 토큰 만료시간)
@@ -76,20 +78,25 @@ exports.login = async(user_id, pwd) => {
         success: true,
         token
       }
-    } else if(!(await bcrypt.compare(pwd, user.pwed))) {
+    }
+    if(!(await bcrypt.compare(pwd, user.pwd))) {
       // 비밀 번호가 틀렸다면
       // 비밀번호 비교 함수 : bcrypt.compare(입력받은비번, db 등록된 암호화(해시)비번)
       return {
         success: false,
         message: "비밀번호가 틀렸습니다."
       }
-    } else if(!user) {
+    }
+    if(!user) {
       // 아이디가 없을 경우 (아이디를 비교했기 때문에)
       return{
         message: "아이디가 없습니다."
       }
     }
   } catch (error) {
-
+    console.error(error);
+    return {
+      message: "service 로그인 에러"
+    }
   }
 }
