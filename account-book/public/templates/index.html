@@ -63,10 +63,16 @@
     </section>
   </main>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js'></script>
 <script type="module">
 import {checkAuth} from "../assets/js/auth.js";
 import {state} from "../assets/js/state.js";
 import {common} from "../assets/js/common.js";
+
+
+
+  let chartInstance;
 const init = async () => {
   const user = await checkAuth();
 
@@ -82,15 +88,24 @@ const init = async () => {
 init();
 
 const loadData = async() => {
-  // const response = await fetch('/api/account/data');
-  // const data = awiat response.json();
   console.log("loadData 실행");
 
- await common.dateState();
+
+  const data = await common.dateState(); // 조회 월 설정 데이터 가져온 후 
+
+  if(data.success){ // 데이터 응답 성공시 ui 데이터 조작
+    const {MaxCategory, totalSpend} = data.data;
+    document.querySelector(".category").textContent = MaxCategory ?? "없음";
+    document.querySelector(".spend_data").textContent = totalSpend ?? 0;
+
+  }
+
+  chart();
+
 }
 
 // 조회 월 설정
-const dateState = async() => {
+const dateState = () => {
   const dateState = state.date;
   const renderMonth = () => {
     // 년도 바뀌면
@@ -112,6 +127,7 @@ const dateState = async() => {
   renderMonth();
   loadData();
 
+  // 이전달 버튼 클릭시
   document.querySelector("#prevMonth").addEventListener("click", () => {
     dateState.month--;
     if (dateState.month < 1) {
@@ -122,6 +138,7 @@ const dateState = async() => {
     loadData();
   });
 
+  // 다음달 버튼 클릭시
   document.querySelector("#nextMonth").addEventListener("click", () => {
     // 현재달까지만 선택 가능
     if (
@@ -139,5 +156,82 @@ const dateState = async() => {
     loadData();
   });
 };
+
+const chart = async () => {
+  
+  const dateState = state.date;
+  // 선택 월의 총 일수 구하기
+  const currentMonth = new Date(dateState.year, dateState.month, 0).getDate();
+
+  const data = await common.daySpend();
+  const chart = document.querySelector("#chart").getContext("2d");
+
+  // 차트 데이터 
+  const chartData = new Array(currentMonth).fill(0); // 차트 데이터 0으로 초기화 (31일 기준으로)
+  const labels = Array.from({length : currentMonth}, (_,i) => i + 1);
+  data.dayAccount.forEach(v=>{
+    // 일자에서 따오는데 1일부터 시작이고 배열은 0부터니까 -1 해줘야 맞음
+    const day = new Date(v.day).getDate()-1; 
+    console.log("day", day);
+    chartData[day] = Number(v.total);
+  });
+
+  console.log(labels);
+  console.log(chartData)
+  // 기존 차트 제거 후 그리기
+  if(chartInstance){
+    chartInstance.data.labels = labels;
+    chartInstance.data.datasets[0].data = chartData;
+    chartInstance.update();
+    return;
+  }
+
+  // 차트 설정 함수
+  chartInstance = new Chart(chart, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: chartData,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false   // legend 숨김
+        }
+      },
+      animation: {
+        duration: 300,      // 애니메이션 시간
+        easing: 'easeOutQuart'
+      },
+      scales: {
+        x: {
+        ticks: {
+          autoSkip: false,
+          display: false   // x축 텍스트 숨김
+        },
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            display: false
+          },
+          grid: {
+            display: false
+          }
+        }
+      },
+      elements: {
+        point: {
+          radius: 3
+        }
+      }
+    }
+  });
+}
 </script>
 </html>

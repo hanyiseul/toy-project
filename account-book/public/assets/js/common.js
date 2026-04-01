@@ -8,11 +8,18 @@ export const common = {
     const user_id = state.user.user_id;
     const response = await fetch(`/api/account/data?user_id=${user_id}&year=${year}&month=${month}`);
     const data = await response.json();
-    if(data.success){
-      const {MaxCategory, totalSpend} = data.data;
-      document.querySelector(".category").textContent = MaxCategory ?? "없음";
-      document.querySelector(".spend_data").textContent = totalSpend ?? 0;
-
-    }
+    return data;
   },
+  async daySpend () {
+    // 일별 소비금액 조회
+    const {year, month} = state.date;
+    const user_id = state.user.user_id;
+    const response = await fetch(`/api/account/data?user_id=${user_id}&year=${year}&month=${month}`);
+    const data = await response.json();
+    if(data.success) {
+      const daySpend = data.data;
+      return daySpend;
+    }
+    console.log("daySpend 데이터:", data.dayAccount);
+  }
 }
