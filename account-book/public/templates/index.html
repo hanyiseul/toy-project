@@ -5,15 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Index</title>
   <link rel="stylesheet" href="../assets/css/common.css">
+  <script src="../assets/js/ui.js"></script>
 </head>
 <body>
   <header class="header">
     <div class="back">
-      <button type="button" class="btn back"><span class="blind">back</span></button>
+      <button type="button" class="btn back" onclick="localStorage.removeItem('myToken'); location.href='/';"><span class="blind">back</span></button>
     </div>
     <div><span id="userName">user</span>님의 가계부</div>
     <div class="dropdown">
-      <button type="button" class="btn btn_dropdown">편집</button>
+      <button type="button" class="btn btn_dropdown">메뉴</button>
+      <ul class="dropdown_menu">
+        <li><button type="button" class="btn" onclick="location.href='register';">등록하기</button></li>
+        <li><button type="button" class="btn" onclick="localStorage.removeItem('myToken'); location.href='/';">로그아웃</button></li>
+      </ul>
     </div>
   </header>
   <main>
@@ -28,6 +33,8 @@
           <div class="monthly_category">
             <p id="spend_category" class="spend_category">최다 소비 <span class="category">{카테고리}</span></p>
             <p id="spend_history" class="spend_history">이번달 총 소비금액 <span class="spend_data">{금액}</span> 쓰는 중</p>
+            <p id="spend_balance">현재 <span class="balnce-amount">{남은돈}</span>원 남았어요</p>
+            <p id="spend_income">이번달은 <span class="income-amount">{수입}</span>원 벌었어요</p>
           </div>
         </div>
         <div class="monthly_chart">
@@ -35,31 +42,78 @@
         </div>
       </div>
       <div class="weekly_calender">
-        하단 캘린더
+        <div id="calendar"></div>
       </div>
+    </section>
+    <section class="expenses_fixed mt-0">
+      <h3 class="fixed_title">고정지출내역</h3>
+
+      <ul class="fixed_list">
+
+        <li class="fixed_item">
+          <span class="fixed_category">보험</span>
+          <span class="fixed_amount">50,000원</span>
+        </li>
+
+        <li class="fixed_item">
+          <span class="fixed_category">통신요금</span>
+          <span class="fixed_amount">60,000원</span>
+        </li>
+
+        <li class="fixed_item">
+          <span class="fixed_category">생활요금</span>
+          <span class="fixed_amount">80,000원</span>
+        </li>
+
+        <li class="fixed_item">
+          <span class="fixed_category">구독</span>
+          <span class="fixed_amount">15,000원</span>
+        </li>
+
+        <li class="fixed_item">
+          <span class="fixed_category">기타</span>
+          <span class="fixed_amount">10,000원</span>
+        </li>
+
+      </ul>
+
+    </section>
+    <section class="spend_list">
       <div class="recently_expenses">
-        지출내역 3개만
+        <ul class="expense_list">
+          <ul class="expense_list">
+            <li class="expense_item">
+              <div class="expense_info">
+                <span class="expense_category">식비</span>
+                <span class="expense_memo">김치찌개</span>
+              </div>
+              <div class="expense_right">
+                <span class="expense_amount">-12,000원</span>
+                <div class="expense_actions">
+                  <button class="btn_edit"></button>
+                  <button class="btn_delete"></button>
+                </div>
+              </div>
+            </li>
+            <li class="expense_item">
+              <div class="expense_info">
+                <span class="expense_category">식비</span>
+                <span class="expense_memo">김치찌개</span>
+              </div>
+              <div class="expense_right">
+                <span class="expense_amount">-12,000원</span>
+                <div class="expense_actions">
+                  <button class="btn_edit"></button>
+                  <button class="btn_delete"></button>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </ul>
       </div>
       <div class="button">
         <button type="button" class="btn more">내역 더보기</button>
       </div>
-    </section>
-    <section class="expenses_fixed mt0">
-      고정지출내역
-      보험
-      통신요금
-      생활요금
-      구독
-      기타
-    </section>
-    <section class="balance">
-      남은돈
-      수입
-      소비
-      남은금액
-    </section>
-    <section class="analysis">
-
     </section>
   </main>
 </body>
@@ -90,18 +144,24 @@ init();
 const loadData = async() => {
   console.log("loadData 실행");
 
-
+  // 
   const data = await common.dateState(); // 조회 월 설정 데이터 가져온 후 
 
   if(data.success){ // 데이터 응답 성공시 ui 데이터 조작
-    const {MaxCategory, totalSpend} = data.data;
+    const {MaxCategory, totalSpend, balance, income} = data.data;
     document.querySelector(".category").textContent = MaxCategory ?? "없음";
     document.querySelector(".spend_data").textContent = totalSpend ?? 0;
+    document.querySelector(".balnce-amount").textContent = balance ?? 0
+    document.querySelector(".income-amount").textContent = income ?? 0
 
   }
 
-  chart();
+  chart(); // 차트 실행
 
+  const daySpend = await common.daySpend();
+  calendar(daySpend); // 캘린더 실행
+
+  console.log(data)
 }
 
 // 조회 월 설정
@@ -172,12 +232,9 @@ const chart = async () => {
   data.dayAccount.forEach(v=>{
     // 일자에서 따오는데 1일부터 시작이고 배열은 0부터니까 -1 해줘야 맞음
     const day = new Date(v.day).getDate()-1; 
-    console.log("day", day);
     chartData[day] = Number(v.total);
   });
 
-  console.log(labels);
-  console.log(chartData)
   // 기존 차트 제거 후 그리기
   if(chartInstance){
     chartInstance.data.labels = labels;
@@ -232,6 +289,23 @@ const chart = async () => {
       }
     }
   });
+}
+
+const calendar = (events = []) => {
+
+  const calendarEl = document.getElementById("calendar");
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: "dayGridWeek",
+    headerToolbar: {
+      left: "",
+      center: "title",
+      right: ""
+    },
+    locale: "ko",
+    height: "auto",
+    events: events
+  });
+  calendar.render();
 }
 </script>
 </html>

@@ -49,20 +49,44 @@ exports.getAccountData = async (user_id, year, month) => {
       and type = 'expense'
     group by day
   `
+  const incomeSql = `
+    select SUM(amount) as income
+    from transactions
+    where user_id = ?
+      and year(create_at) = ?
+      and month(create_at) = ?
+      and type = 'income'
+    group by type
+  `
+  
+  const balanceSql = `
+    select SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) - 
+      SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) as balance
+    from transactions
+    where user_id = ?
+      and year(create_at) = ?
+      and month(create_at) = ?
+  `
+
 
   const [result] = await pool.query(sql, [user_id, year, month]);
   const [total] = await pool.query(totalSql, [user_id, year, month]);
   const [category] = await pool.query(MaxCategorySql, [user_id, year, month]);
   const [daySpend] = await pool.query(daySql, [user_id, year, month]);
+  const [income] = await pool.query(incomeSql, [user_id, year, month]);
+  const [balance] = await pool.query(balanceSql, [user_id, year, month]);
 
-  console.log(daySpend);
   return {
     data: result,
     totalSpend: total[0]?.total || 0, // total[0]이 있으면 total을 반환, 없으면 0
     MaxCategory: category[0]?.category || null,  // category[0]이 있으면 category 반환, 없으면 null
-    dayAccount: daySpend || null  // daySql 있으면 결과값 반환, 없으면 null
+    dayAccount: daySpend || null,  // daySql 있으면 결과값 반환, 없으면 null
+    income: income[0]?.income || null,  // income 있으면 결과값 반환, 없으면 null
+    balance: balance[0]?.balance || null  // daySql 있으면 결과값 반환, 없으면 null
   }
 }
+
+// 등록
 
 
 // 월별 총 소비금액과 월별 최다 소비 카테고리 쿼리문 합칠 수 있을지 고민해보기
