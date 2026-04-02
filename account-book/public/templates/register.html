@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>가계부 등록</title>
+  <link rel="stylesheet" href="../assets/css/common.css">
+  <script src="../assets/js/ui.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="back">
+      <button type="button" class="btn back" onclick="location.href='index';"><span class="blind">back</span></button>
+    </div>
+    <div>지출 등록하기</div>
+    <div class="dropdown">
+      <button type="button" class="btn btn_dropdown">메뉴</button>
+      <ul class="dropdown_menu">
+        <li><button type="button" class="btn" onclick="localStorage.removeItem('myToken'); location.href='/';">로그아웃</button></li>
+      </ul>
+    </div>
+  </header>
+  <main class="register">
+    <form id="registerForm">
+      <div class="form_item">
+        <label>타입</label>
+        <select name="category">
+          <option value="지출">지출</option>
+          <option value="수입">수입</option>
+        </select>
+      </div>
+      <div class="form_item">
+        <label>카테고리</label>
+        <select name="category">
+          <option value="식비">식비</option>
+          <option value="카페">카페</option>
+          <option value="외식">외식</option>
+          <option value="교통">교통</option>
+          <option value="생활">생활</option>
+          <option value="구독">구독</option>
+          <option value="기타">기타</option>
+        </select>
+      </div>
+
+      <div class="form_item">
+      <label>금액</label>
+      <input type="number" name="amount" placeholder="금액 입력">
+      </div>
+
+      <div class="form_item">
+      <label>메모</label>
+      <input type="text" name="memo" placeholder="내용 입력">
+      </div>
+
+      <div class="form_item">
+      <label>날짜</label>
+      <input type="date" name="date">
+      </div>
+
+      <div class="form_button">
+      <button type="submit" class="btn submit">등록</button>
+      </div>
+
+    </form>
+  </main>
+  <script src="../assets/js/register.js"></script>
+</body>
+</html>
