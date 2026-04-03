@@ -49,34 +49,31 @@
       <h3 class="fixed_title">고정지출내역</h3>
 
       <ul class="fixed_list">
-
-        <li class="fixed_item">
+        <li class="fixed_item insurance">
           <span class="fixed_category">보험</span>
           <span class="fixed_amount">50,000원</span>
         </li>
 
-        <li class="fixed_item">
+        <li class="fixed_item phone">
           <span class="fixed_category">통신요금</span>
           <span class="fixed_amount">60,000원</span>
         </li>
 
-        <li class="fixed_item">
+        <li class="fixed_item life">
           <span class="fixed_category">생활요금</span>
           <span class="fixed_amount">80,000원</span>
         </li>
 
-        <li class="fixed_item">
+        <li class="fixed_item subscribe">
           <span class="fixed_category">구독</span>
           <span class="fixed_amount">15,000원</span>
         </li>
 
-        <li class="fixed_item">
+        <li class="fixed_item etc">
           <span class="fixed_category">기타</span>
           <span class="fixed_amount">10,000원</span>
         </li>
-
       </ul>
-
     </section>
     <section class="spend_list">
       <div class="recently_expenses">
@@ -159,11 +156,34 @@ const loadData = async() => {
   chart(); // 차트 실행
 
   const daySpend = await common.daySpend();
-  calendar(daySpend); // 캘린더 실행
 
-  console.log(data)
+  // events: [
+  //   { title: '일정1', start: '2025-02-12T10:00:00' },
+  //   { title: '일정2', start: '2025-02-12T12:30:00' }
+  // ]
+  console.log(daySpend);
+
+  const events = []
+
+  // events.push(...daySpend.data.map);
+  // console.log(events);
+
+  // calendar(daySpend); // 캘린더 실행
+
+  console.log();subscribe
+
+  const insuranceAmount = daySpend.data.filter(item => item.category === "보험").reduce((sum, item) => sum + Number(item.amount), 0)
+  const phoneAmount = daySpend.data.filter(item => item.category === "통신").reduce((sum, item) => sum + Number(item.amount), 0)
+  const lifeAmount = daySpend.data.filter(item => item.category === "통신").reduce((sum, item) => sum + Number(item.amount), 0)
+  const subscribeAmount = daySpend.data.filter(item => item.category === "통신").reduce((sum, item) => sum + Number(item.amount), 0)
+  const etcAmount = daySpend.data.filter(item => item.category === "통신").reduce((sum, item) => sum + Number(item.amount), 0)
+
+  document.querySelector(".fixed_item.insurance .fixed_amount").textContent= `${insuranceAmount}원`  
+  document.querySelector(".fixed_item.phone .fixed_amount").textContent= `${phoneAmount}원`  
+  document.querySelector(".fixed_item.life .fixed_amount").textContent= `${lifeAmount}원`  
+  document.querySelector(".fixed_item.subscribe .fixed_amount").textContent= `${subscribeAmount}원`  
+  document.querySelector(".fixed_item.etc .fixed_amount").textContent= `${etcAmount}원`  
 }
-
 // 조회 월 설정
 const dateState = () => {
   const dateState = state.date;
