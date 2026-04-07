@@ -23,14 +23,14 @@
     <form id="registerForm">
       <div class="form_item">
         <label>타입</label>
-        <select name="category">
+        <select name="category" id="type_category">
           <option value="지출">지출</option>
           <option value="수입">수입</option>
         </select>
       </div>
       <div class="form_item">
         <label>카테고리</label>
-        <select name="category">
+        <select name="category" id="item_category">
           <option value="식비">식비</option>
           <option value="카페">카페</option>
           <option value="외식">외식</option>
@@ -42,26 +42,62 @@
       </div>
 
       <div class="form_item">
-      <label>금액</label>
-      <input type="number" name="amount" placeholder="금액 입력">
+        <label>금액</label>
+        <input type="number" name="amount" placeholder="금액 입력" id="amount">
       </div>
 
       <div class="form_item">
-      <label>메모</label>
-      <input type="text" name="memo" placeholder="내용 입력">
+        <label>메모</label>
+        <input type="text" name="memo" placeholder="내용 입력" id="memo">
       </div>
 
       <div class="form_item">
-      <label>날짜</label>
-      <input type="date" name="date">
+        <label>날짜</label>
+        <input type="date" name="date" id="date">
       </div>
 
       <div class="form_button">
-      <button type="submit" class="btn submit">등록</button>
+        <button type="submit" class="btn submit" onclick="registerAccount(e);">등록</button>
       </div>
-
     </form>
   </main>
-  <script src="../assets/js/register.js"></script>
 </body>
+<script>
+  /**
+   * 파이프라인
+   * 
+   * 1. 데이터 로딩
+   *   1-1. 등록 요청 입력 폼 송출
+   * 
+   * 2. 데이터 수집
+   *   2-1. 등록할 데이터 (input value값) 수집
+   *   2-2. user_id는 현재 로그인 값도 함께 전송
+   * 
+   * 3. 데이터 처리
+   *   3-1. 데이터 요청 처리 완료 후 index 화면으로 이동
+  */
+
+  const registerAccount = async(e) => {
+    e.preventDefault(); // 입력폼 새로고침 방지
+
+    // 요청 보낼 input value 값 변수 정의
+    const btnSubmit = document.querySelector(".submit");
+    const type = document.querySelector("#type_category").value;
+    const category = document.querySelector("#item_category").value;
+    const amount = document.querySelector("#amount").value;
+    const memo = document.querySelector("#memo").value;
+    const date = document.querySelector("#date").value;
+    
+    const response = await fetch("/api/account/register", {
+      method: "post",
+      headers: {
+        "Content-Type" : "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("myToken")}`
+      },
+      body: JSON.stringify({type, category, amount, memo, date})
+    })
+
+    const data = await response.json(); 
+  }
+</script>
 </html>

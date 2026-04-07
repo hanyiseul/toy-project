@@ -68,7 +68,7 @@ exports.getAccountData = async (user_id, year, month) => {
       and month(create_at) = ?
   `
 
-
+  // 요청할 쿼리 변수들
   const [result] = await pool.query(sql, [user_id, year, month]);
   const [total] = await pool.query(totalSql, [user_id, year, month]);
   const [category] = await pool.query(MaxCategorySql, [user_id, year, month]);
@@ -87,7 +87,15 @@ exports.getAccountData = async (user_id, year, month) => {
 }
 
 // 등록
+exports.registAccount = async (user_id, amount, memo, category, type, create_at) => {
+  const sql = `
+    insert into transactions (user_id, amount, memo, category, type, create_at) values (?, ?, ?, ?, ?, ?)
+  `
 
+  const [rows] = await pool.query(sql, [user_id, amount, memo, category, type, create_at]);
+
+  return rows;
+}
 
 // 월별 총 소비금액과 월별 최다 소비 카테고리 쿼리문 합칠 수 있을지 고민해보기
 // -> 서브쿼리문 사용? 가독성이 너무 떨어짐

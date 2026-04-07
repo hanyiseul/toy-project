@@ -28,3 +28,22 @@ exports.getAccountData = async (user_id, year, month) => {
     };
   }
 }
+
+// 가계부 등록
+exports.registAccount =  async (user_id, amount, memo, category, type, create_at) => {
+
+  try {
+    const result = await accountModel.registAccount(user_id, amount, memo, category, type, create_at);
+
+    return {
+      success: true,
+      data: result
+    };
+  } catch (error) {
+    console.error("service error", error);
+    return {
+      success: false,
+      data: "가계부 등록 실패"
+    }
+  }
+}
