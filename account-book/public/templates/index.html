@@ -117,215 +117,186 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js'></script>
 <script type="module">
-import {checkAuth} from "../assets/js/auth.js";
-import {state} from "../assets/js/state.js";
-import {common} from "../assets/js/common.js";
+  // 공통 js 호출
+  import {checkAuth} from "../assets/js/auth.js";
+  import {state} from "../assets/js/state.js";
+  import {common} from "../assets/js/common.js";
 
+  let chartInstance; // 차트 변수 선언
+  const init = async () => {
+    // await는 promise 기능이 있어서 결과값이 다 나오면 값을 반환
+    const user = await checkAuth(); // user 변수에 checkAuth에서 받은 결과값 담기
 
+    if(!user) return; // 인증 정보가 없을 경우 return
 
-  let chartInstance;
-const init = async () => {
-  const user = await checkAuth();
+    state.user = user; // 인증정보 공통 함수에 저장
 
-  if(!user) return; // 인증 정보가 없을 경우 return
+    document.querySelector("#userName").textContent = `${user.user_name}`; // 로그인 아이디 출력
 
-  state.user = user; // 인증정보 공통 함수에 저장
-
-  document.querySelector("#userName").textContent = `${user.user_name}`;
-
-  dateState();
-  console.log("init 실행"); // init 정상 실행 확인 콘솔
-}
-init();
-
-const loadData = async() => {
-  console.log("loadData 실행");
-
-  // 
-  const data = await common.dateState(); // 조회 월 설정 데이터 가져온 후 
-
-  if(data.success){ // 데이터 응답 성공시 ui 데이터 조작
-    const {MaxCategory, totalSpend, balance, income} = data.data;
-    document.querySelector(".category").textContent = MaxCategory ?? "없음";
-    document.querySelector(".spend_data").textContent = totalSpend ?? 0;
-    document.querySelector(".balnce-amount").textContent = balance ?? 0
-    document.querySelector(".income-amount").textContent = income ?? 0
-
+    dateState(); // 조회 월 함수 실행
+    loadData();
+    console.log("init 실행"); // init 정상 실행 확인 콘솔
   }
+  init();
 
-  chart(); // 차트 실행
+  // 데이타 로드 함수
+  const loadData = async() => {
+    console.log("loadData 실행"); // loadData 정상 실행 확인 콘솔
 
-  const daySpend = await common.daySpend();
+    const data = await common.dateState(); // 조회 월 설정 데이터 가져온 후 
 
-  // events: [
-  //   { title: '일정1', start: '2025-02-12T10:00:00' },
-  //   { title: '일정2', start: '2025-02-12T12:30:00' }
-  // ]
-  console.log(daySpend);
-
-  const events = []
-
-  // events.push(...daySpend.data.map);
-  // console.log(events);
-
-  // calendar(daySpend); // 캘린더 실행
-
-  console.log();subscribe
-
-  const insuranceAmount = daySpend.data.filter(item => item.category === "보험").reduce((sum, item) => sum + Number(item.amount), 0)
-  const phoneAmount = daySpend.data.filter(item => item.category === "통신").reduce((sum, item) => sum + Number(item.amount), 0)
-  const lifeAmount = daySpend.data.filter(item => item.category === "통신").reduce((sum, item) => sum + Number(item.amount), 0)
-  const subscribeAmount = daySpend.data.filter(item => item.category === "통신").reduce((sum, item) => sum + Number(item.amount), 0)
-  const etcAmount = daySpend.data.filter(item => item.category === "통신").reduce((sum, item) => sum + Number(item.amount), 0)
-
-  document.querySelector(".fixed_item.insurance .fixed_amount").textContent= `${insuranceAmount}원`  
-  document.querySelector(".fixed_item.phone .fixed_amount").textContent= `${phoneAmount}원`  
-  document.querySelector(".fixed_item.life .fixed_amount").textContent= `${lifeAmount}원`  
-  document.querySelector(".fixed_item.subscribe .fixed_amount").textContent= `${subscribeAmount}원`  
-  document.querySelector(".fixed_item.etc .fixed_amount").textContent= `${etcAmount}원`  
-}
-// 조회 월 설정
-const dateState = () => {
-  const dateState = state.date;
-  const renderMonth = () => {
-    // 년도 바뀌면
-    if (dateState.year === new Date().getFullYear()) {
-      document.querySelector("#currentMonth").textContent = dateState.month;
-    } else {
-      document.querySelector("#currentMonth").textContent =
-        dateState.year + "." + dateState.month;
+    if(data.success){ // 데이터 응답 성공시 ui 데이터 조작
+      const {MaxCategory, totalSpend, balance, income} = data.data; // 응답받은 데이터를 변수에 저장
+      document.querySelector(".category").textContent = MaxCategory ?? "없음"; // MaxCategory나 없음 출력
+      document.querySelector(".spend_data").textContent = totalSpend ?? 0; // 총 소비나 0 출력
+      document.querySelector(".balnce-amount").textContent = balance ?? 0 // 남은돈이나 0 출력
+      document.querySelector(".income-amount").textContent = income ?? 0 // 수입이나 0 출력
     }
 
-    // 현재 달이면 다음달 클릭 버튼 숨김
-    if (dateState.year === new Date().getFullYear() && dateState.month >= new Date().getMonth() + 1) {
-      document.querySelector("#nextMonth").style.display = "none";
-    } else {
-      document.querySelector("#nextMonth").style.display = "inline-block";
-    }
+    chart(); // 차트 실행
+
+    const daySpend = await common.daySpend(); // daySpend에 불러온 함수 결과값 저장
+
+    // 고정지출 출력
+    const categories = [ // 고정지출 배열
+      { key: "보험", class: "insurance" },
+      { key: "통신", class: "phone" },
+      { key: "생활", class: "life" },
+      { key: "구독", class: "subscribe" },
+      { key: "기타", class: "etc" }
+    ];
+
+    categories.forEach(cat => {
+      const amount = daySpend.data
+        .filter(item => item.category === cat.key) // 만약 categories.key에 해당하는 값의
+        .reduce((sum, item) => sum + Number(item.amount), 0); // 해당 금액들을 합산
+
+      document.querySelector(`.fixed_item.${cat.class} .fixed_amount`) // 해당 고정지출에
+        .textContent = `${amount}원`; // 합산 금액 출력
+    });
+  }
+  // 조회 월 설정
+  const dateState = () => {
+    const dateState = state.date; // 처리한 데이터 저장
+    const renderMonth = () => { // 해당 월 렌더 함수
+      // 년도 바뀌면
+      if (dateState.year === new Date().getFullYear()) { // 만약 데이터 년도와 현재 연도가 같다면
+        document.querySelector("#currentMonth").textContent = dateState.month; // 해당 월만 출력
+      } else { // 데이터 년도와 현재 년도가 다르다면 (올해가 아니라면)
+        document.querySelector("#currentMonth").textContent =
+          dateState.year + "." + dateState.month; // 데이터 년도+월 출력
+      }
+
+      // 현재 달이면 다음달 클릭 버튼 숨김
+      if (dateState.year === new Date().getFullYear() && dateState.month >= new Date().getMonth() + 1) { // 올해이긴 한데 이번달(제일 최신 월)이거나 미래라면
+        document.querySelector("#nextMonth").style.display = "none"; // 다음달 클릭 버튼 숨김
+      } else {
+        document.querySelector("#nextMonth").style.display = "inline-block"; // 다음달 클릭 버튼 노출
+      }
+    };
+
+    renderMonth(); // 월 렌더 함수 실행
+
+    // 이전달 버튼 클릭시
+    document.querySelector("#prevMonth").addEventListener("click", () => {
+      dateState.month--; // 월 감소
+      if (dateState.month < 1) { // 만약 1 미만시
+        dateState.month = 12; // 12월로 감
+        dateState.year--; // 대신 연도 감소
+      }
+      renderMonth(); // 월 바뀌면 월계산함수 재실행
+    });
+
+    // 다음달 버튼 클릭시
+    document.querySelector("#nextMonth").addEventListener("click", () => {
+      // 현재달까지만 선택 가능
+      if (
+        dateState.year === new Date().getFullYear() && // 올해이고
+        dateState.month >= new Date().getMonth() + 1 // 이번달 또는 미래라면
+      ) {
+        return; // return (변화 없음) - 버팀 숨김과 별개로 미래로 가지 않기 위한 이중 처리
+      }
+      dateState.month++; // 다음달 버튼 클릭시 월 증가
+      if (dateState.month > 12) { // 12월 넘어가면
+        dateState.month = 1; // 1월로 이동
+        dateState.year++; // 연도 증가
+      }
+      renderMonth();  // 월 바뀌면 월계산함수 재실행
+    });
   };
 
-  renderMonth();
-  loadData();
+  const chart = async () => {
+    
+    const dateState = state.date;
+    // 선택 월의 총 일수 구하기
+    const currentMonth = new Date(dateState.year, dateState.month, 0).getDate(); // 현재 월 계산
 
-  // 이전달 버튼 클릭시
-  document.querySelector("#prevMonth").addEventListener("click", () => {
-    dateState.month--;
-    if (dateState.month < 1) {
-      dateState.month = 12;
-      dateState.year--;
-    }
-    renderMonth();
-    loadData();
-  });
+    const data = await common.daySpend(); // 처리한 daySpend 값 가져오기
+    const chart = document.querySelector("#chart").getContext("2d"); // 차트 그릴 변수
 
-  // 다음달 버튼 클릭시
-  document.querySelector("#nextMonth").addEventListener("click", () => {
-    // 현재달까지만 선택 가능
-    if (
-      dateState.year === new Date().getFullYear() &&
-      dateState.month >= new Date().getMonth() + 1
-    ) {
+    // 차트 데이터 
+    const chartData = new Array(currentMonth).fill(0); // 차트 데이터 0으로 초기화 (31일 기준으로)
+    const labels = Array.from({length : currentMonth}, (_,i) => i + 1);
+    data.dayAccount.forEach(v=>{
+      // 일자에서 따오는데 1일부터 시작이고 배열은 0부터니까 -1 해줘야 맞음
+      const day = new Date(v.day).getDate()-1; 
+      chartData[day] = Number(v.total);
+    });
+
+    // 기존 차트 제거 후 그리기
+    if(chartInstance){
+      chartInstance.data.labels = labels;
+      chartInstance.data.datasets[0].data = chartData;
+      chartInstance.update();
       return;
     }
-    dateState.month++;
-    if (dateState.month > 12) {
-      dateState.month = 1;
-      dateState.year++;
-    }
-    renderMonth();
-    loadData();
-  });
-};
 
-const chart = async () => {
-  
-  const dateState = state.date;
-  // 선택 월의 총 일수 구하기
-  const currentMonth = new Date(dateState.year, dateState.month, 0).getDate();
-
-  const data = await common.daySpend();
-  const chart = document.querySelector("#chart").getContext("2d");
-
-  // 차트 데이터 
-  const chartData = new Array(currentMonth).fill(0); // 차트 데이터 0으로 초기화 (31일 기준으로)
-  const labels = Array.from({length : currentMonth}, (_,i) => i + 1);
-  data.dayAccount.forEach(v=>{
-    // 일자에서 따오는데 1일부터 시작이고 배열은 0부터니까 -1 해줘야 맞음
-    const day = new Date(v.day).getDate()-1; 
-    chartData[day] = Number(v.total);
-  });
-
-  // 기존 차트 제거 후 그리기
-  if(chartInstance){
-    chartInstance.data.labels = labels;
-    chartInstance.data.datasets[0].data = chartData;
-    chartInstance.update();
-    return;
-  }
-
-  // 차트 설정 함수
-  chartInstance = new Chart(chart, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: chartData,
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false   // legend 숨김
-        }
+    // 차트 설정 함수
+    chartInstance = new Chart(chart, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: chartData,
+          borderWidth: 1
+        }]
       },
-      animation: {
-        duration: 300,      // 애니메이션 시간
-        easing: 'easeOutQuart'
-      },
-      scales: {
-        x: {
-        ticks: {
-          autoSkip: false,
-          display: false   // x축 텍스트 숨김
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false   // legend 숨김
+          }
         },
+        animation: {
+          duration: 300,      // 애니메이션 시간
+          easing: 'easeOutQuart'
         },
-        y: {
-          beginAtZero: true,
+        scales: {
+          x: {
           ticks: {
-            display: false
+            autoSkip: false,
+            display: false   // x축 텍스트 숨김
           },
-          grid: {
-            display: false
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              display: false
+            },
+            grid: {
+              display: false
+            }
+          }
+        },
+        elements: {
+          point: {
+            radius: 3
           }
         }
-      },
-      elements: {
-        point: {
-          radius: 3
-        }
       }
-    }
-  });
-}
-
-const calendar = (events = []) => {
-
-  const calendarEl = document.getElementById("calendar");
-  const calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: "dayGridWeek",
-    headerToolbar: {
-      left: "",
-      center: "title",
-      right: ""
-    },
-    locale: "ko",
-    height: "auto",
-    events: events
-  });
-  calendar.render();
-}
+    });
+  }
 </script>
 </html>
