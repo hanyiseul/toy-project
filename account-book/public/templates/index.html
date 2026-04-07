@@ -117,6 +117,25 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js'></script>
 <script type="module">
+
+  /**
+   * header
+   *  - 현재 로그인한 id 출력
+   * 
+   *  1. 데이터 로딩
+   *   1-1. (default) 이번달
+   *   1-2. 이전/다음달 클릭시 해당 월로 이동 후 해당 데이터 출력
+   *   1-3. 가계부 내역 기본 3개 더보기 버튼 클릭시 +5개씩 출력
+   * 
+   *  2. 데이터 수집
+   *   2-1. 가계부 내역 삭제, 수정 요청 처리 수집
+   * 
+   *  3. 데이터 처리
+   *   3-1. 수정된 데이터 정상 반영 확인
+   * 
+   *   
+  */
+
   // 공통 js 호출
   import {checkAuth} from "../assets/js/auth.js";
   import {state} from "../assets/js/state.js";

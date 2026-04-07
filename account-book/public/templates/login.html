@@ -31,6 +31,17 @@
 </body>
 
 <script>
+  /**
+   * 파이프라인
+   * 
+   * 1. 데이터 수집
+   *   1-1. 로그인할 입력 데이터값 수집
+   * 
+   * 2. 데이터 요청
+   *   2-1. 로그인 데이터 요청
+   *     -> 입력한 값과 암호화한 값 비교 후 토큰 검증 후 로그인 처리
+   * 
+  */
   // 로그인
   const login = async () => {
     const response = await fetch("/api/user/login", { // fetch: http 서버에 요청 보냄
