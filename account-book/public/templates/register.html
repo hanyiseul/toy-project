@@ -23,7 +23,7 @@
     <form id="registerForm">
       <div class="form_item">
         <label>타입</label>
-        <select name="category" id="type_category">
+        <select name="type" id="type_category">
           <option value="지출">지출</option>
           <option value="수입">수입</option>
         </select>
@@ -57,7 +57,7 @@
       </div>
 
       <div class="form_button">
-        <button type="submit" class="btn submit" onclick="registerAccount(e);">등록</button>
+        <button type="submit" class="btn submit" onclick="registerAccount(event);">등록</button>
       </div>
     </form>
   </main>
@@ -86,7 +86,7 @@
     const category = document.querySelector("#item_category").value;
     const amount = document.querySelector("#amount").value;
     const memo = document.querySelector("#memo").value;
-    const date = document.querySelector("#date").value;
+    const create_at = document.querySelector("#date").value;
     
     const response = await fetch("/api/account/register", {
       method: "post",
@@ -94,10 +94,16 @@
         "Content-Type" : "application/json",
         "Authorization": `Bearer ${localStorage.getItem("myToken")}`
       },
-      body: JSON.stringify({type, category, amount, memo, date})
+      body: JSON.stringify({type, category, amount, memo, create_at})
     })
 
     const data = await response.json(); 
+
+    if(data.success) { // 요청 처리 성공하면
+      location.href = "/index"; // index로 이동
+    } else {
+      console.log("html 에러", data.message);
+    }
   }
 </script>
 </html>

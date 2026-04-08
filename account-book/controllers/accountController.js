@@ -24,13 +24,15 @@ exports.getAccountData = async (req, res) => {
 exports.registAccount = async (req, res) => {
   try {
     const user_id = req.user.user_id; // 현재 로그인 되어있는 계정 아이디 정보
-    const { type, category, amount, memo, date } = req.body;
+    console.log(user_id)
+    const { type, category, amount, memo, create_at } = req.body;
 
-    const result = await accountService.registerAccoun (user_id, type, category, amount, memo, date);
+    const result = await accountService.registAccount (user_id, amount, memo, category, type, create_at);
 
     res.json(result);
 
   } catch (error) {
+    console.error(error)
     res.json({
       success: false,
       message: "controller 등록 실패"
