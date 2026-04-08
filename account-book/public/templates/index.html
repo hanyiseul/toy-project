@@ -77,36 +77,7 @@
     </section>
     <section class="spend_list">
       <div class="recently_expenses">
-        <ul class="expense_list">
-          <ul class="expense_list">
-            <li class="expense_item">
-              <div class="expense_info">
-                <span class="expense_category">식비</span>
-                <span class="expense_memo">김치찌개</span>
-              </div>
-              <div class="expense_right">
-                <span class="expense_amount">-12,000원</span>
-                <div class="expense_actions">
-                  <button class="btn_edit"></button>
-                  <button class="btn_delete"></button>
-                </div>
-              </div>
-            </li>
-            <li class="expense_item">
-              <div class="expense_info">
-                <span class="expense_category">식비</span>
-                <span class="expense_memo">김치찌개</span>
-              </div>
-              <div class="expense_right">
-                <span class="expense_amount">-12,000원</span>
-                <div class="expense_actions">
-                  <button class="btn_edit"></button>
-                  <button class="btn_delete"></button>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </ul>
+        <ul class="expense_list"></ul>
       </div>
       <div class="button">
         <button type="button" class="btn more">내역 더보기</button>
@@ -193,6 +164,8 @@
       document.querySelector(`.fixed_item.${cat.class} .fixed_amount`) // 해당 고정지출에
         .textContent = `${amount}원`; // 합산 금액 출력
     });
+
+    account();
   }
   // 조회 월 설정
   const dateState = () => {
@@ -224,6 +197,7 @@
         dateState.year--; // 대신 연도 감소
       }
       renderMonth(); // 월 바뀌면 월계산함수 재실행
+      loadData(); // 월 변경시 데이터 재로드
     });
 
     // 다음달 버튼 클릭시
@@ -241,6 +215,7 @@
         dateState.year++; // 연도 증가
       }
       renderMonth();  // 월 바뀌면 월계산함수 재실행
+      loadData(); // 월 변경시 데이터 재로드
     });
   };
 
@@ -316,6 +291,40 @@
         }
       }
     });
+  }
+
+  const account = async() => {
+    const dateState = state.date; 
+    console.log(dateState);
+
+    const data = await common.daySpend();
+
+    console.log(data.data)
+
+    const accountData = data.data;
+
+    const list = document.querySelector(".expense_list");
+    let html ="";
+    if(accountData) {
+      accountData.map(item => {
+        html+= `
+          <li class="expense_item">
+            <div class="expense_info">
+              <span class="expense_category">${item.category}</span>
+              <span class="expense_memo">${item.memo}</span>
+            </div>
+            <div class="expense_right">
+              <span class="expense_amount">${item.type === "expense" ? "-" + item.amount : "+" + item.amount}</span>
+              <div class="expense_actions">
+                <button class="btn_edit"></button>
+                <button class="btn_delete"></button>
+              </div>
+            </div>
+          </li>
+        `
+      });
+      list.innerHTML = html;
+    }
   }
 </script>
 </html>
