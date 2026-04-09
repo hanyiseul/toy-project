@@ -47,3 +47,19 @@ exports.registAccount =  async (user_id, amount, memo, category, type, create_at
     }
   }
 }
+
+// 가계부 삭제
+exports.deleteAccount = async (id) => {
+  try {
+    const result = await accountModel.deleteAccount(id);
+    return {
+      success: true
+    }
+  } catch (error) {
+    console.error("service error", error);
+    return {
+      success: false,
+      data: "가계부 삭제 실패"
+    }
+  }
+}

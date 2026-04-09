@@ -39,3 +39,18 @@ exports.registAccount = async (req, res) => {
     });
   }
 };
+
+exports.deleteAccount = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const result = await accountService.deleteAccount(id);
+    res.json(result);
+    res.redirect('/index'); // 해당 경로로 이동
+  } catch (error) {
+    console.error(error)
+    res.json({
+      success: false,
+      message: "controller 등록 실패"
+    });
+  }
+}

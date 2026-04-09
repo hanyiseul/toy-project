@@ -82,7 +82,7 @@
 
     // 요청 보낼 input value 값 변수 정의
     const btnSubmit = document.querySelector(".submit");
-    const type = document.querySelector("#type_category").value;
+    const type  = document.querySelector("#type_category").value === "지출" ? "expense" : "income";
     const category = document.querySelector("#item_category").value;
     const amount = document.querySelector("#amount").value;
     const memo = document.querySelector("#memo").value;

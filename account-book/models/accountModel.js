@@ -8,7 +8,7 @@ const pool = require('../db.js');
 exports.getAccountData = async (user_id, year, month) => {
   // 계정에 맞는 가계부 내역 조회
   const sql = `
-    select user_id, amount, category, type, memo, create_at
+    select id, user_id, amount, category, type, memo, create_at
     from transactions
     where user_id = ?
       and year(create_at) = ?
@@ -96,6 +96,19 @@ exports.registAccount = async (user_id, amount, memo, category, type, create_at)
 
   return rows;
 }
+
+// 삭제
+exports.deleteAccount = async (id) => {
+  const sql = `
+    DELETE FROM transactions where id = ?
+  `
+
+  const [rows] = await pool.query(sql, [id]);
+
+  return rows;
+}
+
+
 
 // 월별 총 소비금액과 월별 최다 소비 카테고리 쿼리문 합칠 수 있을지 고민해보기
 // -> 서브쿼리문 사용? 가독성이 너무 떨어짐
