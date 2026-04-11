@@ -5,15 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Index</title>
   <link rel="stylesheet" href="../assets/css/common.css">
+  <script src="../assets/js/ui.js"></script>
 </head>
 <body>
   <header class="header">
     <div class="back">
-      <button type="button" class="btn back"><span class="blind">back</span></button>
+      <button type="button" class="btn back" onclick="localStorage.removeItem('myToken'); location.href='/';"><span class="blind">back</span></button>
     </div>
     <div><span id="userName">user</span>님의 가계부</div>
     <div class="dropdown">
-      <button type="button" class="btn btn_dropdown">편집</button>
+      <button type="button" class="btn btn_dropdown">메뉴</button>
+      <ul class="dropdown_menu">
+        <li><button type="button" class="btn" onclick="location.href='register';">등록하기</button></li>
+        <li><button type="button" class="btn" onclick="localStorage.removeItem('myToken'); location.href='/';">로그아웃</button></li>
+      </ul>
     </div>
   </header>
   <main>
@@ -21,11 +26,15 @@
       <div class="monthly_history">
         <div class="monthly_info">
           <div class="monthly">
-            <span class="month">{3}</span>월
+            <button type="button" class="prev_month" id="prevMonth">◀</button>
+            <span class="month" id="currentMonth">{3}</span>월
+            <button type="button" class="next_month" id="nextMonth">▶</button>
           </div>
           <div class="monthly_category">
-            <p class="spend_category">최다 소비 <span class="category">{카테고리}</span></p>
-            <p class="spend_history">지난달보다 <span class="spend_data">{금액}</span> 쓰는 중</p>
+            <p id="spend_category" class="spend_category">최다 소비 <span class="category">{카테고리}</span></p>
+            <p id="spend_history" class="spend_history">이번달 총 소비금액 <span class="spend_data">{금액}</span> 쓰는 중</p>
+            <p id="spend_balance">현재 <span class="balnce-amount">{남은돈}</span>원 남았어요</p>
+            <p id="spend_income">이번달은 <span class="income-amount">{수입}</span>원 벌었어요</p>
           </div>
         </div>
         <div class="monthly_chart">
@@ -33,45 +42,317 @@
         </div>
       </div>
       <div class="weekly_calender">
-        하단 캘린더
+        <div id="calendar"></div>
       </div>
+    </section>
+    <section class="expenses_fixed mt-0">
+      <h3 class="fixed_title">고정지출내역</h3>
+
+      <ul class="fixed_list">
+        <li class="fixed_item insurance">
+          <span class="fixed_category">보험</span>
+          <span class="fixed_amount">50,000원</span>
+        </li>
+
+        <li class="fixed_item phone">
+          <span class="fixed_category">통신요금</span>
+          <span class="fixed_amount">60,000원</span>
+        </li>
+
+        <li class="fixed_item life">
+          <span class="fixed_category">생활요금</span>
+          <span class="fixed_amount">80,000원</span>
+        </li>
+
+        <li class="fixed_item subscribe">
+          <span class="fixed_category">구독</span>
+          <span class="fixed_amount">15,000원</span>
+        </li>
+
+        <li class="fixed_item etc">
+          <span class="fixed_category">기타</span>
+          <span class="fixed_amount">10,000원</span>
+        </li>
+      </ul>
+    </section>
+    <section class="spend_list">
       <div class="recently_expenses">
-        지출내역 3개만
+        <ul class="expense_list"></ul>
       </div>
       <div class="button">
-        <button type="button" class="btn more">내역 더보기</button>
+        <button type="button" class="btn more" id="btnMore">내역 더보기</button>
       </div>
-    </section>
-    <section class="expenses_fixed mt0">
-      고정지출내역
-      보험
-      통신요금
-      생활요금
-      구독
-      기타
-    </section>
-    <section class="balance">
-      남은돈
-      수입
-      소비
-      남은금액
-    </section>
-    <section class="analysis">
-
     </section>
   </main>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js'></script>
 <script type="module">
-import {checkAuth} from "../assets/js/auth.js";
-const init = async () => {
-  console.log(checkAuth);
 
-  const user = await checkAuth();
+  /**
+   * header
+   *  - 현재 로그인한 id 출력
+   * 
+   *  1. 데이터 로딩
+   *   1-1. (default) 이번달
+   *   1-2. 이전/다음달 클릭시 해당 월로 이동 후 해당 데이터 출력
+   *   1-3. 가계부 내역 기본 3개 더보기 버튼 클릭시 +5개씩 출력
+   * 
+   *  2. 데이터 수집
+   *   2-1. 가계부 내역 삭제, 수정 요청 처리 수집
+   * 
+   *  3. 데이터 처리
+   *   3-1. 수정된 데이터 정상 반영 확인
+   * 
+   *   
+  */
 
-  if(!user) return;
+  // 공통 js 호출
+  import {checkAuth} from "../assets/js/auth.js";
+  import {state} from "../assets/js/state.js";
+  import {common} from "../assets/js/common.js";
 
-  document.querySelector("#userName").textContent = `${user.userName}`
-}
-init();
+  let chartInstance; // 차트 변수 선언
+  const init = async () => {
+    // await는 promise 기능이 있어서 결과값이 다 나오면 값을 반환
+    const user = await checkAuth(); // user 변수에 checkAuth에서 받은 결과값 담기
+
+    if(!user) return; // 인증 정보가 없을 경우 return
+
+    state.user = user; // 인증정보 공통 함수에 저장
+
+    document.querySelector("#userName").textContent = `${user.user_name}`; // 로그인 아이디 출력
+
+    dateState(); // 조회 월 함수 실행
+    loadData();
+    console.log("init 실행"); // init 정상 실행 확인 콘솔
+  }
+  init();
+
+  // 데이타 로드 함수
+  const loadData = async() => {
+    console.log("loadData 실행"); // loadData 정상 실행 확인 콘솔
+
+    const data = await common.dateState(); // 조회 월 설정 데이터 가져온 후 
+
+    if(data.success){ // 데이터 응답 성공시 ui 데이터 조작
+      const {MaxCategory, totalSpend, balance, income} = data.data; // 응답받은 데이터를 변수에 저장
+      document.querySelector(".category").textContent = MaxCategory ?? "없음"; // MaxCategory나 없음 출력
+      document.querySelector(".spend_data").textContent = totalSpend ?? 0; // 총 소비나 0 출력
+      document.querySelector(".balnce-amount").textContent = balance ?? 0 // 남은돈이나 0 출력
+      document.querySelector(".income-amount").textContent = income ?? 0 // 수입이나 0 출력
+    }
+
+    chart(); // 차트 실행
+
+    const daySpend = await common.daySpend(); // daySpend에 불러온 함수 결과값 저장
+
+    // 고정지출 출력
+    const categories = [ // 고정지출 배열
+      { key: "보험", class: "insurance" },
+      { key: "통신", class: "phone" },
+      { key: "생활", class: "life" },
+      { key: "구독", class: "subscribe" },
+      { key: "기타", class: "etc" }
+    ];
+
+    categories.forEach(cat => {
+      const amount = daySpend.data
+        .filter(item => item.category === cat.key) // 만약 categories.key에 해당하는 값의
+        .reduce((sum, item) => sum + Number(item.amount), 0); // 해당 금액들을 합산
+
+      document.querySelector(`.fixed_item.${cat.class} .fixed_amount`) // 해당 고정지출에
+        .textContent = `${amount}원`; // 합산 금액 출력
+    });
+
+    account();
+  }
+  // 조회 월 설정
+  const dateState = () => {
+    const dateState = state.date; // 처리한 데이터 저장
+    const renderMonth = () => { // 해당 월 렌더 함수
+      // 년도 바뀌면
+      if (dateState.year === new Date().getFullYear()) { // 만약 데이터 년도와 현재 연도가 같다면
+        document.querySelector("#currentMonth").textContent = dateState.month; // 해당 월만 출력
+      } else { // 데이터 년도와 현재 년도가 다르다면 (올해가 아니라면)
+        document.querySelector("#currentMonth").textContent =
+          dateState.year + "." + dateState.month; // 데이터 년도+월 출력
+      }
+
+      // 현재 달이면 다음달 클릭 버튼 숨김
+      if (dateState.year === new Date().getFullYear() && dateState.month >= new Date().getMonth() + 1) { // 올해이긴 한데 이번달(제일 최신 월)이거나 미래라면
+        document.querySelector("#nextMonth").style.display = "none"; // 다음달 클릭 버튼 숨김
+      } else {
+        document.querySelector("#nextMonth").style.display = "inline-block"; // 다음달 클릭 버튼 노출
+      }
+    };
+
+    renderMonth(); // 월 렌더 함수 실행
+
+    // 이전달 버튼 클릭시
+    document.querySelector("#prevMonth").addEventListener("click", () => {
+      dateState.month--; // 월 감소
+      if (dateState.month < 1) { // 만약 1 미만시
+        dateState.month = 12; // 12월로 감
+        dateState.year--; // 대신 연도 감소
+      }
+      renderMonth(); // 월 바뀌면 월계산함수 재실행
+      loadData(); // 월 변경시 데이터 재로드
+    });
+
+    // 다음달 버튼 클릭시
+    document.querySelector("#nextMonth").addEventListener("click", () => {
+      // 현재달까지만 선택 가능
+      if (
+        dateState.year === new Date().getFullYear() && // 올해이고
+        dateState.month >= new Date().getMonth() + 1 // 이번달 또는 미래라면
+      ) {
+        return; // return (변화 없음) - 버팀 숨김과 별개로 미래로 가지 않기 위한 이중 처리
+      }
+      dateState.month++; // 다음달 버튼 클릭시 월 증가
+      if (dateState.month > 12) { // 12월 넘어가면
+        dateState.month = 1; // 1월로 이동
+        dateState.year++; // 연도 증가
+      }
+      renderMonth();  // 월 바뀌면 월계산함수 재실행
+      loadData(); // 월 변경시 데이터 재로드
+    });
+  };
+
+  const chart = async () => {
+    
+    const dateState = state.date;
+    // 선택 월의 총 일수 구하기
+    const currentMonth = new Date(dateState.year, dateState.month, 0).getDate(); // 현재 월 계산
+
+    const data = await common.daySpend(); // 처리한 daySpend 값 가져오기
+    const chart = document.querySelector("#chart").getContext("2d"); // 차트 그릴 변수
+
+    // 차트 데이터 
+    const chartData = new Array(currentMonth).fill(0); // 차트 데이터 0으로 초기화 (31일 기준으로)
+    const labels = Array.from({length : currentMonth}, (_,i) => i + 1);
+    data.dayAccount.forEach(v=>{
+      // 일자에서 따오는데 1일부터 시작이고 배열은 0부터니까 -1 해줘야 맞음
+      const day = new Date(v.day).getDate()-1; 
+      chartData[day] = Number(v.total);
+    });
+
+    // 기존 차트 제거 후 그리기
+    if(chartInstance){
+      chartInstance.data.labels = labels;
+      chartInstance.data.datasets[0].data = chartData;
+      chartInstance.update();
+      return;
+    }
+
+    // 차트 설정 함수
+    chartInstance = new Chart(chart, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          data: chartData,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false   // legend 숨김
+          }
+        },
+        animation: {
+          duration: 300,      // 애니메이션 시간
+          easing: 'easeOutQuart'
+        },
+        scales: {
+          x: {
+          ticks: {
+            autoSkip: false,
+            display: false   // x축 텍스트 숨김
+          },
+          },
+          y: {
+            beginAtZero: true,
+            ticks: {
+              display: false
+            },
+            grid: {
+              display: false
+            }
+          }
+        },
+        elements: {
+          point: {
+            radius: 3
+          }
+        }
+      }
+    });
+  }
+
+  const account = async() => {
+    // 데이터 변수 정의
+    const dateState = state.date; // 공통으로 만들어둔 현재 월 계산 함수
+    const data = await common.daySpend(); // 일소비 데이터 가져오기
+    const accountData = data.data; // 불러올 데이터 변수에 저장
+
+    // 가계부 내역 조회
+    const list = document.querySelector(".expense_list");
+
+    let count = 5; // 가계부 보여줄 갯수 
+    const render = () => {
+      console.log(accountData);
+      let html =""; // html 내용 담을 변수 정의
+      if(accountData) { // 만약 가계부 데이터가 있다면
+        accountData.slice(0,count).map(item => { // 데이터 리스트화하여 클라이언트에 노출 (5개만)
+          html+= `
+            <li class="expense_item" data-id="${item.id}">
+              <div class="expense_info">
+                <span class="expense_category">${item.category}</span>
+                <span class="expense_memo">${item.memo}</span>
+              </div>
+              <div class="expense_right">
+                <span class="expense_amount">${item.type === "expense" ? "-" + item.amount : "+" + item.amount}</span>
+                <div class="expense_actions">
+                  <button class="btn_edit"></button>
+                  <button class="btn_delete"></button>
+                </div>
+              </div>
+            </li>
+          `
+        });
+        list.innerHTML = html;
+      }
+    }
+    render();
+
+    // 내역 더보기
+    const btnMore = document.querySelector("#btnMore");
+
+    btnMore.addEventListener("click", () => { // 내역 더보기 버튼 클릭시
+      count += 5; // 목록 5개씩 추가
+      render(); // 추가된거 그려서 넣기
+    });
+
+    // 내역 삭제
+    list.addEventListener("click", async (e) => {
+
+      if(e.target.classList.contains("btn_delete")){
+
+        const li = e.target.closest(".expense_item");
+        const id = li.dataset.id;
+        console.log(id);
+
+        await fetch(`/api/account/delete/${id}`,{
+          method: "DELETE"
+        });
+
+        account(); // 다시 데이터 불러오기
+      }
+    });
+  }
 </script>
 </html>

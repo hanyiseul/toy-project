@@ -44,35 +44,78 @@
   </section>
 </body>
 <script>
-  // 회원가입 함수
-  const signup  = async () => {
-    const user_name = document.getElementById("input_name").value;
-    const user_id = document.getElementById("input_id").value;
-    const user_pwd = document.getElementById("input_pwd").value;
-    const user_pwdConfirm = document.getElementById("input_pwdConfirm").value;
-    const birth_date = document.getElementById("input_birth").value;
-    const tel = document.getElementById("input_tel").value;
+  /**
+   * 파이프라인
+   * 
+   * 1. 데이터 수집
+   *  1-1. 회원가입 버튼에 회원가입 요청 이벤트 등록
+   *  1-2. post 요청 보낼 입력 데이터 값 수집
+   * 
+   * 2. 데이터 검증
+   *  2-1. 아이디 중복 가입 불가
+   *    -> 아이디 중복 또는 중복 미체크시 회원가입 불가
+   *  2-2. 비밀번호 확인 필요
+   *    -> 비밀번호와 비밀번호 확인 불일치시 회원가입 불가
+   * 
+   * 3. 데이터 처리 : 입력한 데이터 서버에 처리 요청
+   *  3-1. http 서버에 처리 요청 전송
+   *  3-2. 요청 실패시 throw new error 처리
+   * 
+   * 
+  */
+  // 회원가입에 필요한 입력값 변수 정의
+  const inputs = {
+    name: document.getElementById("input_name"),
+    id: document.getElementById("input_id"),
+    pwd: document.getElementById("input_pwd"),
+    pwdConfirm: document.getElementById("input_pwdConfirm"),
+    birth: document.getElementById("input_birth"),
+    tel: document.getElementById("input_tel")
+  };
+  
+  // 아이디 중복 체크 여부
+  let isIdChecked = false;
 
-    // 비밀번호 일치 여부
-    if(user_pwd !== user_pwdConfirm) {
-      alert("비밀번호가 일치하지 않습니다.");
-      return;
+  // 회원가입 함수
+  const signup = async() => {
+    const user_name = inputs.name.value;
+    const user_id = inputs.id.value;
+    const pwd = inputs.pwd.value;
+    const pwd_confirm = inputs.pwdConfirm.value;
+    const birth_date = inputs.birth.value;
+    const tel = inputs.tel.value;
+
+    // 비밀번호 확인 조건문
+    if(pwd !== pwd_confirm) { // 비밀번호와 비빌번호확인이 틀리면
+      document.getElementById("input_pwdConfirm").focus(); // 비밀번호 다시 입력
+      return alert("비밀번호가 일치하지 않습니다.");
     }
 
-    // 회원가입 요청 보내는 부분
+    // 만일 아이디 중복 체크가 안되었을 경우
+    if(!isIdChecked) { // isIdChecked가 false일 경우
+      return alert("아이디 중복 확인 해주세요");
+    }
+
     try {
-      const response = await fetch("/api/user/signup", { // fetch : HTTP 요청을 서버에 보내는 함수
-        method: "POST", // post 방식으로 요청 보냄
+      // 입력한 회원가입 정보를 서버에 보내서 처리
+      // 클라이언트(signup.html) -> server.js(was,ws) -> useController -> userServeice -> useModel -> db
+      const response = await fetch("/api/user/signup", { // fetch : HTTP 서버에 요청을 보냄
+        method: "POST", // post : 회원 정보 서버에 전달
         headers: { "Content-Type": "application/json" }, // 요청 헤더에 JSON 형식의 데이터임을 명시
-        body: JSON.stringify({ user_name, user_id, user_pwd, birth_date, tel }) // 요청 본문에 JSON 형식으로 회원가입 정보를 담아서 보냄
-      });
-      const data = await response.json(); // json 받은걸 자바스크립트 객체로 변환해서 data 변수에 저장
-      console.log(data);
-      // 회원가입 성공 여부 조건문
-      if (data.success) { // 성공
+        body: JSON.stringify({ user_name, user_id, pwd, birth_date, tel }) // 요청 본문에 JSON 형식으로 회원가입 정보를 담아서 보냄
+      }); 
+      // response.ok : 요청이 정상적으로 성공했는지 알려주는 값
+      // throw new Error : 강제로 에러 발생시키는 코드
+      if(!response.ok) throw new Error("서버응답실패"); // 서버 응답 200(성공)이 아니면 전부 에러처리
+    
+      // response 요청이 정상적으로 성공했을 경우
+      // /api/user/signup의 JSON 데이터를 가져옴
+      const data = await response.json(); // 응답 받은 JSON 데이터를 JS 객체로 변환하여 data 변수에 저장
+
+      if(data.success) { // data의 성공 메시지가 true일 경우
         alert(data.message);
         window.location.href = "/login"; // 회원가입 성공 후 로그인 페이지로 이동
-      } else { // 실패
+      } else { // 회원 가입 실패했을 경우
         alert(data.message);
       }
 
@@ -82,24 +125,31 @@
       return;
     }
   }
+  
 
-  // 아이디 중복 여부 체크
+  // 아이디 중복 체크 함수
   const checkId = async () => {
-    const user_id = document.getElementById("input_id").value;
-
+    const user_id = inputs.id.value;
+    
     try {
       // 쿼리 파라미터(Query Parameter) : URL 뒤에 붙어서 서버로 데이터를 전달하는 값
       // URL ? key=value
-      const response = await fetch(`/api/user/checkid?user_id=${user_id}`);
+      const response = await fetch(`/api/user/checkId?user_id=${user_id}`);
       const data = await response.json();
 
-      if (data.exists) { // 아이디 중복 시
-        alert("아이디가 중복됩니다");
-      } 
-      return alert("가능합니다")
-    } catch (error) {
+      // 아이디 중복 확인이 된다면 true
+      isIdChecked = true;
+
+      if(data.exists) { // 아이디가 존재한다면
+        document.getElementById("input_id").focus();
+        alert("이미 존재하는 아이디입니다.");
+        console.log(isIdChecked)
+      } else { // 아이디가 존재하지 않는다면
+        alert("사용 가능합니다.");
+      }
+    } catch (error) { // 데이터 조회 실패시
       console.error("Error:", error);
-      alert("회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
+      alert("아이디 중복 체크 실패했습니다. 다시 확인해주세요");
     }
   }
 </script>

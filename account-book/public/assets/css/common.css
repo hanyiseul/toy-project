@@ -70,12 +70,15 @@ th:last-child,td:last-child {border-right:none;}
 /* display */
 .flex {display: flex; align-items: center; justify-content: center; gap: 5px;}
 /* dropdown */
-.btn.btn_dropdown {display: inline-block; width: auto;  color: var(--color-text); border: 1px solid var(--color-border); background: var(--color-white);}
+.dropdown {position:relative;}
+.btn.btn_dropdown {display:inline-block; width:auto; padding:6px 12px; color:var(--color-text); border:1px solid var(--color-border); background:var(--color-white); border-radius:6px; cursor:pointer;}
+.dropdown_menu {position:absolute; top:40px; right:0; display:none; min-width:120px; padding:6px 0; border:1px solid var(--color-border); border-radius:8px; background:var(--color-white); box-shadow:0 4px 12px rgba(0,0,0,.08);}
+.dropdown_menu li {list-style:none;}
+.dropdown_menu .btn {display:block; width:100%; padding:8px 14px; border:0; background:transparent; color:var(--color-text); text-align:left; cursor:pointer;}
+.dropdown_menu .btn:hover {background:var(--color-bg);}
+
 /* blind */
 .blind {position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0;}
-
-/* chart */
-.chart {border: 1px solid red;}
 
 /* link */
 .link { cursor: pointer;}
@@ -97,7 +100,7 @@ section:first-child {margin-top: 0;}
 section + section {border-top: 10px solid var(--color-border);}
 
 /* index */
-.monthly_history {border:1px solid red; display: flex; justify-content: space-between;}
+.monthly_history {display: flex; justify-content: space-between;}
 .monthly_info .monthly {text-align: center;}
 .monthly_info .monthly .month {font-weight: bold;}
 
@@ -105,3 +108,86 @@ section + section {border-top: 10px solid var(--color-border);}
 .card.login_card {flex-direction: column;}
 .card.login_card .card_wrap {min-height: auto;}
 .card.login_card .auth_links {padding: 0 0 20px;}
+
+/* monthly layout */
+.expenses_monthly {padding:20px;}
+.monthly_history {display:flex; gap:30px; align-items:flex-start; padding:20px; background:var(--color-white);}
+
+/* left info */
+.monthly_info {flex:1;}
+.monthly {display:flex; align-items:center; gap:8px; margin-bottom:12px;}
+.monthly button {padding:4px 8px; border:1px solid var(--color-border); background:var(--color-white); cursor:pointer;}
+.month {font-weight:600; font-size:16px;}
+
+/* text info */
+.monthly_category p {margin:6px 0; font-size:14px; color:var(--color-text);}
+.monthly_category span {font-weight:600;}
+
+/* chart */
+.monthly_chart {flex:1.4; height:180px;}
+.chart {width:100%; height:100%;}
+
+/* calendar */
+.weekly_calender {margin-top:16px; padding:20px;}
+
+/* fixed expenses */
+.expenses_fixed {padding:20px;}
+
+/* spend list */
+.spend_list {padding:20px;}
+.recently_expenses {padding:10px 0;}
+.button {text-align:center; margin-top:14px;}
+
+/* more button */
+.btn.more {padding:8px 16px; border:1px solid var(--color-border); background:var(--color-white); cursor:pointer;}
+
+/* expense list */
+.expense_list {margin:0; padding:0; list-style:none;}
+.expense_item {display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid var(--color-border);}
+.expense_item:last-child {border-bottom:0;}
+
+/* left info */
+.expense_info {display:flex; flex-direction:column; gap:3px;}
+.expense_category {font-size:13px; color:#888;}
+.expense_memo {font-size:15px; font-weight:500;}
+
+/* right */
+.expense_right {display:flex; align-items:center; gap:14px;}
+.expense_amount {font-weight:600; font-size:15px; color:#222;}
+
+/* buttons */
+.expense_actions {display:flex; gap:6px;}
+.btn_edit,
+.btn_delete {width:28px; height:28px; border-radius:6px; border:1px solid var(--color-border); background:#fff; cursor:pointer; font-size:13px;}
+.btn_edit::before {content:"✏";}
+.btn_delete::before {content:"🗑";}
+
+/* fixed expenses */
+.fixed_title {margin-bottom:12px; font-size:15px; font-weight:600;}
+.fixed_list {margin:0; padding:0; list-style:none;}
+.fixed_item {display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--color-border);}
+.fixed_item:last-child {border-bottom:0;}
+.fixed_category {font-size:14px; color:var(--color-text);}
+.fixed_amount {font-size:14px; font-weight:600;}
+
+/* weekly calendar */
+.weekly_calender {padding:20px 0;}
+#calendar {font-size:13px;}
+.fc .fc-toolbar-title {font-size:15px; font-weight:600;}
+.fc .fc-button {border:1px solid var(--color-border); background:var(--color-white); color:var(--color-text); padding:4px 8px;}
+.fc .fc-button:hover {background:#f5f5f5;}
+.fc .fc-col-header-cell {background:#fafafa; font-size:12px; padding:6px 0;}
+.fc .fc-daygrid-day {border:1px solid var(--color-border);}
+.fc .fc-daygrid-day-number {font-size:12px; padding:4px;}
+.fc .fc-day-today {background:#e8f4ff !important;}
+.fc-daygrid-event { background:#6ec1ff; border:none; color:#fff; font-size:11px; padding:2px 4px; border-radius:4px;}
+.fc-daygrid-event:hover {background:#4daeff;}
+
+/* register */
+.register {padding:20px;}
+.form_item {display:flex; flex-direction:column; margin-bottom:16px;}
+.form_item label {font-size:13px; margin-bottom:6px;}
+.form_item input,
+.form_item select {padding:8px; border:1px solid var(--color-border); border-radius:4px; font-size:14px;}
+.form_button {margin-top:20px;}
+.btn.submit {width:100%; padding:10px; background:#6ec1ff; border:0; color:#fff; font-weight:600; cursor:pointer;}

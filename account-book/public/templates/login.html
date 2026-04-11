@@ -31,21 +31,30 @@
 </body>
 
 <script>
+  /**
+   * 파이프라인
+   * 
+   * 1. 데이터 수집
+   *   1-1. 로그인할 입력 데이터값 수집
+   * 
+   * 2. 데이터 요청
+   *   2-1. 로그인 데이터 요청
+   *     -> 입력한 값과 암호화한 값 비교 후 토큰 검증 후 로그인 처리
+   * 
+  */
   // 로그인
   const login = async () => {
-    const response = await fetch("/api/user/login", {
-      method: "post",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: input_id.value, user_pwd: input_pwd.value})
+    const response = await fetch("/api/user/login", { // fetch: http 서버에 요청 보냄
+      method: "post", // post: 서버에 로그인 정보 전달
+      headers: { "Content-Type": "application/json" }, // 요청 헤더에 json 형식의 데이터임을 명시
+      body: JSON.stringify({ user_id: input_id.value, pwd: input_pwd.value}) // 요청 본문에 json 형식으로 로그인 정보를 담아서 보냄 (user_id는 input_id의 value 값이고, pwd는 input_pwd의 value값이다)
     });
 
-    const data = await response.json();
+    const data = await response.json(); // 응답받은 json을 js 객체로 변환하여 data에 저장
 
-    console.log(data)
-
-    if(data.success) {
-      localStorage.setItem('myToken', data.token);
-      location.href = '/index';
+    if(data.success) { // data의 성공 여부 메세지가 true일 경우
+      localStorage.setItem('myToken', data.token); // 로컬스토리지에 토큰 저장
+      location.href = '/index'; // 로그인 성공시 index.html로 이동
     } else {
       alert("로그인 실패");
     }
