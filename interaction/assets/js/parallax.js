@@ -115,6 +115,7 @@
 			scrollHeight:0,
 			objs:{ 
 				container : document.querySelector('.section4'),
+				sticky : document.querySelector('.section4 .is-sticky'),
 				banner : document.querySelector('.section4 .bannerArea__roller'),
 			},
 			values:{
