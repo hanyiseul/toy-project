@@ -49,7 +49,7 @@ https://hanyiseul.github.io/toy-project/interaction/index.html
 ## 3️⃣ Account Book
 
 간단한 **가계부 웹 애플리케이션**입니다.  
-수입 / 지출을 기록하고 관리할 수 있도록 구현 작업중입니다.
+수입 / 지출을 기록하고 관리할 수 있도록 구현했습니다.
 
 ### 주요 기능
 - 수입 / 지출 등록
