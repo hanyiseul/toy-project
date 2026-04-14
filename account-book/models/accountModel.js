@@ -108,7 +108,28 @@ exports.deleteAccount = async (id) => {
   return rows;
 }
 
+// 수정
+exports.updateAccount = async (id, data) => {
+  const { type, category, amount, memo, create_at } = data;
 
+  const [result] = await pool.query(
+    `UPDATE transactions 
+     SET type=?, category=?, amount=?, memo=?, create_at=? 
+     WHERE id=?`,
+    [type, category, amount, memo, create_at, id]
+  );
+
+  return result;
+};
+
+// 상세 조회
+exports.getAccountDetail = async (id) => {
+  const [rows] = await pool.query(
+    `SELECT * FROM transactions WHERE id=?`,
+    [id]
+  );
+  return rows;
+};
 
 // 월별 총 소비금액과 월별 최다 소비 카테고리 쿼리문 합칠 수 있을지 고민해보기
 // -> 서브쿼리문 사용? 가독성이 너무 떨어짐

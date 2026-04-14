@@ -24,8 +24,8 @@
       <div class="form_item">
         <label>타입</label>
         <select name="type" id="type_category">
-          <option value="지출">지출</option>
-          <option value="수입">수입</option>
+          <option value="expense">지출</option>
+          <option value="income">수입</option>
         </select>
       </div>
       <div class="form_item">
@@ -67,7 +67,8 @@
    * 파이프라인
    * 
    * 1. 데이터 로딩
-   *   1-1. 등록 요청 입력 폼 송출
+   *   1-1. 등록 : 요청 입력 폼 송출
+   *   1-2. 수정 : 기존 입력한 데이터 송출 (상세조 회)
    * 
    * 2. 데이터 수집
    *   2-1. 등록할 데이터 (input value값) 수집
@@ -77,33 +78,82 @@
    *   3-1. 데이터 요청 처리 완료 후 index 화면으로 이동
   */
 
-  const registerAccount = async(e) => {
-    e.preventDefault(); // 입력폼 새로고침 방지
 
-    // 요청 보낼 input value 값 변수 정의
-    const btnSubmit = document.querySelector(".submit");
-    const type  = document.querySelector("#type_category").value === "지출" ? "expense" : "income";
+  const loadAccountData = async () => {
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
+
+    if (!id) return; // 등록 페이지면 종료
+
+    const res = await fetch(`/api/account/${id}`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("myToken")}`
+      }
+    });
+    const data = await res.json();
+
+    const item = data.data;
+    
+    console.log(item);
+    if (!item) return;
+
+    const formatDate = (dateStr) => {
+      if (!dateStr) return "";
+      return dateStr.split("T")[0];
+    };
+    document.querySelector("#type_category").value = item.type;
+    document.querySelector("#item_category").value = item.category;
+    document.querySelector("#amount").value = item.amount;
+    document.querySelector("#memo").value = item.memo;
+    document.querySelector("#date").value = formatDate(item.create_at);
+  };
+
+  const registerAccount = async (e) => {
+    e.preventDefault();
+
+    const type  = document.querySelector("#type_category").value;
     const category = document.querySelector("#item_category").value;
     const amount = document.querySelector("#amount").value;
     const memo = document.querySelector("#memo").value;
     const create_at = document.querySelector("#date").value;
-    
-    const response = await fetch("/api/account/register", {
-      method: "post",
-      headers: {
-        "Content-Type" : "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("myToken")}`
-      },
-      body: JSON.stringify({type, category, amount, memo, create_at})
-    })
 
-    const data = await response.json(); 
+    const params = new URLSearchParams(location.search);
+    const id = params.get("id");
 
-    if(data.success) { // 요청 처리 성공하면
-      location.href = "/index"; // index로 이동
+    let response;
+      
+    if (id) {
+      // 수정
+      response = await fetch(`/api/account/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("myToken")}`
+        },
+        body: JSON.stringify({ type, category, amount, memo, create_at })
+      });
     } else {
-      console.log("html 에러", data.message);
+      // 등록
+      response = await fetch(`/api/account/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${localStorage.getItem("myToken")}`
+        },
+        body: JSON.stringify({ type, category, amount, memo, create_at })
+      });
     }
-  }
+
+    const data = await response.json();
+
+    if (data.success) {
+      location.href = "/index";
+    } else {
+      console.log("에러", data.message);
+    }
+  };
+
+
+  window.addEventListener("DOMContentLoaded", loadAccountData);
 </script>
 </html>

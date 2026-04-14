@@ -344,13 +344,24 @@
 
         const li = e.target.closest(".expense_item");
         const id = li.dataset.id;
-        console.log(id);
-
+        
         await fetch(`/api/account/delete/${id}`,{
-          method: "DELETE"
+          method: "delete"
         });
 
         account(); // 다시 데이터 불러오기
+      }
+    });
+
+    // 내역 수정
+    list.addEventListener("click", async (e) => {
+
+      if(e.target.classList.contains("btn_edit")){
+
+        const li = e.target.closest(".expense_item");
+        const id = li.dataset.id;
+
+        location.href=`/register?id=${id}`; // id 값에 해당하는 등록 페이지로 이동
       }
     });
   }

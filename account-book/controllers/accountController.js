@@ -40,12 +40,12 @@ exports.registAccount = async (req, res) => {
   }
 };
 
+// 가계부 삭제
 exports.deleteAccount = async (req, res) => {
   try {
     const id = req.params.id;
     const result = await accountService.deleteAccount(id);
     res.json(result);
-    res.redirect('/index'); // 해당 경로로 이동
   } catch (error) {
     console.error(error)
     res.json({
@@ -54,3 +54,28 @@ exports.deleteAccount = async (req, res) => {
     });
   }
 }
+
+// 가계부 수정
+exports.updateAccount = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await accountService.updateAccount(id, req.body);
+
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: "수정 실패" });
+  }
+};
+
+// 상세 조회
+exports.getAccountDetail = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await accountService.getAccountDetail(id);
+    res.json(result);
+  } catch (error) {
+    res.json({ success: false, message: "조회 실패" });
+  }
+};

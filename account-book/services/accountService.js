@@ -63,3 +63,30 @@ exports.deleteAccount = async (id) => {
     }
   }
 }
+
+// 가계부 수정
+exports.updateAccount = async (id, data) => {
+  try {
+    const result = await accountModel.updateAccount(id, data);
+
+    return {
+      success: true,
+      data: result
+    };
+  } catch (error) {
+    console.error("service error", error);
+    return {
+      success: false,
+      message: "가계부 수정 실패"
+    };
+  }
+};
+
+// 상세 조회
+exports.getAccountDetail = async (id) => {
+  const result = await accountModel.getAccountDetail(id);
+  return {
+    success: true,
+    data: result[0]
+  };
+};
