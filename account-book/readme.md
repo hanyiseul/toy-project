@@ -3,6 +3,12 @@
 - 사용자별 수입/지출을 관리할 수 있는 가계부 웹 애플리케이션
 - 월별 데이터 조회 및 고정 지출 합산 기능 제공
 - JWT 기반 인증을 통해 사용자 데이터 보호
+  
+---
+
+# 🌐 Demo
+
+https://edt-ordinary-slots-studies.trycloudflare.com
 
 ---
 
