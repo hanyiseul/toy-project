@@ -8,7 +8,7 @@
 
 # 🌐 Demo
 
-https://edt-ordinary-slots-studies.trycloudflare.com
+https://bench-talks-dollar-treatments.trycloudflare.com/
 
 ---
 
