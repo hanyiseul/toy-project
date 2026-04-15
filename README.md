@@ -67,4 +67,8 @@ https://hanyiseul.github.io/toy-project/interaction/index.html
 
 **Database**
 - MySQL
+  
+### Demo
+https://edt-ordinary-slots-studies.trycloudflare.com/
+
 
