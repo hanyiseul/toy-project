@@ -69,6 +69,6 @@ https://hanyiseul.github.io/toy-project/interaction/index.html
 - MySQL
   
 ### Demo
-https://edt-ordinary-slots-studies.trycloudflare.com/
+https://bench-talks-dollar-treatments.trycloudflare.com/
 
 
