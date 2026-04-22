@@ -2,5 +2,10 @@
 
 const express = require("express"); // express 모듈
 const router = express.Router(); // 라우터 객체 생성
+const userController = require("../controllers/userController.js"); // 응답/요청 처리한 파일 연결
 
-const userController = re
+// user router
+router.post("/signup", userController.signup); // 회원가입
+router.get("/checkId", userController.checkId); // 회원가입 - 아이디 중복 체크
+
+module.exports = router;
