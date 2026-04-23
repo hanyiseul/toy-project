@@ -45,7 +45,7 @@
 				msgB_translateY_out: [0, -20, {start:0.8, end:0.9}],
 			}
 		},
-		{
+		{ 
 			//section2
 			type:'sticky',
 			heightNum:4,
