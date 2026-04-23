@@ -251,7 +251,7 @@
             objs.sticky.style.position = "sticky";
           } 
         }
-      
+        sceneInfo[3].objs.sticky.style.position = "sticky";
       break;
       case 3: //section3
 			  // 시퀀스 이미지 처리
@@ -266,7 +266,7 @@
 
         //msgA 애니메이션 효과
         if(scrollRatio >= 0){
-          objs.sticky.style.position = "sticky";}
+          objs.sticky.style.position = "fixed";}
         if(scrollRatio <= 0.25){
           //in
           objs.img.style.opacity = calcValues(values.img_opacity_in, currentYOffset);
@@ -295,9 +295,10 @@
 
       break;
       case 4: //section4
+        sceneInfo[3].objs.sticky.style.position = "sticky";
 				//banner
 				if(scrollRatio <= 0){
-        objs.sticky.style.position = "sticky";
+        // objs.sticky.style.position = "sticky";
 					objs.banner.style.transform = `translateX(${calcValues(values.bannerTrans, currentYOffset)}%)`;
 				}
       break;
