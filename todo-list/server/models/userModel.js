@@ -20,7 +20,7 @@ exports.signup = async (name, user_id, pwd) => {
 // 로그인, 아이디 중복 체크
 exports.checkId = async(user_id) => {
   const sql = `
-    select * from users where user_id = ?
+    select * from users where user_id=?
   `
   
   const [rows] = await pool.query(sql, [user_id]);

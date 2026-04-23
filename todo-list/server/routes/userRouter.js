@@ -7,5 +7,7 @@ const userController = require("../controllers/userController.js"); // 응답/�
 // user router
 router.post("/signup", userController.signup); // 회원가입
 router.get("/checkId", userController.checkId); // 회원가입 - 아이디 중복 체크
+router.post("/login", userController.login); // 로그인
+router.get("/verify", userController.verify); // 로그인 - jwt 토큰 검증
 
 module.exports = router;

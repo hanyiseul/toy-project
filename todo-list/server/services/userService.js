@@ -8,10 +8,18 @@ const JWT_SECRET = process.env.JWT_SECRET; // .env에 랜덤키 생성
 // 회원가입 처리 (암호 hash 처리 해서 등록)
 exports.signup = async(name, user_id, pwd) => {
   try {
+    // 기존 유저 확인
+    const exist = await userModel.checkId(user_id);
+    if(exist.length > 0) {
+      return {
+        success: false,
+        message: "이미 존재하는 아이디입니다."
+      }
+    }
+
     // hash 설정
     // 연산을 2^10으로 설정해서 pwd 해싱
     const hash = await bcrypt.hash(pwd, 10);
-
     const result = await userModel.signup(name, user_id, hash);
     
     // affectedRows : 실제로 데이터가 추가된 수
@@ -30,7 +38,7 @@ exports.signup = async(name, user_id, pwd) => {
   } catch (err) {
     console.error("회원가입 에러 : ", err);
     // ER_DUP_ENTRY : 중복된 값 때문에 insert 실패
-    if(error.code === "ER_DUP_ENTRY") { // 동일 아이디 존재로 인식
+    if(err.code === "ER_DUP_ENTRY") { // 동일 아이디 존재로 인식
       return {
         success: false,
         message: "이미 존재하는 아이디"
@@ -56,7 +64,7 @@ exports.checkId = async(user_id) => {
       message: exists ? "이미 아이디가 존재합니다." : "사용 가능한 아이디입니다." // exits값이 존재한다면 아이디 중복 o / 없다면 가입 o 
     }
   } catch (err) {
-    console.error("아이디 중복체크 에러 : ", error);
+    console.error("아이디 중복체크 에러 : ", err);
 
     return {
       message: "service 아이디 중복 체크 에러"
@@ -70,6 +78,23 @@ exports.login = async(user_id, pwd) => {
   const user = result[0];
 
   try { 
+    
+    // 아이디가 없을 경우
+    if(!user) { // 아이디를 비교했기 때문에 (쿼리에서 아이디 조회)
+      return {
+        success: false,
+        message: "service : 아이디가 존재하지 않습니다."
+      }
+    }
+
+    // 만약 비밀번호가 틀렸다면
+    if(!(await bcrypt.compare(pwd, user.pwd))) {
+      return {
+        success: false,
+        message: "service : 비밀번호가 틀렸습니다."
+      }
+    }
+
     // user 정보가 존재하고 해시암호와 비교할 입력 비밀번호가 있다면
     if(user && await bcrypt.compare(pwd, user.pwd)) {
       // payload : jwt 토큰 생성 코드
@@ -83,21 +108,6 @@ exports.login = async(user_id, pwd) => {
       }
     }
 
-    // 만약 비밀번호가 틀렸다면
-    if(!(await bcrypt.compare(pwd, user.pwd))) {
-      return {
-        success: false,
-        message: "service : 비밀번호가 틀렸습니다."
-      }
-    }
-
-    // 아이디가 없을 경우
-    if(!user) { // 아이디를 비교했기 때문에 (쿼리에서 아이디 조회)
-      return {
-        success: false,
-        message: "service : 아이디가 존재하지 않습니다."
-      }
-    }
   } catch (err) {
     console.error("service error: ", err);
     return {
@@ -116,7 +126,7 @@ exports.login = async(user_id, pwd) => {
 // })();
 
 // 로그인 테스트 코드
-(async () => {
-  const result = await exports.login("test_id", "1234");
-  console.log("login result:", result);
-})();
+// (async () => {
+//   const result = await exports.login("test_id", "1234");
+//   console.log("login result:", result);
+// })();

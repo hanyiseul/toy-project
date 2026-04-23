@@ -5,7 +5,7 @@ use todoList;
 create table users (
 	id int auto_increment primary key,
   name varchar(500) not null,
-  user_id varchar(2000) not null,
+  user_id varchar(500) not null unique,
   pwd varchar(2000) not null
 );
 
