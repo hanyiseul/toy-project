@@ -266,7 +266,7 @@
 
         //msgA 애니메이션 효과
         if(scrollRatio >= 0){
-          objs.sticky.style.position = "fixed";}
+          objs.sticky.style.position = "sticky";}
         if(scrollRatio <= 0.25){
           //in
           objs.img.style.opacity = calcValues(values.img_opacity_in, currentYOffset);
