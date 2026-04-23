@@ -65,14 +65,44 @@ exports.checkId = async(user_id) => {
 }
 
 // 로그인
-exports.login = async(user_id) => {
+exports.login = async(user_id, pwd) => {
   const result = await userModel.checkId(user_id);
   const user = result[0];
 
   try { 
-    // user 정보가 존재하고 
+    // user 정보가 존재하고 해시암호와 비교할 입력 비밀번호가 있다면
     if(user && await bcrypt.compare(pwd, user.pwd)) {
-      const token = jwt.sign({user_id: user.user_id, name: user.name }, JWT_SECRET, {expiresIn: '12h'});
+      // payload : jwt 토큰 생성 코드
+      // jwt.sign : 토큰에 담을 정보, 토큰 서명용 비밀키, 토큰 만료시간
+      const token = jwt.sign({user_id: user.user_id, name: user.name }, JWT_SECRET, {expiresIn: '12h'}); // 토큰 변수에 payload 유저 정보를 담아 서명
+
+      // 성공하면 토큰 반환
+      return {
+        success: true,
+        token
+      }
+    }
+
+    // 만약 비밀번호가 틀렸다면
+    if(!(await bcrypt.compare(pwd, user.pwd))) {
+      return {
+        success: false,
+        message: "service : 비밀번호가 틀렸습니다."
+      }
+    }
+
+    // 아이디가 없을 경우
+    if(!user) { // 아이디를 비교했기 때문에 (쿼리에서 아이디 조회)
+      return {
+        success: false,
+        message: "service : 아이디가 존재하지 않습니다."
+      }
+    }
+  } catch (err) {
+    console.error("service error: ", err);
+    return {
+      success: false,
+      message: "service 로그인 에러"
     }
   }
 }
@@ -87,6 +117,6 @@ exports.login = async(user_id) => {
 
 // 로그인 테스트 코드
 (async () => {
-  const result = await exports.login("test_id");
+  const result = await exports.login("test_id", "1234");
   console.log("login result:", result);
 })();
