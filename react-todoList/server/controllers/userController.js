@@ -24,7 +24,7 @@ exports.signup = async(req, res) => {
   }
 }
 
-// 회원가입 - 아이디 중복 체크
+// 회원가입 - 아이디 체크
 exports.checkId = async(req, res) => {
   try {
     const {user_id} = req.query;

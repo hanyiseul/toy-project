@@ -18,4 +18,17 @@ export const signup = async (name, user_id, pwd) => {
   }
 }
 
-// 아이디 중복체크 api
+// 아이디 체크 api
+export const checkId = async (user_id) => {
+  try {
+    // 해당 user_id의 데이터만 가져오기 위해 쿼리파라미터 사용
+    const res = await fetch(`/api/user/checkId?user_id=${user_id}`);
+
+    const data = await res.json(); // 응답 받은 데이터 js 객체로 변환하여 저장
+    if(!res) throw new Error("서버 응답 실패");  // 서버 응답 실패시 강제 에러 처리
+    return data; // data 반환
+
+  } catch (err) {
+    console.error("api 아이디 체크 에러: ", err);
+  }
+}

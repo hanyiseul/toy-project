@@ -51,7 +51,7 @@ exports.signup = async(name, user_id, pwd) => {
   }
 }
 
-// 회원가입 - 아이디 중복 체크 여부
+// 회원가입 - 아이디 체크 여부
 exports.checkId = async(user_id) => {
   const result = await userModel.checkId(user_id);
 
