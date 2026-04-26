@@ -1,11 +1,9 @@
--- 생성한 database 사용 
-use todoList;
-
 -- todo 테이블
 create table todos (
 	id int auto_increment primary key,
   memo text not null,
   created_at datetime not null default current_timestamp,
+  user_id varchar(500) not null unique,
   is_done boolean not null default false,
   foreign key
   (user_id) references users

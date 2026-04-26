@@ -1,6 +1,3 @@
--- 생성한 database 사용 
-use todoList;
-
 -- 회원정보 테이블
 create table users (
 	id int auto_increment primary key,
