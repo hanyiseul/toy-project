@@ -55,7 +55,9 @@ exports.login = async(req, res) => {
 
     res.json({
       success: true,
-      result: "로그인 성공"
+      result: "로그인 성공",
+      user: result.user,
+      token: result.token
     });
   } catch (err) {
     console.error("controller 로그인 실패: ", err);

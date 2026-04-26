@@ -104,7 +104,11 @@ exports.login = async(user_id, pwd) => {
       // 성공하면 토큰 반환
       return {
         success: true,
-        token
+        token,
+        user: { 
+          user_id: user.user_id,
+          name: user.name
+        }
       }
     }
 

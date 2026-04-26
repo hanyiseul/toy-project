@@ -32,3 +32,19 @@ export const checkId = async (user_id) => {
     console.error("api 아이디 체크 에러: ", err);
   }
 }
+
+// 로그인 api
+export const login = async (user_id, pwd) => {
+  try { 
+    const res = await fetch("/api/user/login", {
+      method: "POST",
+      headers: {"Content-Type" : "application/json"}, // 헤더에 json 데이터라고 명시
+      body: JSON.stringify({user_id, pwd}) // 본문에 회원가입 정보를 json 데이터로 전송
+    });
+    const data = await res.json(); // json 데이터를 js 객체로 변환
+    if(!data.success) throw new Error(data.message); // 로그인 실패시 강제 오류
+    return data;
+  } catch(err) {
+    console.error("api 실패", err);
+  }
+}

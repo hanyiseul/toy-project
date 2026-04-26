@@ -31,7 +31,7 @@ const Login = () => {
       localStorage.setItem("token", data.token);
       console.log("login data:", data);
       console.log("store user:", data.user);
-      // navigate("/todoList"); // 로그인 성공시 해당 페이지로 이동
+      navigate("/todoList"); // 로그인 성공시 해당 페이지로 이동
     } catch (err) {
       alert("로그인 실패", err);
     }

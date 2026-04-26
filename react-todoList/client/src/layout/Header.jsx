@@ -24,7 +24,7 @@ const Header = () => {
       </h1>
 
       <p className="text-gray-500 mt-4 text-lg">
-        {isLogin ? `${user.user_id}의` : "로그인 후"} 할 일을 기록하고 완료해보세요! ✨
+        {isLogin ? `${user.name}의` : "로그인 후"} 할 일을 기록하고 완료해보세요! ✨
       </p>
 
       <div className="mt-3 flex justify-center">

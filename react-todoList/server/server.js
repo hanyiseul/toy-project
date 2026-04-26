@@ -4,6 +4,7 @@
 require('dotenv').config(); // .env 파일 읽기 (JWT_SECRET 랜덤키 설정)
 const express = require("express"); // express 모듈
 const path = require("path"); // path 모듈
+const cookieParser = require("cookie-parser"); // 쿠키를 사용하기 위한 모듈
 const app = express(); // express 사용을 위한 객체 생성
 const port = 5000; // 서버 포트 설정
 const userRouter = require('./routes/userRouter'); // userRoute.js 불러오기
@@ -15,10 +16,12 @@ const cors = require('cors'); // CORS 모듈 (다른 도메인 내에서 내 서
 app.use(cors()); // CORS 설정
 app.use(express.json()); // json 파일 읽게 해주는 설정
 
+// 쿠키 사용
+app.use(cookieParser());
+
 // 라우터 설정
 app.use("/api/user", userRouter); // "/api/user"로 시작하는 모든 요청은 userRouter에서 처리
 app.use("/api/todo", todoRouter); // "/api/todo"로 시작하는 모든 요청은 todoRouter에서 처리
-
 
 // 클라우드 설정용
 app.use(express.static(path.join(__dirname, 'static'))); // static 폴더를 정적 파일 제공 폴더로 설정
