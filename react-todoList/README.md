@@ -8,10 +8,33 @@
 
 ## ⚡ 실행 방법 (How to Run)
 
+### 1. 데이터베이스 설정
+
+- MySQL 실행 후 아래 SQL 파일 실행
+
 ```bash
+sql/todoList.sql
+sql/users.sql
+sql/todos.sql
+```
+### 2. 서버 실행
+
+- 서버 실행: http://localhost:5000
+
+```bash
+cd server
+npm install
 node server.js
 ```
+### 3. 클라이언트 실행
 
+- 클라이언트 실행: http://localhost:5173
+
+```bash
+cd client
+npm install
+npm run dev
+```
 ---
 
 ## 📌 1. 프로젝트 개요 (Project Overview)
