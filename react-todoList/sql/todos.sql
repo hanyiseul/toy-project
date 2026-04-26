@@ -3,7 +3,7 @@ create table todos (
 	id int auto_increment primary key,
   memo text not null,
   created_at datetime not null default current_timestamp,
-  user_id varchar(500) not null unique,
+  user_id varchar(500) not null,
   is_done boolean not null default false,
   foreign key
   (user_id) references users

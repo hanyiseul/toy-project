@@ -5,10 +5,20 @@ const TodoList = ({
   isLoading, 
   toggleStatus, 
   update,
-  removeTodo
+  removeTodo,
+  filter
 }) => {
-  const [editValue, setEditValue] = useState({});
-
+  // 상태 제어 함수
+  const [editValue, setEditValue] = useState({}); // 입력값 {id, memo} : 해당 id의 memo만 수정해야하기 때문
+  
+  // filter에 해당하는 데이터 필터링
+  const filteredData =
+    filter === "all"
+      ? data
+      : filter === "active"
+      ? data.filter((todo) => todo.is_done === 0)
+      : data.filter((todo) => todo.is_done === 1);
+  
   return (
     <ul className="mt-5 space-y-3">
 
@@ -28,7 +38,7 @@ const TodoList = ({
       )}
 
       {!isLoading && data.length > 0 &&
-        data.map((todo) => (
+        filteredData.map((todo) => (
           <li
             key={todo.id}
             className="flex items-center justify-between border-2 border-purple-200 rounded-lg px-4 py-3 bg-white"
@@ -51,7 +61,10 @@ const TodoList = ({
                   todo.is_done === 1 ? "line-through text-purple-300" : ""
                 }`}
                 onChange={(e) =>
-                  setEditValue(e.target.value)
+                  setEditValue({ // 해당 아이디 값의 value만 수정
+                    ...editValue,
+                    [todo.id]: e.target.value,
+                  })
                 }
                 defaultValue={todo.memo}
               />
@@ -64,7 +77,7 @@ const TodoList = ({
                 onClick={() =>
                   update({
                     id: todo.id,
-                    memo: editValue,
+                    memo: editValue[todo.id] ?? todo.memo, // 수정값 또는 기존값
                   })
                 }
               >

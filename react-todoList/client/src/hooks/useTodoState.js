@@ -17,6 +17,9 @@ export const useTodoState = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["todos"] }); // 캐시 무효화 후 재조회 리렌더링
     },
+    onError: (err) => {
+      console.error("추가 실패", err)
+    }
   });
 
   // 수정

@@ -8,7 +8,6 @@ import Signup from "@/pages/Signup/page"
 import TodoList from "@/pages/TodoList/page"
 
 function App() {
-
   // 새로고침시에도 로그인 유지
   const isLogin = useAuthStore((state) => state.isLogin);
   const login = useAuthStore((state) => state.login);
@@ -18,6 +17,7 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
+
     const checkLogin = async () => {
       try {
         const data = await verify(); // 토큰 검증 api

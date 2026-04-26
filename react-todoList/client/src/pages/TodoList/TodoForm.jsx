@@ -8,6 +8,7 @@ const TodoForm = ({ onAdd }) => {
     if (!value) return;
     onAdd(value); // 부모에서 mutate 연결
     setValue("");
+    console.log("추가 클릭", value)
   };
 
   return (
@@ -15,7 +16,7 @@ const TodoForm = ({ onAdd }) => {
       <Input
         className="flex-1"
         placeholder="할 일을 입력하세요"
-        value={value} // 🔥 이거 추가
+        value={value}
         onChange={(e) => setValue(e.target.value)}
       />
 
