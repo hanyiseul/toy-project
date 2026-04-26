@@ -118,34 +118,35 @@ react-todoList
 │   └── vite.config.js
 │
 ├── server
-│   ├── controllers
+│   ├── controllers            # 요청(Request) / 응답(Response) 처리 (Service 호출)
 │   │   ├── todoController.js
 │   │   └── userController.js
 │   │
-│   ├── services
+│   ├── services               # 비즈니스 로직 처리 (Controller ↔ Model 연결)
 │   │   ├── todoService.js
 │   │   └── userService.js
 │   │
-│   ├── models
+│   ├── models                 # DB 쿼리 실행 (CRUD 담당)
 │   │   ├── todoModel.js
 │   │   └── userModel.js
 │   │
-│   ├── routes
+│   ├── routes                 # API 엔드포인트 정의 및 Controller 연결
 │   │   ├── todoRouter.js
 │   │   └── userRouter.js
 │   │
-│   ├── middleware
+│   ├── middleware             # 공통 로직 처리 (JWT 인증 등)          
 │   │   └── authMiddleware.js
 │   │
-│   ├── config
+│   ├── config                 # DB 연결 및 환경 설정
+
 │   │   └── db.js
 │   │
-│   ├── tests
+│   ├── tests                  # 테스트 코드 (Jest)
 │   │
-│   ├── server.js
-│   └── .env
+│   ├── server.js              # 서버 실행 파일 (Entry Point)
+│   └── .env                   # 환경 변수 (DB, JWT 등)
 │
-├── sql
+├── sql                        # DB 셋팅
 │   ├── users.sql
 │   └── todos.sql
 │
