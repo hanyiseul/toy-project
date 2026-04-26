@@ -39,8 +39,8 @@ const Signup = () => {
       await signup(name, user_id, pwd); // 회원가입 api 함수에 요청 데이터 넣기
       alert("회원가입 성공");
       navigate("/"); // 회원가입 성공시 로그인 페이지로 이동
-    } catch (error) {
-      alert("회원가입 실패", error);
+    } catch (err) {
+      alert("회원가입 실패", err);
     }
   }
 
@@ -57,60 +57,74 @@ const Signup = () => {
         setIdMessage("사용 가능합니다.");
         setIsChkId(true);
       }
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (err) {
+      console.error("Error:", err);
       alert("아이디 중복 체크 실패했습니다. 다시 확인해주세요");
     }
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="w-full max-w-sm px-6">
-        <h1 className="text-2xl font-bold mb-8">회원가입</h1>
-        <div className="flex flex-col gap-3">
+    <>
+      <h1 className="text-2xl font-bold text-center mb-6 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">
+        회원가입
+      </h1>
+
+      <div className="flex flex-col gap-3">
+        <Input
+          placeholder="이름"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <div className="flex gap-2">
           <Input
-            placeholder="이름"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            className="flex-1"
+            placeholder="아이디"
+            value={user_id}
+            ref={idRef}
+            onChange={(e) => {
+              setUserId(e.target.value);
+              setIsChkId(false);
+              setIdMessage("");
+            }}
           />
-          <div className="flex gap-2">
-            <Input
-              className="flex-3"
-              placeholder="아이디"
-              value={user_id}
-              ref={idRef}
-              onChange={(e) => {
-                setUserId(e.target.value);
-                setIsChkId(false);
-                setIdMessage("");
-              }}
-            />
-            <Button className="flex-1" onClick={handleCheckId}>확인</Button>
-          </div>
-          
-          {idMessage && <p className="text-sm">{idMessage}</p>}
-          <Input
-            type="password"
-            placeholder="비밀번호"
-            value={pwd}
-            onChange={(e) => setPwd(e.target.value)}
-          />
-          <Input
-            type="password"
-            placeholder="비밀번호 확인"
-            value={pwdCheck}
-            onChange={(e) => setPwdCheck(e.target.value)}
-          />
-          <Button onClick={handleSignup}>회원가입</Button>
+          <Button
+            size="md"
+            className="whitespace-nowrap"
+            onClick={handleCheckId}
+          >
+            확인
+          </Button>
         </div>
-        <div className="mt-6 text-sm text-gray-500 text-center">
-          이미 계정이 있으신가요?{" "}
-          <Link to="/" className="text-gray-900 font-medium">
-            로그인
-          </Link>
-        </div>
+        {idMessage && (
+          <p className={`text-xs ml-1 ${isChkId ? "text-green-500" : "text-red-500"}`}>
+            {idMessage}
+          </p>
+        )}
+        <Input
+          type="password"
+          placeholder="비밀번호"
+          value={pwd}
+          onChange={(e) => setPwd(e.target.value)}
+        />
+        <Input
+          type="password"
+          placeholder="비밀번호 확인"
+          value={pwdCheck}
+          ref={pwdRef}
+          onChange={(e) => setPwdCheck(e.target.value)}
+        />
+        <Button size="lg" onClick={handleSignup}>
+          회원가입
+        </Button>
       </div>
-    </div>
+
+      <div className="mt-5 text-sm text-gray-500 text-center">
+        이미 계정이 있으신가요?{" "}
+        <Link to="/" className="text-purple-500 font-medium hover:underline">
+          로그인
+        </Link>
+      </div>
+    </>
   );
 };
 

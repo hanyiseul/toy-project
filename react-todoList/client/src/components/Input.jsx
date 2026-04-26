@@ -1,33 +1,41 @@
-const Input = ({
-  type = "text",
-  value,
-  onChange,
-  placeholder,
-  className = "",
-  ref=null,
-  ...props // 넘어온 나머지 속성들을 전부 전달 (확장성 막으려면 생략하고 사용할 속성들만 명시하기)
-}) => {
-  return (
-    <input
-      type={type}
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      ref={ref}
-      className={`
-        w-full
-        px-4 py-3
-        text-sm
-        border border-gray-300
-        rounded-lg
-        bg-white
-        outline-none
-        focus:border-gray-500
-        ${className}
-      `}
-      {...props}
-    />
-  );
-};
+import { forwardRef } from "react";
+
+const Input = forwardRef(
+  (
+    {
+      type = "text",
+      value,
+      onChange,
+      placeholder,
+      className = "",
+      ...props
+    },
+    ref // forwardRef: ref를 props처럼 전달해줌
+  ) => {
+    return (
+      <input
+        ref={ref}
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`
+          w-full
+          px-4 py-2
+          text-sm
+          border border-purple-200
+          rounded-lg
+          bg-white
+          outline-none
+          transition
+          focus:border-pink-400
+          focus:ring-2 focus:ring-pink-200
+          ${className}
+        `}
+        {...props}
+      />
+    );
+  }
+);
 
 export default Input;
