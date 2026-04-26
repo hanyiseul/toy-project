@@ -1,6 +1,6 @@
 // userService.js : 실제 비즈니스 로직 처리
 
-const userModel = require("../models/userModel.js"); // 데이터 연결 설정한 userModel 파일 연결
+const userModel = require("../models/userModel"); // 데이터 연결 설정한 userModel 파일 연결
 const jwt = require("jsonwebtoken"); // JWT : JSON Web Token, 사용자 인증에 사용되는 토큰 기반 인증 방식
 const bcrypt = require("bcrypt"); // bcrypt : 비밀번호 암호화 라이브러리
 const JWT_SECRET = process.env.JWT_SECRET; // .env에 랜덤키 생성

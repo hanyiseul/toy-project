@@ -1,6 +1,6 @@
 // userModels.js : 사용자 모델 정의
 
-const pool = require("../db.js"); // db 연결 객체
+const pool = require("../db"); // db 연결 객체
 
 // 회원가입
 exports.signup = async (name, user_id, pwd) => {

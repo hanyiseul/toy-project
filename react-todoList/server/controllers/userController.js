@@ -1,7 +1,7 @@
 // userController.js : 응답/요청 데이터 처리
 
 // 연결 설정
-const userService = require("../services/userService.js"); // 비즈니스 로직 파일 연결
+const userService = require("../services/userService"); // 비즈니스 로직 파일 연결
 const jwt = require("jsonwebtoken"); // jwt 인증 모듈 연결
 const JWT_SECRET = process.env.JWT_SECRET; // env 파일에서 시크릿키 가져옴
 

@@ -1,6 +1,6 @@
 // todoModel.js : 할 일 모델 정의
 
-const pool = require("../db.js"); // db 연결 객체
+const pool = require("../db"); // db 연결 객체
 
 // 할일 조회 (r)
 exports.getTodo = async(user_id) => {

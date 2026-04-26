@@ -2,7 +2,7 @@
 
 const express = require("express"); // express 모듈
 const router = express.Router(); // 라우터 객체 생성
-const userController = require("../controllers/userController.js"); // 응답/요청 처리한 파일 연결
+const userController = require("../controllers/userController"); // 응답/요청 처리한 파일 연결
 
 // user router
 router.post("/signup", userController.signup); // 회원가입

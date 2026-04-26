@@ -1,6 +1,6 @@
 // todoService.js : 할일 서비스 처리
 
-const todoModel = require("../models/todoModel.js"); // db 쿼리 설정한 todoModel 연결
+const todoModel = require("../models/todoModel"); // db 쿼리 설정한 todoModel 연결
 
 // 할일 조회
 exports.getTodo = async(title, memo, user_id) => {
