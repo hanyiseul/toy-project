@@ -8,13 +8,9 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // next() : 다음 미들웨어(또는 라우트 함수)로 넘어가게 하는 함수
 const authToken = (req, res, next) => { 
   console.log("실행됨")
-  const authHeader = req.headers['authorization']; // 헤더에서 토큰 꺼냄
-
-  // authHeader : beare hash값
-  const token = authHeader?.split(" ")[1]; // authHeader가 존재하면 authHeader의 1번째 값 저장
-  // .split(" ") : 공백 기준으로 배열 나눔
+  const token = req.cookies?.token; // 쿠키에서 토큰 정보 꺼냄
   
-  if(!token) return res.josn({success: false}); // token 정보가 없다면 success 실패 전달
+  if(!token) return res.json({success: false}); // token 정보가 없다면 success 실패 전달
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if(err) return res.json({success: false}); // 에러가 난다면 실패 전달

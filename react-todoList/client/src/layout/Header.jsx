@@ -4,7 +4,7 @@ import Button from "@/components/Button";
 
 const Header = () => {
   // 전역상태관리
-  const isLogin = useAuthStore((state) => state.isLogin); // 로그인 상태
+  const login = useAuthStore((state) => state.isLogin); // 로그인 상태
   const user = useAuthStore((state) => state.user); // 유저 정보
   const logout = useAuthStore((state) => state.logout); // 로그아웃
 
@@ -24,11 +24,11 @@ const Header = () => {
       </h1>
 
       <p className="text-gray-500 mt-4 text-lg">
-        {isLogin ? `${user.name}의` : "로그인 후"} 할 일을 기록하고 완료해보세요! ✨
+        {login && user && `${user.name}의`} 할 일을 기록하고 완료해보세요! ✨
       </p>
 
       <div className="mt-3 flex justify-center">
-        {isLogin && (<Button
+        {login && user && (<Button
           variant="outline"
           size="sm"
           className="px-4 py-1 text-xs rounded-full border-purple-200 text-purple-500 hover:bg-purple-100"

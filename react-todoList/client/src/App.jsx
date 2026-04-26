@@ -1,4 +1,4 @@
-import { Route, Routes, useNavigate } from "react-router-dom"
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom"
 import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { verify } from "@/api/authAPI.js";
@@ -10,6 +10,7 @@ import TodoList from "@/pages/TodoList/page"
 function App() {
 
   // 새로고침시에도 로그인 유지
+  const isLogin = useAuthStore((state) => state.isLogin);
   const login = useAuthStore((state) => state.login);
   const logout = useAuthStore((state) => state.logout);
 
@@ -17,15 +18,18 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!isLogin) return; 
     const checkLogin = async () => {
-      const token = localStorage.getItem("token"); // 로컬스토리지에 토큰 정보를 담고
-      if(!token) return; // 토큰 정보 없으면 종료 (로그아웃 상태)
-
       try {
-        const data = await verify(token); // 토큰 검증 api
+        const data = await verify(); // 토큰 검증 api
+
+        if (!data.success) {
+          logout();
+          return;
+        }
+        
         login({ // 로그인 정보를 전역으로 상태 관리
           user: data.user,
-          token
         });
         navigate("/todoList");
       } catch (error) {
@@ -42,7 +46,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/todoList" element={<TodoList />} />
+        <Route
+          path="/todoList"
+          element={isLogin ? <TodoList /> : <Navigate to="/" />}
+        />
       </Routes>
     </Layout>
   )

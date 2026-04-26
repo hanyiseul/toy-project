@@ -9,5 +9,6 @@ router.post("/signup", userController.signup); // 회원가입
 router.get("/checkId", userController.checkId); // 회원가입 - 아이디 중복 체크
 router.post("/login", userController.login); // 로그인
 router.get("/verify", userController.verify); // 로그인 - jwt 토큰 검증
+router.post("/logout", userController.logout); // 로그아웃 - 쿠키 삭제
 
 module.exports = router;

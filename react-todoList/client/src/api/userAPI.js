@@ -39,7 +39,8 @@ export const login = async (user_id, pwd) => {
     const res = await fetch("/api/user/login", {
       method: "POST",
       headers: {"Content-Type" : "application/json"}, // 헤더에 json 데이터라고 명시
-      body: JSON.stringify({user_id, pwd}) // 본문에 회원가입 정보를 json 데이터로 전송
+      body: JSON.stringify({user_id, pwd}), // 본문에 회원가입 정보를 json 데이터로 전송
+      credentials: "include" // 쿠키 옵션 가져오는 옵션
     });
     const data = await res.json(); // json 데이터를 js 객체로 변환
     if(!data.success) throw new Error(data.message); // 로그인 실패시 강제 오류
@@ -48,3 +49,17 @@ export const login = async (user_id, pwd) => {
     console.error("api 실패", err);
   }
 }
+
+// 로그아웃 api
+export const logout = async () => {
+  try { 
+    const res = await fetch("/api/user/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+    const data = await res.json(); // json 데이터를 js 객체로 변환
+    return data;
+  } catch(err) {
+    console.error("api 로그아웃 실패", err);
+  }
+};

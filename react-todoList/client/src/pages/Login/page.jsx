@@ -14,23 +14,24 @@ const Login = () => {
 
   // 로그인 기능 구현
   // state: useAuthStore의 현재 상태값 묶음 (전역상태로 관리)
-  const setAuth = useAuthStore((state) => state.login); // useAuthStore에서 login 꺼내옴
+  const login = useAuthStore((state) => state.login); // useAuthStore에서 login 꺼내옴
+  const logout = useAuthStore((state) => state.logout); // useAuthStore에서 logout 꺼내옴
 
   // 로그인 처리
   const handleLogin = async() => {
     try {
       const data = await loginAPI(user_id, pwd); // 로그인 api 함수에 요청 데이터 넣기
-      
+      console.log(data)
+       if (!data.success) {
+        logout();    
+        navigate("/");
+        return;
+      }
       // 전역으로 관리할 데이터 저장
-      setAuth({
+      login({
         user: data.user, // 계정 정보
-        token: data.token, // 토큰 값 저장
       });
 
-      // localStorage 저장
-      localStorage.setItem("token", data.token);
-      console.log("login data:", data);
-      console.log("store user:", data.user);
       navigate("/todoList"); // 로그인 성공시 해당 페이지로 이동
     } catch (err) {
       alert("로그인 실패", err);

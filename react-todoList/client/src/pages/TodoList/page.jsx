@@ -1,16 +1,10 @@
+import TodoForm from "./TodoForm";
+
 const TodoPage = () => {
   
   return (
     <>
-      <div className="flex gap-2">
-        <input
-          className="flex-1 border border-purple-300 rounded-lg px-4 py-2 text-base focus:outline-none focus:border-pink-400"
-          placeholder="할 일을 입력하세요"
-        />
-        <button className="px-4 py-2 rounded-lg text-white font-semibold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:opacity-90">
-          + 추가
-        </button>
-      </div>
+      <TodoForm />
 
       {/* banner */}
       <div className="mt-5 p-4 text-center text-purple-600 font-semibold border-2 border-pink-200 rounded-lg bg-purple-50">

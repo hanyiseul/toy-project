@@ -50,7 +50,7 @@ exports.login = async(req, res) => {
       secure: false, // http에서도 전송 가능 (배포때는 true)
       sameSite: "lax", // csrf 공격 방어 lax 모드(일부 허용)
       path: '/', // 사이트 전체에서 쿠키 사용 가능
-      maxAge: 60 * 60 // 쿠키 유효 시간
+      maxAge: 60 * 60 * 1000 // 쿠키 유효 시간
     });
 
     res.json({
@@ -71,6 +71,7 @@ exports.login = async(req, res) => {
 // 로그인 - jwt 검증
 exports.verify = (req, res) => {
   try {
+    console.log("쿠키:", req.cookies); 
     const token = req.cookies.token;
 
     if(!token) { // 만약 토큰이 없을 시 권한 인증 에러 처리
@@ -89,6 +90,30 @@ exports.verify = (req, res) => {
     });
   }
 } 
+
+// 로그아웃
+exports.logout = (req, res) => {
+  try {
+    res.clearCookie("token", { // 쿠키에 저장된 해당 토큰 삭제
+      httpOnly: true, // 브라우저에서 접근 불가능
+      sameSite: "lax", // 다른 사이트에서 요청 올 때 쿠키 제한
+      path: "/" // 쿠키 전체 사용
+    });
+
+    res.json({
+      success: true,
+      message: "로그아웃 성공"
+    });
+
+  } catch (err) {
+    console.error("controller 로그아웃 에러:", err);
+
+    res.json({
+      success: false,
+      message: "로그아웃 실패"
+    });
+  }
+};
 
 // userService test code
 // (async () => {
