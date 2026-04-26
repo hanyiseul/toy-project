@@ -21,7 +21,6 @@ const Login = () => {
   const handleLogin = async() => {
     try {
       const data = await loginAPI(user_id, pwd); // 로그인 api 함수에 요청 데이터 넣기
-      console.log(data)
        if (!data.success) {
         logout();    
         navigate("/");

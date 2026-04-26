@@ -25,10 +25,10 @@ exports.getTodo = async (req, res) => {
 // 할일 생성
 exports.createTodo = async (req, res) => {
   try {
-    const { title, memo } = req.body;
+    const { memo } = req.body;
     const user_id = req.user.user_id;
 
-    const result = await todoService.createTodo(title, memo, user_id);
+    const result = await todoService.createTodo(memo, user_id);
 
     res.json(result);
 
@@ -65,9 +65,9 @@ exports.deleteTodo = async (req, res) => {
 exports.updateTodo = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, memo } = req.body;
+    const { memo } = req.body;
 
-    const result = await todoService.updateTodo(id, title, memo);
+    const result = await todoService.updateTodo(id, memo);
 
     res.json(result);
 
@@ -80,3 +80,22 @@ exports.updateTodo = async (req, res) => {
     });
   }
 };
+
+// 완료 체크
+exports.status = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { is_done } = req.body;
+
+    const result = await todoService.status(id, is_done);
+    res.json(result);
+
+  } catch (err) {
+    console.error("todo 완료 에러:", err);
+
+    res.json({
+      success: false,
+      message: "todo 완료 실패"
+    });
+  }
+}

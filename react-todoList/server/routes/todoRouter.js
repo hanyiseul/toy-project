@@ -8,7 +8,8 @@ const authToken = require("../middleware/authMiddleware");
 // todo router
 router.get("/get", authToken, todoController.getTodo);
 router.post("/create", authToken, todoController.createTodo);
-router.put("/update", authToken, todoController.updateTodo);
-router.delete("/delete", authToken, todoController.deleteTodo);
+router.put("/update/:id", authToken, todoController.updateTodo);
+router.delete("/delete/:id", authToken, todoController.deleteTodo);
+router.put("/status/:id", authToken, todoController.status);
 
 module.exports = router;

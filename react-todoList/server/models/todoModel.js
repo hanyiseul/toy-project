@@ -17,15 +17,15 @@ exports.getTodo = async(user_id) => {
 }
 
 // 할일 생성 (c)
-exports.createTodo = async(title, memo, user_id) => {
+exports.createTodo = async(memo, user_id) => {
   // 입력한 todo 삽입 쿼리
   const sql = `
-    insert into todos (title, memo, user_id)
-    values (?,?,?)
+    insert into todos (memo, user_id)
+    values (?,?)
   `;
 
   // pool에서 커넥션 하나 가져와서 해당 sql 실행
-  const [rows] = await pool.execute(sql, [title, memo, user_id]);
+  const [rows] = await pool.execute(sql, [memo, user_id]);
   // 실행 쿼리 반환
   return rows;
 }
@@ -42,12 +42,22 @@ exports.deleteTodo = async(id) => {
 }
 
 // 할일 수정 (u)
-exports.updateTodo = async(id,title, memo) => {
+exports.updateTodo = async(id, memo) => {
   // 할일 수정
   const sql = `
-    update todos set title=?, memo=?
+    update todos set memo=?
     where id=?
   `;
-  const [rows] = await pool.query(sql, [title, memo, id]);
+  const [rows] = await pool.query(sql, [memo, id]);
+  return rows;
+}
+
+// 완료 여부 (u)
+exports.status = async(id, is_done) => {
+  // 완료 여부 체크
+  const sql = `
+    update todos set is_done=? where id=?
+  `;
+  const [rows] = await pool.query(sql, [is_done, id]);
   return rows;
 }

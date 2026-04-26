@@ -3,9 +3,9 @@
 const todoModel = require("../models/todoModel"); // db 쿼리 설정한 todoModel 연결
 
 // 할일 조회
-exports.getTodo = async(title, memo, user_id) => {
+exports.getTodo = async(user_id) => {
   try {
-    const result = await todoModel.getTodo(title, memo, user_id);
+    const result = await todoModel.getTodo(user_id);
     
     // 결과값이 없거나 0일 경우 빈배열 반환
     if(!result || result.length === 0) {
@@ -68,9 +68,9 @@ exports.deleteTodo = async(id) => {
 }
 
 // 할일 수정
-exports.updateTodo = async(id,title, memo) => {
+exports.updateTodo = async(id, memo) => {
   try {
-    const result = await todoModel.updateTodo(id,title, memo);
+    const result = await todoModel.updateTodo(id, memo);
 
     return {
       success: true,
@@ -82,6 +82,24 @@ exports.updateTodo = async(id,title, memo) => {
     return {
       success: false,
       message: "todoService 수정 에러"
+    }
+  }
+}
+
+exports.status = async(id, is_done) => {
+  try {
+    const result = await todoModel.status(id, is_done);
+
+    return {
+      success: true,
+      data: result
+    }
+  } catch(err) {
+    console.error("todoService 에러", err);
+
+    return {
+      success: false,
+      message: "todoService 완료 에러"
     }
   }
 }

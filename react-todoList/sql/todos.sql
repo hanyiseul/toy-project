@@ -4,9 +4,9 @@ use todoList;
 -- todo 테이블
 create table todos (
 	id int auto_increment primary key,
-  title varchar(500) not null,
   memo text not null,
   created_at datetime not null default current_timestamp,
+  is_done boolean not null default false,
   foreign key
   (user_id) references users
   (user_id) on delete cascade -- 작성자 아이디
