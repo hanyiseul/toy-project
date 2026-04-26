@@ -71,7 +71,6 @@ exports.login = async(req, res) => {
 // 로그인 - jwt 검증
 exports.verify = (req, res) => {
   try {
-    console.log("쿠키:", req.cookies); 
     const token = req.cookies.token;
 
     if(!token) { // 만약 토큰이 없을 시 권한 인증 에러 처리

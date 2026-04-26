@@ -18,7 +18,6 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLogin) return; 
     const checkLogin = async () => {
       try {
         const data = await verify(); // 토큰 검증 api

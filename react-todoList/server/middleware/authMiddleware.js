@@ -7,7 +7,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // next는 Express가 자동으로 넣어주는 함수
 // next() : 다음 미들웨어(또는 라우트 함수)로 넘어가게 하는 함수
 const authToken = (req, res, next) => { 
-  console.log("실행됨")
   const token = req.cookies?.token; // 쿠키에서 토큰 정보 꺼냄
   
   if(!token) return res.json({success: false}); // token 정보가 없다면 success 실패 전달

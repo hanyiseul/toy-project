@@ -15,7 +15,6 @@ const Header = () => {
   const handleLogout = () => {
     logout(); // 전역상태로 관리되는 로그아웃 처리
     navigate("/"); 
-    console.log("store 확인:", useAuthStore.getState()); // 로그인 여부 확인
   }
   return (
     <header className="text-center mt-16">
