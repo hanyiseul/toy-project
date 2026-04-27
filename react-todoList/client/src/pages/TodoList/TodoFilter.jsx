@@ -18,17 +18,6 @@ const TodoFilter = ({ filter, setFilter }) => {
         </button>
       </li>
       ))}
-{/*       
-      <li className="flex-1">
-        <button className="w-full py-2 rounded-lg border border-gray-200 bg-white">
-          진행
-        </button>
-      </li>
-      <li className="flex-1">
-        <button className="w-full py-2 rounded-lg border border-gray-200 bg-white">
-          완료
-        </button>
-      </li> */}
     </ul>
   );
 };
