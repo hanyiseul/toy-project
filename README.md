@@ -68,7 +68,5 @@ https://hanyiseul.github.io/toy-project/interaction/index.html
 **Database**
 - MySQL
   
-### Demo
-https://bench-talks-dollar-treatments.trycloudflare.com/
 
 
