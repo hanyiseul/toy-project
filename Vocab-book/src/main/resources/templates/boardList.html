@@ -2,34 +2,229 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>게시글 리스트 페이지</title>
-</head>
-<style>
-    .layout{
-        width: 500px;
-        margin: 0 auto;
-        margin-top: 40px;
-    }
+    <title>Vocabulary Book</title>
 
-</style>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto;
+            background: #f4f6fb;
+            margin: 0;
+        }
+        .layout {
+            width: 640px;
+            margin: 50px auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 26px;
+            font-weight: 700;
+        }
+        .add-btn {
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #4CAF50, #43a047);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .add-btn:hover {
+            transform: scale(1.05);
+        }
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 14px;
+
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+            transition: 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .word {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .meaning {
+            margin-top: 6px;
+            font-size: 14px;
+            color: #666;
+        }
+        a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: #333;
+        }
+        strong {
+            margin: 0 5px;
+            color: #4CAF50;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+
+            background: rgba(0,0,0,0.5);
+        }
+        .modal-box {
+            background: white;
+            width: 420px;
+            margin: 8% auto;
+            padding: 25px;
+            border-radius: 16px;
+
+            animation: fadeIn 0.2s ease;
+        }
+        .close-btn {
+            float: right;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .modal input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .modal textarea {
+            resize: none;
+            height: 80px;
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .modal button {
+            margin-top: 12px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #4CAF50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .page-btn {
+            margin: 0 5px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid #ddd;
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .page-btn:hover {
+            background: #f0f0f0;
+        }
+        .page-btn.active {
+            background: #4CAF50;
+            color: white;
+            font-weight: bold;
+            border: none;
+        }
+    </style>
+</head>
+
 <body>
-    <div class="layout">
-        <table>
-            <thead>
-                <tr>
-                    <th>글번호</th>
-                    <th>제목</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="board : ${list}">
-                    <td th:text="${board.id}">1</td>
-                    <td>
-                        <a th:text="${board.title}" th:href="@{/board/view(id=${board.id})}">a제목입니다</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+
+<div class="layout">
+    <div class="header">
+        <div class="title">📘 My Vocab</div>
+        <button class="add-btn" onclick="openModal('/board/write-modal')">+ 추가</button>
     </div>
+    <div class="search-box">
+        <form th:action="@{/board/list}" method="get">
+            <input type="text" name="searchKeyword" placeholder="단어 검색..." />
+        </form>
+    </div>
+    <div th:each="board : ${list}"
+         class="card"
+         th:onclick="'openModal(\'/board/view-modal?id=' + ${board.id} + '\')'">
+
+        <div class="word" th:text="${board.title}">apple</div>
+        <div class="meaning" th:text="${board.content}">사과</div>
+    </div>
+    <div class="pagination">
+        <th:block th:each="page : ${#numbers.sequence(startPage, endPage)}">
+            <a th:if="${page != nowPage}"
+               th:href="@{/board/list(page=${page - 1}, searchKeyword=${param.searchKeyword})}"
+               th:text="${page}"
+               class="page-btn">
+            </a>
+            <span th:if="${page == nowPage}"
+                  th:text="${page}"
+                  class="page-btn active">
+        </span>
+        </th:block>
+    </div>
+</div>
+
+<!-- 모달 -->
+<div id="modal" class="modal">
+    <div class="modal-box">
+        <span onclick="closeModal()" class="close-btn">&times;</span>
+        <div id="modal-body"></div>
+    </div>
+</div>
 </body>
+<script>
+    const openModal = async (url) => {
+        console.log("열림:", url);
+        try {
+            const res = await fetch(url);
+            if (!res.ok) {
+                throw new Error("서버 오류: " + res.status);
+            }
+            const html = await res.text();
+            document.getElementById("modal-body").innerHTML = html;
+            document.getElementById("modal").style.display = "block";
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const closeModal = () => {
+        document.getElementById("modal").style.display = "none";
+    };
+</script>
 </html>

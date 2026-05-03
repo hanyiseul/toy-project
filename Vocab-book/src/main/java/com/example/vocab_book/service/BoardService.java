@@ -3,6 +3,8 @@ package com.example.vocab_book.service;
 import com.example.vocab_book.entity.Board;
 import com.example.vocab_book.repository.BoardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +21,13 @@ public class BoardService {
     }
 
     // 게시글 리스트 처리
-    public List<Board> boardList() {
-        return boardRepository.findAll(); // board가 담긴 리스트 반환
+    public Page<Board> boardList(Pageable pageable) {
+        return boardRepository.findAll(pageable); // board가 담긴 리스트 반환
+    }
+
+    // 게시글 검색
+    public Page<Board> boardSearchList(String searchKeyword, Pageable pageable) {
+        return boardRepository.findByTitleContaining(searchKeyword, pageable);
     }
 
     // 특정 게시글 불러오기
