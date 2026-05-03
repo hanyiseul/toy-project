@@ -1,0 +1,6 @@
+<form th:action="@{/board/update/{id}(id=${board.id})}" method="post">
+  <input type="text" name="title" th:value="${board.title}">
+  <textarea name="content" th:text="${board.content}"></textarea>
+  <button type="submit">수정</button>
+</form>
+
