@@ -1,8 +1,11 @@
-import React from 'react'
+import Layout from "../components/common/Layout"
+import UserForm from "../components/User/UserForm"
 
 const User = () => {
   return (
-    <div>User</div>
+    <Layout>
+      <UserForm />
+    </Layout>
   )
 }
 
