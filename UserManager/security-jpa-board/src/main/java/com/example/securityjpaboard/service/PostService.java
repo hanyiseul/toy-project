@@ -1,14 +1,17 @@
 package com.example.securityjpaboard.service;
 
 import com.example.securityjpaboard.domain.Post;
+import com.example.securityjpaboard.domain.Role;
 import com.example.securityjpaboard.domain.User;
 import com.example.securityjpaboard.dto.PostRequest;
 import com.example.securityjpaboard.repository.PostRepository;
 import com.example.securityjpaboard.repository.UserRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Service // 이 파일이 서비스임을 명시
 // 게시글 관련 기능을 모아놓은 클래스
 public class PostService {
     // 게시글 DB 작업 담당, 회원 DB 작업 담당
@@ -21,6 +24,13 @@ public class PostService {
     public PostService(PostRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canManage(Post post, String username) {
+        User loginUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("로그인 사용자를 찾을 수 없습니다."));
+        return post.isWrittenBy(username) || loginUser.getRole() == Role.ADMIN;
     }
 
     /**
@@ -94,17 +104,28 @@ public class PostService {
         if(!canManage(post, username)) {
             throw new IllegalArgumentException("작성자 또는 관리자만 삭제할 수 있습니다.");
         }
+
+        // findById()로 조회한 post가 트랜잭션 안에서 영속 상태이기 때문에 UPDATE sql 실행
         post.update(request.getTitle(), request.getContent());
     }
 
     /**
-     * `Post 조회
-     *    ↓
-     *  작성자 검증
-     *    ↓
+     * Post 조회
+     *   ↓
+     * 작성자 검증
+     *   ↓
+     * postRepository.delete(post)
+     *   ↓
+     * DELETE SQL 실행
      * */
     @Transactional
     public void delete(Long id, String username) {
         Post post = findById(id);
+        if(!canManage(post, username)) {
+            throw new IllegalArgumentException(("작성자 또는 관리자만 삭제할 수 있습니다."));
+        }
+        postRepository.delete(post);
     }
+
+
 }
