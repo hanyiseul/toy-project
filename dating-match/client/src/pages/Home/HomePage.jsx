@@ -11,6 +11,7 @@ import ProfileSetupScreen from "../../components/onboarding/ProfileSetupScreen";
 import ReferenceCourseResult from "../../components/course/ReferenceCourseResult";
 import AuthScreen from "../../components/auth/AuthScreen";
 import { placeApi } from "../../services/placeApi";
+import { buildProfilePayload } from "../../utils/buildProfilePayload";
 
 const API = "http://localhost:4000/api";
 
@@ -18,8 +19,10 @@ const initialCoursePrefs = {
   transport: "walk",
   keywords: [],
   location: "",
-  season: "summer",
-  diet: "all",
+  stylePref: "indoor",
+  cuisine: "korean",
+  matching: true,
+  matchTarget: null,
 };
 const initialForm = {
   type: "foreign",
@@ -27,22 +30,8 @@ const initialForm = {
   age: "20대",
   gender: "비공개",
   visa: "관광 / 단기체류",
-  matching: true,
   ...initialCoursePrefs,
 };
-function buildProfilePayload(form) {
-  return {
-    type: form.type,
-    nationality: form.country,
-    ageRange: form.age,
-    gender: form.gender,
-    visa: form.visa,
-    matching: form.matching,
-    photoUrl: form.photoUrl,
-    diet: form.diet,
-    location: form.location,
-  };
-}
 export default function HomePage() {
   const [lang, setLang] = useState("ko");
   const [screen, setScreen] = useState("landing");
@@ -57,7 +46,7 @@ export default function HomePage() {
     if (screen === "landing") {
       if (!authUser) setScreen("auth");
       else goToHub(authUser);
-    } else if (step < 6) setStep(step + 1);
+    } else if (step < 4) setStep(step + 1);
     else setScreen("loading");
   };
   const back = () => {
@@ -96,7 +85,7 @@ export default function HomePage() {
       .catch(() => {});
   }, []);
   useEffect(() => {
-    if (screen === "onboarding" && step === 6) {
+    if (screen === "onboarding" && step === 4) {
       placeApi.saveProfile(buildProfilePayload(form)).catch(() => {});
       const readyTimer = setTimeout(() => setScreen("loading"), 900);
       return () => clearTimeout(readyTimer);
@@ -185,6 +174,9 @@ export default function HomePage() {
           lang={lang}
           form={form}
           user={authUser}
+          onUserUpdate={(patch) =>
+            setAuthUser((current) => ({ ...current, ...patch }))
+          }
           onBack={back}
           onReset={reset}
         />

@@ -1,6 +1,6 @@
 import { createMatchRequest, findMatches } from "../data/matchRepository.js";
 
-export function listMatches(query, excludeUserId) {
+export function listMatches(query, excludeUserId, targetType) {
   return findMatches({
     page: query.page || 1,
     limit: 10,
@@ -9,6 +9,7 @@ export function listMatches(query, excludeUserId) {
     nationality: query.nationality || "all",
     sort: query.sort || "score",
     excludeUserId,
+    targetType,
   });
 }
 

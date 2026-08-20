@@ -17,6 +17,9 @@ export async function createAuthUser({ email, passwordHash, nickname }) {
 }
 
 export async function findUserById(id) {
-  const rows = await query("SELECT id, email, nickname, user_type AS userType, nationality FROM users WHERE id = ?", [id]);
+  const rows = await query(
+    "SELECT id, email, nickname, user_type AS userType, nationality, matching_enabled AS matchingEnabled, match_target AS matchTarget, dietary_preference AS cuisinePreference, location FROM users WHERE id = ?",
+    [id],
+  );
   return rows[0] ? withProfileComplete(rows[0]) : null;
 }

@@ -22,6 +22,13 @@ const countries = [
 export default function ProfileSetupScreen({ text, form, setForm, onBack, onNext }) {
   const update = (key, value) =>
     setForm((current) => ({ ...current, [key]: value }));
+  const selectType = (type) =>
+    setForm((current) => ({
+      ...current,
+      type,
+      country:
+        type === "korean" ? "한국" : current.country === "한국" ? "" : current.country,
+    }));
   const handlePhotoChange = (event) => {
     const file = event.target.files?.[0];
     if (file) update("photoUrl", URL.createObjectURL(file));
@@ -49,40 +56,40 @@ export default function ProfileSetupScreen({ text, form, setForm, onBack, onNext
         <div className="choice-stack">
           <button
             className={form.type === "foreign" ? "choice selected" : "choice"}
-            onClick={() => update("type", "foreign")}
+            onClick={() => selectType("foreign")}
           >
             <b>🌍</b>
             <span>
               <strong>{text.typeForeign}</strong>
-              <small>{text.typeForeignDesc}</small>
             </span>
             {form.type === "foreign" && <Check />}
           </button>
           <button
             className={form.type === "korean" ? "choice selected" : "choice"}
-            onClick={() => update("type", "korean")}
+            onClick={() => selectType("korean")}
           >
             <b>🇰🇷</b>
             <span>
               <strong>{text.typeKorean}</strong>
-              <small>{text.typeKoreanDesc}</small>
             </span>
             {form.type === "korean" && <Check />}
           </button>
         </div>
         <div className="form-grid">
-          <label>
-            {text.country}
-            <select
-              value={form.country}
-              onChange={(event) => update("country", event.target.value)}
-            >
-              <option value="">선택해주세요</option>
-              {countries.map((country) => (
-                <option key={country}>{country}</option>
-              ))}
-            </select>
-          </label>
+          {form.type !== "korean" && (
+            <label>
+              {text.country}
+              <select
+                value={form.country}
+                onChange={(event) => update("country", event.target.value)}
+              >
+                <option value="">선택해주세요</option>
+                {countries.map((country) => (
+                  <option key={country}>{country}</option>
+                ))}
+              </select>
+            </label>
+          )}
           <label>
             {text.ageBand}
             <select
@@ -123,17 +130,6 @@ export default function ProfileSetupScreen({ text, form, setForm, onBack, onNext
         <label className="upload-box">
           ＋ {text.photoUpload}
           <input type="file" accept="image/*" onChange={handlePhotoChange} />
-        </label>
-        <label className="switch-row">
-          <input
-            type="checkbox"
-            checked={form.matching}
-            onChange={(event) => update("matching", event.target.checked)}
-          />
-          <span>
-            <strong>{text.matchingOpt}</strong>
-            <small>{text.matchingOptDesc}</small>
-          </span>
         </label>
       </div>
       <div className="flow-footer">

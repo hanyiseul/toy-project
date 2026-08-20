@@ -68,6 +68,7 @@ cp server/.env.example server/.env
 DATABASE_URL=mysql://dating_match:change-me@127.0.0.1:3306/dating_match
 PORT=4000
 CORS_ORIGIN=http://localhost:3000
+JWT_SECRET=change-me-to-a-random-string
 ```
 
 schema와 초기 장소 데이터를 넣습니다.
@@ -82,9 +83,11 @@ npm run dev --prefix server
 
 ```bash
 mysql -u root -p dating_match < server/schema/002_interactions.sql
+mysql -u root -p dating_match < server/schema/003_auth.sql
+mysql -u root -p dating_match < server/schema/004_preferences.sql
 ```
 
-이 schema 알림, 매칭 완료 대화방, 채팅 메시지 테이블을 생성합니다.
+이 schema는 순서대로 알림/매칭 완료 대화방/채팅 메시지 테이블, 로그인용 이메일·비밀번호 컬럼, 매칭 상대 유형·요리 취향·주차 가능 여부 컬럼을 추가합니다.
 
 서버 로그에 `database: { configured: true, connected: true }`가 나오면 연결된 것입니다. 운영 장소 데이터는 Google Places, Kakao, Naver Places 등의 실제 수집 작업으로 `places` 테이블에 넣습니다.
 

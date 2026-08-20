@@ -38,8 +38,12 @@ export async function getConversations(req, res, next) {
 
 export async function getConversationMessages(req, res, next) {
   try {
-    res.json({ messages: await listMessages(req.params.conversationId) });
+    res.json({
+      messages: await listMessages(req.params.conversationId, req.user.sub),
+    });
   } catch (error) {
+    if (error.message === "CONVERSATION_FORBIDDEN")
+      return res.status(403).json({ message: "채팅방에 접근할 수 없습니다." });
     next(error);
   }
 }
@@ -58,6 +62,8 @@ export async function postMessage(req, res, next) {
         ),
       );
   } catch (error) {
+    if (error.message === "CONVERSATION_FORBIDDEN")
+      return res.status(403).json({ message: "채팅방에 접근할 수 없습니다." });
     next(error);
   }
 }

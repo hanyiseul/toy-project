@@ -4,8 +4,10 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Heart,
   MapPin,
   Pin,
+  RefreshCw,
   Search,
   Share2,
   ThumbsDown,
@@ -15,6 +17,22 @@ import {
 import { useDeferredValue, useEffect, useState } from "react";
 import { errorTranslations, uiTranslations } from "../../data/translations";
 import InteractionPanel from "../interaction/InteractionPanel";
+import { placeApi } from "../../services/placeApi";
+import { buildProfilePayload } from "../../utils/buildProfilePayload";
+
+const PLACES_API = "http://localhost:4000/api/places";
+
+function mapPlace(place) {
+  return {
+    id: place.id,
+    title: place.name,
+    category: `${place.type} · ${place.area}`,
+    text: place.description,
+    min: place.costMin,
+    max: place.costMax,
+    placeType: place.placeType,
+  };
+}
 
 const candidateSeeds = [
   "김지우",
@@ -136,14 +154,18 @@ export default function ReferenceCourseResult({
   lang,
   form,
   user,
+  onUserUpdate,
   onBack,
   onReset,
 }) {
   const [items, setItems] = useState([]);
   const [placeError, setPlaceError] = useState("");
-  const [pinned, setPinned] = useState({ 1: true });
+  const [placesEmpty, setPlacesEmpty] = useState(false);
+  const [pinned, setPinned] = useState({});
   const [votes, setVotes] = useState({});
+  const [swapNotice, setSwapNotice] = useState(null);
   const [matchingOpen, setMatchingOpen] = useState(false);
+  const [matchPromptOpen, setMatchPromptOpen] = useState(false);
   const [interactionOpen, setInteractionOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
   const [query, setQuery] = useState("");
@@ -176,32 +198,33 @@ export default function ReferenceCourseResult({
   }, [user]);
   useEffect(() => {
     const params = new URLSearchParams({
-      season: form.season,
-      diet: form.diet,
-      nationality: form.country || "general",
+      preference: form.stylePref || "all",
+      cuisine: form.cuisine || "",
+      transport: form.transport || "walk",
       area: form.location || "all",
     });
-    fetch(`http://localhost:4000/api/places?${params}`)
-      .then((response) => response.json())
-      .then((data) => {
-        if (!data.places?.length) throw new Error("No places");
-        setItems(
-          data.places.map((place) => ({
-            id: place.id,
-            title: place.name,
-            category: `${place.type} · ${place.area}`,
-            text: place.description,
-            min: place.costMin,
-            max: place.costMax,
-          })),
-        );
+    setPlaceError("");
+    setPlacesEmpty(false);
+    setPinned({});
+    fetch(`${PLACES_API}?${params}`)
+      .then((response) =>
+        response.json().then((data) => ({ ok: response.ok, data })),
+      )
+      .then(({ ok, data }) => {
+        if (!ok) throw new Error("fetch-failed");
+        if (!data.places?.length) {
+          setItems([]);
+          setPlacesEmpty(true);
+          return;
+        }
+        setItems(data.places.map(mapPlace));
       })
       .catch(() =>
         setPlaceError(
           "실제 장소 데이터를 불러오지 못했어요. 관리자에게 데이터 연결을 확인해주세요.",
         ),
       );
-  }, [form.season, form.diet, form.country, form.location]);
+  }, [form.stylePref, form.cuisine, form.transport, form.location]);
   const total = items.reduce(
     (result, place) => ({
       min: result.min + place.min,
@@ -276,6 +299,19 @@ export default function ReferenceCourseResult({
     visibleCandidates.length,
   ]);
   const openMatching = () => {
+    if (!user?.matchTarget) {
+      setMatchPromptOpen(true);
+      return;
+    }
+    setMatchingOpen(true);
+    setPage(1);
+  };
+  const chooseMatchTarget = (target) => {
+    placeApi
+      .saveProfile(buildProfilePayload({ ...form, matching: true, matchTarget: target }))
+      .catch(() => {});
+    onUserUpdate?.({ matchTarget: target, matchingEnabled: true });
+    setMatchPromptOpen(false);
     setMatchingOpen(true);
     setPage(1);
   };
@@ -283,14 +319,58 @@ export default function ReferenceCourseResult({
     setter(event.target.value);
     setPage(1);
   };
-  const swap = (id) => {
-    const index = items.findIndex((place) => place.id === id);
-    const next = [...items];
-    [next[index], next[(index + 1) % next.length]] = [
-      next[(index + 1) % next.length],
-      next[index],
-    ];
-    setItems(next);
+  const placeQueryParams = (extra) =>
+    new URLSearchParams({
+      preference: form.stylePref || "all",
+      cuisine: form.cuisine || "",
+      transport: form.transport || "walk",
+      area: form.location || "all",
+      ...extra,
+    });
+  const swapPlace = (id) => {
+    const current = items.find((place) => place.id === id);
+    if (!current || pinned[id]) return;
+    const params = placeQueryParams({
+      types: current.placeType,
+      exclude: items.map((place) => place.id).join(","),
+    });
+    fetch(`${PLACES_API}?${params}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const alternative = data.places?.[0];
+        if (!alternative) {
+          setSwapNotice(id);
+          setTimeout(() => setSwapNotice(null), 2500);
+          return;
+        }
+        setItems((current) =>
+          current.map((place) => (place.id === id ? mapPlace(alternative) : place)),
+        );
+      })
+      .catch(() => {});
+  };
+  const regenerateCourse = () => {
+    const toReplace = items.filter((place) => !pinned[place.id]);
+    if (!toReplace.length) return;
+    const params = placeQueryParams({
+      types: toReplace.map((place) => place.placeType).join(","),
+      exclude: items.map((place) => place.id).join(","),
+    });
+    fetch(`${PLACES_API}?${params}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const byType = Object.fromEntries(
+          (data.places || []).map((place) => [place.placeType, place]),
+        );
+        setItems((current) =>
+          current.map((place) =>
+            pinned[place.id] || !byType[place.placeType]
+              ? place
+              : mapPlace(byType[place.placeType]),
+          ),
+        );
+      })
+      .catch(() => {});
   };
 
   const appliedCandidate = candidates.find(
@@ -343,78 +423,97 @@ export default function ReferenceCourseResult({
           <em>오늘의 코스</em>
         </h2>
         <p>
-          {form.season === "winter" ? text.winter : text.summer} ·{" "}
+          {form.stylePref === "outdoor" ? text.outdoorPref : text.indoorPref} ·{" "}
           {form.transport === "drive" ? text.drive : text.walk} ·{" "}
-          {form.diet === "halal"
-            ? text.halal
-            : form.diet === "vegetarian"
-              ? text.vegetarian
-              : text.dietaryNone}
+          {text[
+            {
+              korean: "cuisineKorean",
+              western: "cuisineWestern",
+              japanese: "cuisineJapanese",
+              chinese: "cuisineChinese",
+              southeast_asian: "cuisineSoutheastAsian",
+              middle_eastern: "cuisineMiddleEastern",
+            }[form.cuisine]
+          ]}
         </p>
       </div>
-      <div className="budget">
-        <span>{text.totalBudget}</span>
-        <strong>
-          {total.min.toLocaleString()}원 — {total.max.toLocaleString()}원
-        </strong>
-      </div>
-      <div className="route-map">
-        <div className="route-road"></div>
-        {items.map((item, index) => (
-          <div className={`route-pin route-pin-${index + 1}`} key={item.id}>
-            <b>{index + 1}</b>
+      {placesEmpty ? (
+        <div className="empty-places">
+          <p>{text.emptyPlaces}</p>
+          <button onClick={onBack}>{errorText.retry}</button>
+        </div>
+      ) : (
+        <>
+          <div className="budget">
+            <span>{text.totalBudget}</span>
+            <strong>
+              {total.min.toLocaleString()}원 — {total.max.toLocaleString()}원
+            </strong>
           </div>
-        ))}
-        <span className="map-word">
-          SEOUL
-          <br />
-          <small>LOCAL DATE ROUTE</small>
-        </span>
-      </div>
-      <div className="places-heading">
-        <strong>{text.placesLabel}</strong>
-        <small>{text.dragHint}</small>
-      </div>
-      <div className="result-places">
-        {items.map((place, index) => (
-          <article className="result-place" key={place.id}>
-            <div className="result-number">0{index + 1}</div>
-            <div className="result-place-main">
-              <span>{place.category}</span>
-              <h3>{place.title}</h3>
-              <p>{place.text}</p>
-              <strong>
-                {place.min.toLocaleString()}원 — {place.max.toLocaleString()}원
-              </strong>
-              <div className="place-actions">
-                <button
-                  className={votes[place.id] === "up" ? "active" : ""}
-                  onClick={() => setVotes({ ...votes, [place.id]: "up" })}
-                >
-                  <ThumbsUp size={14} /> {text.good}
-                </button>
-                <button
-                  className={votes[place.id] === "down" ? "active" : ""}
-                  onClick={() => setVotes({ ...votes, [place.id]: "down" })}
-                >
-                  <ThumbsDown size={14} /> {text.bad}
-                </button>
-                <button onClick={() => swap(place.id)}>
-                  <ChevronDown size={14} /> {text.change}
-                </button>
-                <button
-                  className={pinned[place.id] ? "pin active" : "pin"}
-                  onClick={() =>
-                    setPinned({ ...pinned, [place.id]: !pinned[place.id] })
-                  }
-                >
-                  <Pin size={14} />
-                </button>
+          <div className="route-map">
+            <div className="route-road"></div>
+            {items.map((item, index) => (
+              <div className={`route-pin route-pin-${index + 1}`} key={item.id}>
+                <b>{index + 1}</b>
               </div>
-            </div>
-          </article>
-        ))}
-      </div>
+            ))}
+            <span className="map-word">
+              SEOUL
+              <br />
+              <small>LOCAL DATE ROUTE</small>
+            </span>
+          </div>
+          <div className="places-heading">
+            <strong>{text.placesLabel}</strong>
+            <button className="regenerate-link" onClick={regenerateCourse}>
+              <RefreshCw size={13} /> {text.regenerateCourse}
+            </button>
+          </div>
+          <div className="result-places">
+            {items.map((place, index) => (
+              <article className="result-place" key={place.id}>
+                <div className="result-number">0{index + 1}</div>
+                <div className="result-place-main">
+                  <span>{place.category}</span>
+                  <h3>{place.title}</h3>
+                  <p>{place.text}</p>
+                  <strong>
+                    {place.min.toLocaleString()}원 — {place.max.toLocaleString()}원
+                  </strong>
+                  <div className="place-actions">
+                    <button
+                      className={votes[place.id] === "up" ? "active" : ""}
+                      onClick={() => setVotes({ ...votes, [place.id]: "up" })}
+                    >
+                      <ThumbsUp size={14} /> {text.good}
+                    </button>
+                    <button
+                      className={votes[place.id] === "down" ? "active" : ""}
+                      onClick={() => setVotes({ ...votes, [place.id]: "down" })}
+                    >
+                      <ThumbsDown size={14} /> {text.bad}
+                    </button>
+                    <button onClick={() => swapPlace(place.id)} disabled={pinned[place.id]}>
+                      <ChevronDown size={14} /> {text.change}
+                    </button>
+                    <button
+                      className={pinned[place.id] ? "pin active" : "pin"}
+                      onClick={() =>
+                        setPinned({ ...pinned, [place.id]: !pinned[place.id] })
+                      }
+                    >
+                      <Pin size={14} />
+                    </button>
+                  </div>
+                  {swapNotice === place.id && (
+                    <small className="swap-notice">{text.noAlternative}</small>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        </>
+      )}
       <div className="partner">
         <div className="partner-avatar">지</div>
         <div>
@@ -465,6 +564,13 @@ export default function ReferenceCourseResult({
           onClose={() => setMatchingOpen(false)}
         />
       )}
+      {matchPromptOpen && (
+        <MatchPreferenceSheet
+          text={text}
+          onSelect={chooseMatchTarget}
+          onClose={() => setMatchPromptOpen(false)}
+        />
+      )}
       <InteractionPanel
         open={interactionOpen}
         user={user}
@@ -475,6 +581,44 @@ export default function ReferenceCourseResult({
         }}
       />
     </section>
+  );
+}
+
+function MatchPreferenceSheet({ text, onSelect, onClose }) {
+  return (
+    <div className="interaction-backdrop" onClick={onClose}>
+      <aside
+        className="interaction-sheet"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <header className="interaction-header">
+          <div>
+            <span className="notification-kicker">
+              <Heart size={14} /> MATCHING
+            </span>
+            <h2>{text.matchSettingTitle}</h2>
+            <p>{text.matchTargetLabel}</p>
+          </div>
+          <button onClick={onClose}>
+            <X size={19} />
+          </button>
+        </header>
+        <div className="request-list">
+          <button className="choice" onClick={() => onSelect("foreign")}>
+            <b>🌍</b>
+            <span>
+              <strong>{text.matchTargetForeign}</strong>
+            </span>
+          </button>
+          <button className="choice" onClick={() => onSelect("korean")}>
+            <b>🇰🇷</b>
+            <span>
+              <strong>{text.matchTargetKorean}</strong>
+            </span>
+          </button>
+        </div>
+      </aside>
+    </div>
   );
 }
 

@@ -27,6 +27,25 @@
   font-size: 13px;
   font-weight: 700;
 }
+.empty-places {
+  text-align: center;
+  padding: 60px 24px;
+}
+.empty-places p {
+  max-width: 300px;
+  margin: 0 auto 18px;
+  color: #888;
+  font-size: 13px;
+  line-height: 1.65;
+}
+.empty-places button {
+  background: var(--black);
+  color: #fff;
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-size: 13px;
+  font-weight: 700;
+}
 .result-header-actions {
   display: flex;
   align-items: center;
@@ -742,16 +761,24 @@ button {
   font-size: 11px;
 }
 .route-pin-1 {
-  left: 25%;
-  top: 28%;
+  left: 20%;
+  top: 25%;
 }
 .route-pin-2 {
-  left: 49%;
-  top: 51%;
+  left: 38%;
+  top: 40%;
 }
 .route-pin-3 {
+  left: 55%;
+  top: 55%;
+}
+.route-pin-4 {
   left: 72%;
   top: 68%;
+}
+.route-pin-5 {
+  left: 88%;
+  top: 80%;
 }
 .map-word {
   position: absolute;
@@ -778,6 +805,15 @@ button {
 .places-heading small {
   font-size: 9px;
   color: #999;
+}
+.regenerate-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  color: var(--orange);
+  font-size: 10px;
+  font-weight: 700;
 }
 .result-place {
   display: flex;
@@ -829,6 +865,16 @@ button {
 .place-actions button.pin.active {
   color: var(--orange);
   background: var(--orange-soft);
+}
+.place-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.swap-notice {
+  display: block;
+  margin-top: 7px;
+  color: var(--orange);
+  font-size: 10px;
 }
 .partner {
   margin: 12px 22px;

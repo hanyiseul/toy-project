@@ -39,12 +39,19 @@ export async function findMatches(filters) {
     nationality = "all",
     sort = "score",
     excludeUserId,
+    targetType,
   } = filters;
+  if (!targetType) {
+    return {
+      matches: [],
+      pagination: { page: 1, limit: 10, total: 0, pages: 1 },
+    };
+  }
   const pageSize = 10;
   const currentPage = Math.max(1, Number.parseInt(page, 10) || 1);
   const offset = (currentPage - 1) * pageSize;
-  const conditions = ["u.user_type = 'korean'", "u.matching_enabled = TRUE"];
-  const params = [];
+  const conditions = ["u.user_type = ?", "u.matching_enabled = TRUE"];
+  const params = [targetType];
   if (excludeUserId) {
     conditions.push("u.id != ?");
     params.push(excludeUserId);

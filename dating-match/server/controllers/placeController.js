@@ -1,11 +1,18 @@
 import { recommendPlaces, reorderCourse } from "../services/placeService.js";
 
 export async function getPlaces(req, res, next) {
+  const validTypes = new Set(["food", "cafe", "activity", "culture", "shopping"]);
   const filters = {
-    diet: req.query.diet || "all",
-    season: req.query.season || "summer",
-    nationality: req.query.nationality || "general",
+    cuisine: req.query.cuisine || null,
+    preference: req.query.preference || "all",
     area: req.query.area || "all",
+    transport: req.query.transport || "walk",
+    types: req.query.types
+      ? req.query.types.split(",").filter((type) => validTypes.has(type))
+      : undefined,
+    excludeIds: req.query.exclude
+      ? req.query.exclude.split(",").map(Number).filter(Boolean)
+      : [],
   };
   try {
     res.json(await recommendPlaces(filters));

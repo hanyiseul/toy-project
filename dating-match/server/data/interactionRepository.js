@@ -112,13 +112,23 @@ export async function listConversations(userId) {
   }
 }
 
-export async function listMessages(conversationId) {
+async function assertConversationParticipant(conversationId, userId) {
+  const rows = await query(
+    "SELECT 1 FROM conversations c JOIN match_requests r ON r.id = c.match_request_id WHERE c.id = ? AND (r.requester_id = ? OR r.partner_id = ?) LIMIT 1",
+    [conversationId, userId, userId],
+  );
+  if (!rows.length) throw new Error("CONVERSATION_FORBIDDEN");
+}
+
+export async function listMessages(conversationId, userId) {
   try {
+    await assertConversationParticipant(conversationId, userId);
     return await query(
       "SELECT id, sender_id AS senderId, body, created_at AS createdAt FROM messages WHERE conversation_id = ? ORDER BY created_at ASC",
       [conversationId],
     );
   } catch (error) {
+    if (error.message === "CONVERSATION_FORBIDDEN") throw error;
     console.warn("Using fallback messages:", error.message);
     return (
       fallback.messages[conversationId] || [
@@ -135,12 +145,14 @@ export async function listMessages(conversationId) {
 
 export async function createMessage(conversationId, senderId, body) {
   try {
+    await assertConversationParticipant(conversationId, senderId);
     const result = await query(
       "INSERT INTO messages (conversation_id, sender_id, body) VALUES (?, ?, ?)",
       [conversationId, senderId, body],
     );
     return { id: result.insertId, conversationId, senderId, body };
   } catch (error) {
+    if (error.message === "CONVERSATION_FORBIDDEN") throw error;
     console.warn("Using fallback message:", error.message);
     const message = {
       id: Date.now(),
