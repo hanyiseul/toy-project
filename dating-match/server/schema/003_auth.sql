@@ -1,0 +1,4 @@
+USE dating_match;
+
+ALTER TABLE users ADD COLUMN email VARCHAR(190) UNIQUE;
+ALTER TABLE users ADD COLUMN password_hash VARCHAR(255) NOT NULL DEFAULT '';

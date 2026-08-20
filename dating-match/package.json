@@ -1,0 +1,14 @@
+{
+  "name": "dating-match",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix server && npm install --prefix client",
+    "dev": "concurrently \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
+    "build": "npm run build --prefix client",
+    "format": "prettier --write \"client/**/*.{js,jsx,css}\" \"server/**/*.js\" \"*.md\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "prettier": "^3.6.2"
+  }
+}
