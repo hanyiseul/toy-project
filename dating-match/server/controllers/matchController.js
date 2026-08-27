@@ -1,5 +1,6 @@
 import { findUserById } from "../data/authRepository.js";
 import { listMatches, requestMatch } from "../services/matchService.js";
+import { emitToUser } from "../realtime/socket.js";
 
 export async function getMatches(req, res, next) {
   try {
@@ -20,7 +21,12 @@ export async function applyMatch(req, res, next) {
       .status(400)
       .json({ message: "userId와 partnerId가 필요합니다." });
   try {
-    res.status(201).json(await requestMatch(req.user.sub, partnerId));
+    const result = await requestMatch(req.user.sub, partnerId);
+    emitToUser(partnerId, "notification:new", {
+      type: "match_request",
+      requestId: result.requestId,
+    });
+    res.status(201).json(result);
   } catch (error) {
     next(error);
   }

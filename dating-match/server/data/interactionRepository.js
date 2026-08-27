@@ -19,7 +19,15 @@ const fallback = {
 export async function listNotifications(userId) {
   try {
     return await query(
-      `SELECT n.id, n.type, n.is_read AS isRead, n.match_request_id AS requestId, n.created_at AS createdAt, u.nickname AS requesterName, u.age AS requesterAge FROM notifications n LEFT JOIN match_requests r ON r.id = n.match_request_id LEFT JOIN users u ON u.id = r.requester_id WHERE n.user_id = ? ORDER BY n.created_at DESC`,
+      `SELECT n.id, n.type, n.is_read AS isRead, n.match_request_id AS requestId, n.created_at AS createdAt,
+        CASE WHEN n.type = 'match_accepted' THEN p.nickname ELSE u.nickname END AS requesterName,
+        CASE WHEN n.type = 'match_accepted' THEN p.age ELSE u.age END AS requesterAge
+       FROM notifications n
+       LEFT JOIN match_requests r ON r.id = n.match_request_id
+       LEFT JOIN users u ON u.id = r.requester_id
+       LEFT JOIN users p ON p.id = r.partner_id
+       WHERE n.user_id = ?
+       ORDER BY n.created_at DESC`,
       [userId],
     );
   } catch (error) {
@@ -55,15 +63,33 @@ export async function respondToRequest(requestId, userId, status) {
             partnerAge: fallbackRequest.requesterAge,
           },
         ];
-        return { requestId: fallbackRequest.id, conversationId, status };
+        return {
+          requestId: fallbackRequest.id,
+          conversationId,
+          status,
+          requesterId: fallbackRequest.requesterId,
+        };
       }
-      return { requestId: fallbackRequest.id, status };
+      return {
+        requestId: fallbackRequest.id,
+        status,
+        requesterId: fallbackRequest.requesterId,
+      };
     }
     await query("UPDATE match_requests SET status = ? WHERE id = ?", [
       status,
       requestId,
     ]);
-    if (status !== "accepted") return { requestId: Number(requestId), status };
+    await query(
+      "UPDATE notifications SET is_read = TRUE WHERE match_request_id = ? AND type = 'match_request'",
+      [requestId],
+    );
+    if (status !== "accepted")
+      return {
+        requestId: Number(requestId),
+        status,
+        requesterId: rows[0].requesterId,
+      };
     const result = await query(
       "INSERT INTO conversations (match_request_id) VALUES (?) ON DUPLICATE KEY UPDATE id = LAST_INSERT_ID(id)",
       [requestId],
@@ -76,6 +102,7 @@ export async function respondToRequest(requestId, userId, status) {
       requestId: Number(requestId),
       conversationId: result.insertId,
       status: "accepted",
+      requesterId: rows[0].requesterId,
     };
   } catch (error) {
     if (error.message === "MATCH_REQUEST_NOT_FOUND") throw error;
@@ -94,10 +121,27 @@ export async function respondToRequest(requestId, userId, status) {
           partnerAge: request.requesterAge,
         },
       ];
-      return { requestId: request.id, conversationId, status };
+      return {
+        requestId: request.id,
+        conversationId,
+        status,
+        requesterId: request.requesterId,
+      };
     }
-    return { requestId: request.id, status };
+    return { requestId: request.id, status, requesterId: request.requesterId };
   }
+}
+
+export async function markNotificationRead(notificationId, userId) {
+  try {
+    await query(
+      "UPDATE notifications SET is_read = TRUE WHERE id = ? AND user_id = ?",
+      [notificationId, userId],
+    );
+  } catch (error) {
+    console.warn("Using fallback notification read:", error.message);
+  }
+  return { id: Number(notificationId), isRead: true };
 }
 
 export async function listConversations(userId) {
@@ -112,7 +156,7 @@ export async function listConversations(userId) {
   }
 }
 
-async function assertConversationParticipant(conversationId, userId) {
+export async function assertConversationParticipant(conversationId, userId) {
   const rows = await query(
     "SELECT 1 FROM conversations c JOIN match_requests r ON r.id = c.match_request_id WHERE c.id = ? AND (r.requester_id = ? OR r.partner_id = ?) LIMIT 1",
     [conversationId, userId, userId],
@@ -150,7 +194,13 @@ export async function createMessage(conversationId, senderId, body) {
       "INSERT INTO messages (conversation_id, sender_id, body) VALUES (?, ?, ?)",
       [conversationId, senderId, body],
     );
-    return { id: result.insertId, conversationId, senderId, body };
+    return {
+      id: result.insertId,
+      conversationId,
+      senderId,
+      body,
+      createdAt: new Date().toISOString(),
+    };
   } catch (error) {
     if (error.message === "CONVERSATION_FORBIDDEN") throw error;
     console.warn("Using fallback message:", error.message);

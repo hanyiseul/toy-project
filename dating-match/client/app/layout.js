@@ -1,4 +1,5 @@
 import "./globals.css";
+import InAppBrowserRedirect from "../src/components/InAppBrowserRedirect";
 
 export const metadata = {
   title: "미결추 | 진짜 한국인과 데이트하기",
@@ -8,7 +9,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <InAppBrowserRedirect />
+        {children}
+      </body>
     </html>
   );
 }

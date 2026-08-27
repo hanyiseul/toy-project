@@ -9,6 +9,8 @@ VALUES
 ('서촌 한옥골목 산책', '동네 산책', '서촌', '한옥 지붕 사이로 걷는 조용한 골목길', 0, 5000, FALSE, FALSE, FALSE, NULL, FALSE, 'activity', 37.5802, 126.9705, 'seed-seochon-walk'),
 ('통인동 소품가게', '소품샵', '서촌', '아기자기한 소품과 문구를 구경해요', 0, 15000, TRUE, FALSE, FALSE, NULL, FALSE, 'shopping', 37.5804, 126.9698, 'seed-tongin-shop'),
 ('인왕산 초소책방', '뷰 포인트', '부암동', '서울이 내려다보이는 조용한 산책과 따뜻한 차', 8000, 14000, TRUE, TRUE, TRUE, NULL, FALSE, 'cafe', 37.5926, 126.9636, 'seed-inwangsan-bookshop'),
+('부암동 백사실계곡 산책', '계곡 산책', '부암동', '도심 속 작은 계곡을 따라 걷는 한적한 숲길', 0, 3000, FALSE, FALSE, FALSE, NULL, FALSE, 'activity', 37.5936, 126.9646, 'seed-buam-baeksasil'),
+('부암동 家 家 백반', '가정식 백반', '부암동', '집밥처럼 편안한 계절 반찬으로 채운 한 상', 10000, 16000, TRUE, FALSE, TRUE, 'korean', FALSE, 'food', 37.5921, 126.9652, 'seed-buam-bakban'),
 ('홍대 벽화 골목', '동네 산책', '홍대', '골목마다 그림을 구경하며 천천히 걷기 좋은 코스', 0, 8000, FALSE, TRUE, TRUE, NULL, FALSE, 'activity', 37.5563, 126.9237, 'seed-hongdae-mural'),
 ('연남동 브런치 카페', '브런치 카페', '홍대', '경의선숲길 옆에서 여유롭게 즐기는 브런치', 12000, 22000, TRUE, FALSE, TRUE, 'western', TRUE, 'food', 37.5506052, 126.9254349, 'seed-yeonnam-brunch'),
 ('홍대 쌀국수 골목', '베트남 음식', '홍대', '향긋한 쌀국수와 스프링롤을 함께 먹어요', 8000, 13000, TRUE, FALSE, TRUE, 'southeast_asian', FALSE, 'food', 37.5567, 126.9241, 'seed-hongdae-pho'),

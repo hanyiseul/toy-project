@@ -82,26 +82,64 @@ export async function findRecommendedPlaces(filters) {
     excludeIds = [],
   } = filters;
   const resolvedTypes = types?.length ? types : pickRandomTypes();
+
   try {
-    const picks = await Promise.all(
-      resolvedTypes.map((placeType) =>
-        findOnePlace({
-          placeType,
-          cuisine,
-          preference,
-          area,
-          transport,
-          near,
-          excludeIds,
-        }),
-      ),
-    );
-    return picks
-      .filter(Boolean)
-      .map((place, index) => ({
-        ...place,
-        location: { x: 31 + index * 18, y: 26 + index * 20 },
-      }));
+    const picked = [];
+    const pickedIds = [...excludeIds];
+    const usedTypes = new Set();
+
+    const attempt = async (placeType, overrides = {}) => {
+      const place = await findOnePlace({
+        placeType,
+        cuisine,
+        preference,
+        area,
+        transport,
+        near,
+        ...overrides,
+        excludeIds: pickedIds,
+      });
+      if (place) {
+        picked.push(place);
+        pickedIds.push(place.id);
+        usedTypes.add(placeType);
+      }
+    };
+
+    for (const placeType of resolvedTypes) {
+      await attempt(placeType);
+    }
+
+    // Guarantee at least MIN_COURSE_SIZE places: first backfill with unused
+    // categories under the original filters, then progressively relax the
+    // filters (parking/transport, indoor preference, cuisine, area) until the
+    // minimum is met or every category has been tried.
+    const unusedTypes = () => COURSE_TYPES.filter((type) => !usedTypes.has(type));
+    const relaxSteps = [
+      {},
+      { transport: "walk", near: null },
+      { transport: "walk", near: null, preference: "all" },
+      { transport: "walk", near: null, preference: "all", cuisine: null },
+      {
+        transport: "walk",
+        near: null,
+        preference: "all",
+        cuisine: null,
+        area: "all",
+      },
+    ];
+    for (const overrides of relaxSteps) {
+      if (picked.length >= MIN_COURSE_SIZE) break;
+      for (const placeType of unusedTypes()) {
+        if (picked.length >= MIN_COURSE_SIZE) break;
+        await attempt(placeType, overrides);
+      }
+    }
+
+    return picked.map((place, index) => ({
+      ...place,
+      location: { x: 31 + index * 18, y: 26 + index * 20 },
+    }));
   } catch (error) {
     console.warn("Using fallback places:", error.message);
     return filterFallbackPlaces(filters);

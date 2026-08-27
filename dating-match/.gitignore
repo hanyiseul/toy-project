@@ -3,3 +3,6 @@ dist
 .next
 .next-dev
 .env*
+!.env.example
+server/uploads/*
+!server/uploads/.gitkeep

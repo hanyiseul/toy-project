@@ -165,9 +165,23 @@ export default function OnboardingScreen({
           </>
         )}
         {step === 4 && (
-          <div className="ready-step">
-            <div className="flow-icon">✨</div>
-            <h2>{ui.readyTitle}</h2>
+          <div className="ready-step promo-loading">
+            <a
+              className="promo-loading-logo"
+              href="https://jbbplatform.jbbank.co.kr/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              JB PLATFORM
+            </a>
+            <span className="notification-kicker promo-kicker">
+              JB PLATFORM
+            </span>
+            <h2>
+              대한민국 최고의 금융에듀테인센터
+              <br />
+              <strong>JB PLATFORM</strong>
+            </h2>
             <p>{ui.readyText}</p>
           </div>
         )}

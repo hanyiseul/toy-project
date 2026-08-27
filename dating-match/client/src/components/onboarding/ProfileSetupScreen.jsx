@@ -1,4 +1,7 @@
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { useState } from "react";
+import { API_URL as API } from "../../config/api";
+import { authFetch } from "../../services/authFetch";
 
 const countries = [
   "🇺🇸 미국",
@@ -20,6 +23,8 @@ const countries = [
 ];
 
 export default function ProfileSetupScreen({ text, form, setForm, onBack, onNext }) {
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
   const update = (key, value) =>
     setForm((current) => ({ ...current, [key]: value }));
   const selectType = (type) =>
@@ -29,9 +34,27 @@ export default function ProfileSetupScreen({ text, form, setForm, onBack, onNext
       country:
         type === "korean" ? "한국" : current.country === "한국" ? "" : current.country,
     }));
-  const handlePhotoChange = (event) => {
+  const handlePhotoChange = async (event) => {
     const file = event.target.files?.[0];
-    if (file) update("photoUrl", URL.createObjectURL(file));
+    if (!file) return;
+    update("photoUrl", URL.createObjectURL(file));
+    setUploadError("");
+    setUploading(true);
+    try {
+      const body = new FormData();
+      body.append("photo", file);
+      const response = await authFetch(`${API}/users/photo`, {
+        method: "POST",
+        body,
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "업로드 실패");
+      update("photoUrl", data.photoUrl);
+    } catch {
+      setUploadError("사진 업로드에 실패했어요. 다시 시도해주세요.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -128,9 +151,15 @@ export default function ProfileSetupScreen({ text, form, setForm, onBack, onNext
           )}
         </div>
         <label className="upload-box">
-          ＋ {text.photoUpload}
-          <input type="file" accept="image/*" onChange={handlePhotoChange} />
+          ＋ {uploading ? "업로드 중..." : text.photoUpload}
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoChange}
+            disabled={uploading}
+          />
         </label>
+        {uploadError && <p className="auth-error">{uploadError}</p>}
       </div>
       <div className="flow-footer">
         <button className="next-button" onClick={onNext}>

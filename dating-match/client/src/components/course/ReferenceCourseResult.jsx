@@ -1,6 +1,6 @@
 import {
   ArrowLeft,
-  Bell,
+  ArrowRight,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -14,13 +14,14 @@ import {
   ThumbsUp,
   X,
 } from "lucide-react";
-import { useDeferredValue, useEffect, useState } from "react";
+import { useDeferredValue, useEffect, useRef, useState } from "react";
 import { errorTranslations, uiTranslations } from "../../data/translations";
-import InteractionPanel from "../interaction/InteractionPanel";
 import { placeApi } from "../../services/placeApi";
 import { buildProfilePayload } from "../../utils/buildProfilePayload";
+import { API_URL } from "../../config/api";
+import { authFetch } from "../../services/authFetch";
 
-const PLACES_API = "http://localhost:4000/api/places";
+const PLACES_API = `${API_URL}/places`;
 
 function mapPlace(place) {
   return {
@@ -166,8 +167,11 @@ export default function ReferenceCourseResult({
   const [swapNotice, setSwapNotice] = useState(null);
   const [matchingOpen, setMatchingOpen] = useState(false);
   const [matchPromptOpen, setMatchPromptOpen] = useState(false);
-  const [interactionOpen, setInteractionOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareNotice, setShareNotice] = useState("");
+  const [promoOpen, setPromoOpen] = useState(false);
+  const promoShownRef = useRef(false);
+  const promoTimerRef = useRef(null);
   const [query, setQuery] = useState("");
   const [region, setRegion] = useState("all");
   const [nationality, setNationality] = useState("all");
@@ -181,21 +185,6 @@ export default function ReferenceCourseResult({
   const pageSize = 10;
   const ui = uiTranslations[lang];
   const errorText = errorTranslations[lang];
-  useEffect(() => {
-    if (!user) return;
-    fetch("http://localhost:4000/api/interaction/notifications", {
-      credentials: "include",
-    })
-      .then((response) => response.json())
-      .then((data) =>
-        setNotificationCount(
-          (data.notifications || []).filter(
-            (notification) => !notification.isRead,
-          ).length,
-        ),
-      )
-      .catch(() => setNotificationCount(0));
-  }, [user]);
   useEffect(() => {
     const params = new URLSearchParams({
       preference: form.stylePref || "all",
@@ -225,6 +214,12 @@ export default function ReferenceCourseResult({
         ),
       );
   }, [form.stylePref, form.cuisine, form.transport, form.location]);
+  useEffect(() => {
+    if (promoShownRef.current || !items.length) return;
+    promoShownRef.current = true;
+    promoTimerRef.current = setTimeout(() => setPromoOpen(true), 1200);
+  }, [items.length]);
+  useEffect(() => () => clearTimeout(promoTimerRef.current), []);
   const total = items.reduce(
     (result, place) => ({
       min: result.min + place.min,
@@ -242,9 +237,7 @@ export default function ReferenceCourseResult({
       nationality,
       sort,
     });
-    fetch(`http://localhost:4000/api/matches?${params}`, {
-      credentials: "include",
-    })
+    authFetch(`${API_URL}/matches?${params}`)
       .then((response) => response.json())
       .then((data) => {
         if (!data.matches) throw new Error("No matches");
@@ -373,6 +366,48 @@ export default function ReferenceCourseResult({
       .catch(() => {});
   };
 
+  const shareUrl = typeof window !== "undefined" ? window.location.href : "";
+  const shareText = `${form.location || "서울"} 데이트 코스\n${items
+    .map((item, index) => `${index + 1}. ${item.title}`)
+    .join("\n")}`;
+  const shareCourse = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${form.location || "서울"} 데이트 코스`,
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch {
+        // user cancelled the native share sheet — nothing else to do
+      }
+      return;
+    }
+    setShareNotice("");
+    setShareOpen(true);
+  };
+  const copyShareLink = async () => {
+    try {
+      await navigator.clipboard?.writeText(shareUrl);
+      setShareNotice("링크가 복사됐어요.");
+    } catch {
+      setShareNotice("복사에 실패했어요.");
+    }
+  };
+  const shareViaSms = () => {
+    window.location.href = `sms:?body=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`;
+    setShareOpen(false);
+  };
+  const shareViaInstagram = async () => {
+    try {
+      await navigator.clipboard?.writeText(`${shareText}\n${shareUrl}`);
+      setShareNotice("공유 문구가 복사됐어요. 인스타그램에 붙여넣어 주세요.");
+    } catch {
+      setShareNotice("복사에 실패했어요.");
+    }
+    window.open("https://www.instagram.com/", "_blank", "noopener,noreferrer");
+  };
+
   const appliedCandidate = candidates.find(
     (candidate) => candidate.id === appliedId,
   );
@@ -400,21 +435,27 @@ export default function ReferenceCourseResult({
         </button>
         <strong>{text.appName}</strong>
         <div className="result-header-actions">
-          <button
-            className="notification-button"
-            onClick={() => setInteractionOpen(true)}
-            aria-label="매칭 신청 알림"
-          >
-            <Bell size={18} />
-            {notificationCount > 0 && (
-              <span className="notification-dot">
-                {notificationCount > 9 ? "9+" : notificationCount}
-              </span>
-            )}
-          </button>
           <button className="lang-dot">{text.flag}</button>
         </div>
       </header>
+      <a
+        className="ad-banner"
+        href="https://www.jbbank.co.kr/NFF_CRCD_DETAIL.act"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <div className="ad-card-mock">
+          <span className="ad-card-bank">Jeonbuk Bank</span>
+          <span className="ad-card-chip" />
+          <span className="ad-card-name">4 TRACK</span>
+        </div>
+        <div className="ad-banner-body">
+          <small className="ad-banner-brand">전북은행</small>
+          <strong>4TRACK 신용카드</strong>
+          <span>언제 어디서든 최대 1.5% 적립</span>
+        </div>
+        <ChevronRight size={16} />
+      </a>
       <div className="result-title">
         <span className="result-badge">♥ {text.localBadge}</span>
         <h2>
@@ -531,7 +572,7 @@ export default function ReferenceCourseResult({
       </div>
       <div className="result-bottom">
         <button onClick={onReset}>{text.retry}</button>
-        <button onClick={() => navigator.clipboard?.writeText(location.href)}>
+        <button onClick={shareCourse}>
           <Share2 size={15} /> {text.share}
         </button>
       </div>
@@ -552,9 +593,8 @@ export default function ReferenceCourseResult({
           onSortChange={changeFilter(setSort)}
           onPage={setPage}
           onApply={(id) => {
-            fetch("http://localhost:4000/api/matches/requests", {
+            authFetch(`${API_URL}/matches/requests`, {
               method: "POST",
-              credentials: "include",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ partnerId: id }),
             }).catch(() => {});
@@ -571,15 +611,75 @@ export default function ReferenceCourseResult({
           onClose={() => setMatchPromptOpen(false)}
         />
       )}
-      <InteractionPanel
-        open={interactionOpen}
-        user={user}
-        onClose={() => setInteractionOpen(false)}
-        onCompleted={() => {
-          setNotificationCount(0);
-          setInteractionOpen(true);
-        }}
-      />
+      {shareOpen && (
+        <div className="interaction-backdrop" onClick={() => setShareOpen(false)}>
+          <aside
+            className="interaction-sheet share-sheet"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <header className="interaction-header">
+              <div>
+                <span className="notification-kicker">
+                  <Share2 size={14} /> SHARE
+                </span>
+                <h2>코스 공유하기</h2>
+              </div>
+              <button onClick={() => setShareOpen(false)}>
+                <X size={19} />
+              </button>
+            </header>
+            <div className="share-options">
+              <button onClick={shareViaSms}>문자로 보내기</button>
+              <button onClick={shareViaInstagram}>인스타그램에 공유</button>
+              <button onClick={copyShareLink}>링크 복사</button>
+            </div>
+            <p className="share-hint">
+              카카오톡 공유는 모바일 브라우저의 공유 버튼을 이용해주세요.
+            </p>
+            {shareNotice && <small className="swap-notice">{shareNotice}</small>}
+          </aside>
+        </div>
+      )}
+      {promoOpen && (
+        <div className="interaction-backdrop" onClick={() => setPromoOpen(false)}>
+          <aside
+            className="interaction-sheet promo-sheet"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button className="promo-close" onClick={() => setPromoOpen(false)}>
+              <X size={19} />
+            </button>
+            <img
+              className="promo-image"
+              src="/images/unnamed.webp"
+              alt="bravo KOREA"
+            />
+            <div className="promo-body">
+              <span className="notification-kicker promo-kicker">
+                BRAVO KOREA
+              </span>
+              <h2 className="promo-title">
+                한국 생활에 더 많은 정보를 얻고 싶다면
+                <br />
+                <strong>bravoKorea!</strong>
+              </h2>
+              <button
+                className="complete-button"
+                onClick={() => {
+                  window.open(
+                    "https://play.google.com/store/apps/details?id=kr.co.jbbank.bravokorea&hl=ko",
+                    "_blank",
+                    "noopener,noreferrer",
+                  );
+                  setPromoOpen(false);
+                }}
+              >
+                지금 만나보기 <ArrowRight size={16} />
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
     </section>
   );
 }

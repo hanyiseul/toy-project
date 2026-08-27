@@ -1,10 +1,8 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
+import { API_URL } from "../config/api";
+import { authFetch } from "./authFetch";
 
 async function request(path, options) {
-  const response = await fetch(`${API_URL}${path}`, {
-    credentials: "include",
-    ...options,
-  });
+  const response = await authFetch(`${API_URL}${path}`, options);
   if (!response.ok) throw new Error("API request failed");
   return response.json();
 }

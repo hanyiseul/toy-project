@@ -156,7 +156,12 @@
   color: #888;
   margin: 4px 0 0;
 }
-.request-card > button,
+.request-card-actions {
+  display: flex;
+  gap: 6px;
+}
+.request-card-actions button,
+.match-update-card > button,
 .complete-button {
   background: var(--orange);
   color: #fff;
@@ -164,6 +169,11 @@
   padding: 9px 11px;
   font-size: 10px;
   font-weight: 700;
+}
+.request-card-actions .reject-button {
+  background: transparent;
+  color: #888;
+  border: 1px solid var(--line);
 }
 .empty-interaction {
   text-align: center;
@@ -199,6 +209,26 @@
   color: var(--orange);
   font-size: 10px;
 }
+.share-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 0 6px;
+}
+.share-options button {
+  width: 100%;
+  padding: 13px 14px;
+  border-radius: 12px;
+  background: var(--soft);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+}
+.share-hint {
+  font-size: 10.5px;
+  color: #999;
+  margin: 4px 0 0;
+}
 .match-complete {
   height: 100%;
   display: flex;
@@ -231,6 +261,58 @@
   display: flex;
   align-items: center;
   gap: 7px;
+}
+.promo-sheet {
+  position: relative;
+  height: auto;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 26px 22px;
+  text-align: left;
+}
+.promo-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  color: #aaa;
+  display: grid;
+  place-items: center;
+  padding: 4px;
+}
+.promo-image {
+  width: 64px;
+  height: auto;
+  border-radius: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px #00000026;
+}
+.promo-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+.promo-kicker {
+  margin: 0;
+}
+.promo-title {
+  font-family: Sora;
+  font-size: 14.5px;
+  line-height: 1.5;
+  font-weight: 800;
+  margin: 0;
+}
+.promo-title strong {
+  color: var(--orange);
+}
+.promo-body .complete-button {
+  margin-top: 0;
+  align-self: flex-end;
 }
 .chat-messages {
   flex: 1;
@@ -335,6 +417,63 @@ button {
 .logo span {
   font-size: 19px;
   color: var(--orange);
+}
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.account-menu {
+  position: relative;
+}
+.account-menu-trigger {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--orange-soft);
+  color: var(--black);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.account-menu-list {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px #00000014;
+  display: flex;
+  flex-direction: column;
+  min-width: 130px;
+  overflow: hidden;
+  z-index: 20;
+}
+.account-menu-list button {
+  background: none;
+  text-align: left;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.account-menu-list button:hover {
+  background: var(--orange-soft);
+}
+.app-toast {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  background: var(--black);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px #00000026;
 }
 .language-list {
   display: flex;
@@ -680,6 +819,83 @@ button {
 }
 .lang-dot {
   font-size: 18px;
+}
+.ad-banner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin: 14px 22px 0;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: inherit;
+  text-decoration: none;
+}
+.ad-card-mock {
+  position: relative;
+  width: 42px;
+  height: 58px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  border: 1.5px solid var(--black);
+  background: #fff;
+  overflow: hidden;
+}
+.ad-card-bank {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  font-size: 4px;
+  font-weight: 600;
+  color: #999;
+  letter-spacing: 0.01em;
+}
+.ad-card-chip {
+  position: absolute;
+  top: 15px;
+  left: 6px;
+  width: 11px;
+  height: 8px;
+  border-radius: 2px;
+  background: linear-gradient(135deg, #dedad2, #b6b2a8);
+}
+.ad-card-name {
+  position: absolute;
+  left: 7px;
+  bottom: 5px;
+  font-family: Sora, sans-serif;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  color: var(--black);
+}
+.ad-banner-body {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ad-banner-brand {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #aaa;
+}
+.ad-banner-body strong {
+  font-size: 13px;
+  font-weight: 800;
+}
+.ad-banner-body span {
+  font-size: 11px;
+  color: #888;
+}
+.ad-banner > svg {
+  color: #bbb;
+  flex-shrink: 0;
 }
 .result-title {
   padding: 22px 22px 18px;
@@ -1234,6 +1450,32 @@ button {
   font-size: 10px;
   color: #aaa;
 }
+.promo-loading-logo {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 16px;
+  border-radius: 24px;
+  background: #eef4ff;
+  color: #1e5fe0;
+  font-family: Sora, sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  padding: 6px;
+}
+.promo-loading .promo-kicker {
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
+  color: #1e5fe0;
+}
+.promo-loading h2 strong {
+  color: #1e5fe0;
+}
 @keyframes loadingPulse {
   50% {
     transform: scale(1.08);
@@ -1297,6 +1539,7 @@ button {
 .auth-form {
   width: 100%;
   max-width: 300px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -1358,4 +1601,35 @@ button {
   font-size: 12px;
   color: var(--orange);
   font-weight: 700;
+}
+.auth-find-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 11.5px;
+  color: #999;
+}
+.auth-find-links button {
+  background: none;
+  color: #777;
+  font-weight: 600;
+}
+.auth-result {
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  border-radius: 10px;
+  background: var(--orange-soft);
+  padding: 12px;
+  font-size: 12px;
+  color: var(--black);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+}
+.auth-result strong {
+  color: var(--orange);
 }
