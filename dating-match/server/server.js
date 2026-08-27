@@ -10,12 +10,13 @@ import interactionRoutes from "./routes/interactionRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import { initSocket } from "./realtime/socket.js";
 import { uploadsDir } from "./middleware/uploadMiddleware.js";
+import { corsOrigins } from "./config/cors.js";
 
 const app = express();
 const httpServer = createServer(app);
 initSocket(httpServer);
 const port = process.env.PORT || 4000;
-app.use(cors({ origin: process.env.CORS_ORIGIN || "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: corsOrigins(), credentials: true }));
 app.use(express.json());
 app.use("/uploads", express.static(uploadsDir));
 app.get("/", (_, res) =>

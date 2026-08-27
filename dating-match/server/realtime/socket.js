@@ -1,13 +1,14 @@
 import { Server } from "socket.io";
 import { parseAuthCookie, verifyAuthToken } from "../middleware/authMiddleware.js";
 import { assertConversationParticipant } from "../data/interactionRepository.js";
+import { corsOrigins } from "../config/cors.js";
 
 let io = null;
 
 export function initSocket(httpServer) {
   io = new Server(httpServer, {
     cors: {
-      origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+      origin: corsOrigins(),
       credentials: true,
     },
   });
